@@ -1,0 +1,173 @@
+{
+  "generatedAt": "2026-06-04T21:10:43.727Z",
+  "groups": [
+    {
+      "mineCount": 14,
+      "wins": 94,
+      "total": 222,
+      "theor": 0.44,
+      "pValue": 0.6187897440947236
+    },
+    {
+      "mineCount": 10,
+      "wins": 132,
+      "total": 222,
+      "theor": 0.6,
+      "pValue": 0.8694170607412404
+    },
+    {
+      "mineCount": 23,
+      "wins": 18,
+      "total": 219,
+      "theor": 0.08,
+      "pValue": 0.9048329363608667
+    },
+    {
+      "mineCount": 1,
+      "wins": 206,
+      "total": 221,
+      "theor": 0.96,
+      "pValue": 0.03446790181764858
+    },
+    {
+      "mineCount": 9,
+      "wins": 153,
+      "total": 223,
+      "theor": 0.64,
+      "pValue": 0.1515248750909891
+    },
+    {
+      "mineCount": 18,
+      "wins": 69,
+      "total": 224,
+      "theor": 0.28,
+      "pValue": 0.35003376008181064
+    },
+    {
+      "mineCount": 22,
+      "wins": 27,
+      "total": 221,
+      "theor": 0.12,
+      "pValue": 0.9208521578187745
+    },
+    {
+      "mineCount": 17,
+      "wins": 78,
+      "total": 224,
+      "theor": 0.32,
+      "pValue": 0.36533837916052725
+    },
+    {
+      "mineCount": 7,
+      "wins": 160,
+      "total": 220,
+      "theor": 0.72,
+      "pValue": 0.8101364618244385
+    },
+    {
+      "mineCount": 8,
+      "wins": 147,
+      "total": 221,
+      "theor": 0.68,
+      "pValue": 0.6362231866595345
+    },
+    {
+      "mineCount": 21,
+      "wins": 30,
+      "total": 218,
+      "theor": 0.16,
+      "pValue": 0.3672936196144533
+    },
+    {
+      "mineCount": 5,
+      "wins": 163,
+      "total": 215,
+      "theor": 0.8,
+      "pValue": 0.12490982415921914
+    },
+    {
+      "mineCount": 16,
+      "wins": 87,
+      "total": 228,
+      "theor": 0.36,
+      "pValue": 0.49725012458659623
+    },
+    {
+      "mineCount": 13,
+      "wins": 102,
+      "total": 220,
+      "theor": 0.48,
+      "pValue": 0.6270999642989792
+    },
+    {
+      "mineCount": 6,
+      "wins": 172,
+      "total": 217,
+      "theor": 0.76,
+      "pValue": 0.26043706352740637
+    },
+    {
+      "mineCount": 11,
+      "wins": 128,
+      "total": 223,
+      "theor": 0.56,
+      "pValue": 0.6738260634240852
+    },
+    {
+      "mineCount": 4,
+      "wins": 185,
+      "total": 228,
+      "theor": 0.84,
+      "pValue": 0.23886662893737354
+    },
+    {
+      "mineCount": 2,
+      "wins": 205,
+      "total": 227,
+      "theor": 0.92,
+      "pValue": 0.3474934043428304
+    },
+    {
+      "mineCount": 20,
+      "wins": 36,
+      "total": 212,
+      "theor": 0.2,
+      "pValue": 0.27181844325549487
+    },
+    {
+      "mineCount": 12,
+      "wins": 216,
+      "total": 418,
+      "theor": 0.52,
+      "pValue": 0.8940778306094561
+    },
+    {
+      "mineCount": 24,
+      "wins": 51,
+      "total": 1219,
+      "theor": 0.04,
+      "pValue": 0.7433642956417892
+    },
+    {
+      "mineCount": 3,
+      "wins": 189,
+      "total": 219,
+      "theor": 0.88,
+      "pValue": 0.4391963883460773
+    },
+    {
+      "mineCount": 19,
+      "wins": 58,
+      "total": 222,
+      "theor": 0.24,
+      "pValue": 0.4582434363235114
+    },
+    {
+      "mineCount": 15,
+      "wins": 89,
+      "total": 217,
+      "theor": 0.4,
+      "pValue": 0.7604798670891546
+    }
+  ]
+}

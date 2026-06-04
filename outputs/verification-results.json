@@ -1,0 +1,169 @@
+{
+  "generatedAt": "2026-06-04T21:10:43.727Z",
+  "totalBets": 7050,
+  "totalSeeds": 151,
+  "steps": [
+    {
+      "step": 1,
+      "name": "Seed Hash Integrity",
+      "status": "PASS",
+      "detail": "130 revealed seeds verified. 3 phase-boundary skips."
+    },
+    {
+      "step": 2,
+      "name": "Next-Seed Promotion (Commitment Linkage)",
+      "status": "PASS",
+      "detail": "134/134 rotation transitions verified — previousNextHash === newActiveHash recomputed per rotation; next-seed pre-commitment chain intact"
+    },
+    {
+      "step": 3,
+      "name": "Hash Consistency Within Epoch",
+      "status": "PASS",
+      "detail": "All 130 epochs: serverSeedHashed identical across all bets within each epoch"
+    },
+    {
+      "step": 4,
+      "name": "Nonce Audit",
+      "status": "PASS",
+      "detail": "130 epochs: nonces sequential 0–N, single client seed per epoch."
+    },
+    {
+      "step": 5,
+      "name": "Mine Position Recomputation",
+      "status": "PASS",
+      "detail": "6500/6500 verified, 0 mismatches, 0 skipped (unrevealed seeds)"
+    },
+    {
+      "step": 6,
+      "name": "Client Seed Influence",
+      "status": "PASS",
+      "detail": "646/650 bets: wrong clientSeed → different mine positions"
+    },
+    {
+      "step": 7,
+      "name": "Payout Math",
+      "status": "PASS",
+      "detail": "6500 bets checked, 0 errors (tolerance 1e-8)"
+    },
+    {
+      "step": 8,
+      "name": "Multiplier Formula (C(25,1)/C(25-m,1) × edge)",
+      "status": "PASS",
+      "detail": "2795 winning bets: multiplier = 25/(25−m), payout_mult = 25/(25−m) × 0.999; 0 mismatches"
+    },
+    {
+      "step": 9,
+      "name": "Win Condition (tile not in mines)",
+      "status": "PASS",
+      "detail": "6500 bets verified: outcome=win iff revealed_positions[0] ∉ mines_positions; 0 errors"
+    },
+    {
+      "step": 10,
+      "name": "Phase C Bet-Size Invariance ($10 bets)",
+      "status": "PASS",
+      "detail": "200 Phase C bets ($10), 105 wins: multiplier formula identical, payout math correct; 0 errors"
+    },
+    {
+      "step": 11,
+      "name": "Config Completeness (24 mine counts)",
+      "status": "PASS",
+      "detail": "24/24 mine counts present"
+    },
+    {
+      "step": 12,
+      "name": "House Edge Audit (effective_edge = 0.1%)",
+      "status": "PASS",
+      "detail": "6500 bets: effective_edge = 0.1 (0.1%) for all; 0 deviations"
+    },
+    {
+      "step": 13,
+      "name": "Phase Labels",
+      "status": "PASS",
+      "detail": "Phases present: A, B, C, D; last bet phase: D"
+    },
+    {
+      "step": 14,
+      "name": "Dataset Hash",
+      "status": "PASS",
+      "detail": "Expected: 331f74ff98b88d06242d57e806186548612f13c4269eb754ebb571d8a6fc9b20 | Actual: 331f74ff98b88d06242d57e806186548612f13c4269eb754ebb571d8a6fc9b20"
+    },
+    {
+      "step": 15,
+      "name": "Epoch Size",
+      "status": "PASS",
+      "detail": "130 epochs; min=50, max=50 bets per epoch"
+    },
+    {
+      "step": 16,
+      "name": "Probability Independence (Anti-Circularity)",
+      "status": "PASS",
+      "detail": "300 (mines, reveals) combinations checked (mines 1–24, k 1–(25−m)); RTP = [C(25−m,k)/C(25,k)] × [C(25,k)/C(25−m,k) × 0.999] = 0.999 by construction. Max deviation: 0.00000000% (worst: mines=2, k=14)"
+    },
+    {
+      "step": 17,
+      "name": "Phase D — Client Seed Variation",
+      "status": "PASS",
+      "detail": "500 bets, 10 distinct client seeds, mine counts: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24; recomputation: 500/500 match"
+    },
+    {
+      "step": 18,
+      "name": "Simulation Results — Pass 1 Integrity",
+      "status": "PASS",
+      "detail": "24,000,000 rounds × 24 configs; mean RTP=99.9041%; chi2: 0/24 uncorrected, 0/24 at Bonferroni α/24=0.000417; serial: 0/24 uncorrected, 0/24 at Bonferroni"
+    },
+    {
+      "step": 19,
+      "name": "Simulation Results — Pass 2 Cherry-Pick Test",
+      "status": "PASS",
+      "detail": "130 seeds × mines=3; Test A: 1/130 fails (expected ≤2); Test B: 7/130 flags (≤14 = 2×7 threshold); 7 isolated-early, 0 broad — no cherry-picking detected"
+    },
+    {
+      "step": 20,
+      "name": "Multi-Reveal Multiplier Chain",
+      "status": "PASS",
+      "detail": "795 reveal steps verified across k={1,2,3,4,5} (max k=5); formula C(25,k)/C(25-m,k) matches API multiplier at each step; 0 mismatches"
+    },
+    {
+      "step": 21,
+      "name": "Mine-Set Invariance Across Reveals",
+      "status": "PASS",
+      "detail": "550 Phase E bets with API-returned mine sets checked: mine layout recomputed from RNG matches API response (mine set fixed at round start, unchanged by reveal sequence); 0 mismatches, 0 skipped (unrevealed seeds)"
+    },
+    {
+      "step": 22,
+      "name": "Reveal-Position Independence (Phase E5)",
+      "status": "PASS",
+      "detail": "50 bets with varied reveal positions (tiles: {3,7,11,17,23}); mine recomputation + win condition correct for all non-zero tile reveals; 0 errors"
+    },
+    {
+      "step": 23,
+      "name": "Cash-Out Payout Correctness (k>1)",
+      "status": "PASS",
+      "detail": "133 multi-reveal cash-outs verified (k=2:14, k=3:74, k=5:45); noEdge = C(25,k)/C(25−m,k), edge = noEdge × 0.999, payout = amount × edge — all derived independently and matched against API response; 0 errors"
+    }
+  ],
+  "info": [
+    {
+      "label": "RTP Analysis",
+      "detail": "Empirical RTP: 100.8587% — Mines is high-variance; theoretical RTP 99.9000% proven analytically in anti-circularity step."
+    },
+    {
+      "label": "Win Rate Chi-Squared (per-mine-count)",
+      "detail": "24 mine-count groups (≥10 bets) tested; fails at α=0.01: 0/24; min p=0.0345; Bonferroni α/24=0.000417"
+    },
+    {
+      "label": "Serial Independence (lag-1 autocorrelation on mine_count sequence)",
+      "detail": "r₁=0.302762, z=24.409 (|z|>3 — structured phase ordering; see simulation for definitive test). Underpowered at live sample size — see simulation for definitive test."
+    },
+    {
+      "label": "Serial Independence (Wald-Wolfowitz runs test on mine_count sequence)",
+      "detail": "runs=2701, expected=3241.5, z=-13.448, p=0.0000. Underpowered at live sample size — see simulation for definitive test."
+    }
+  ],
+  "summary": {
+    "passed": 23,
+    "flags": 0,
+    "hardFail": 0,
+    "verdict": "PROVABLY FAIR — Full Pass"
+  }
+}
