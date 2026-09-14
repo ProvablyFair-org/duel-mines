@@ -80,3 +80,14 @@ export function checkPhaseEHash(): { expected: string; actual: string; match: bo
   const actual = crypto.createHash('sha256').update(raw).digest('hex');
   return { expected: PHASE_E_HASH, actual, match: actual === PHASE_E_HASH };
 }
+
+// ── POPULATION OF RECORD ─────────────────────────────────────────────────────────
+// The capture plan, stated as CODE so a shrunken dataset cannot pass by agreeing with
+// itself. Deleting rounds and doctoring the header to match leaves a file that is
+// internally consistent and re-pins cleanly — and re-pinning is exactly what a forger
+// does, so EXPECTED_HASH cannot see it. The counts have to be asserted from somewhere
+// the dataset does not control, and a step that finds them wrong must HARD FAIL.
+export const EXPECTED_BETS  = 6500;
+export const EXPECTED_SEEDS = 134;
+export const EXPECTED_PHASE_BETS: Readonly<Record<string, number>> =
+  Object.freeze({ A: 4800, B: 1000, C: 200, D: 500 });
