@@ -1,0 +1,35 @@
+[
+  {
+    "name": "S01 all-8-chunks-rejected branch throws instead of advancing the cursor",
+    "runner": "verify",
+    "file": "src/rng.ts",
+    "find": "      cursor++;\n    }",
+    "replace": "      throw new Error('no fair chunk');\n    }",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 5,
+    "expectStatus": "FAIL",
+    "why": "DL-11 / premise P1: the branch is never reached — 0 rejected chunks in the 156,000 captured draws (expected 2.4e-4) — so no captured round can tell which rule the operator's server runs (its published Verify-tab code advances the cursor, L77 of evidence/verify-tab/duel-verify-tab-mines-2026-09-25.js — the rule src/rng.ts ports)"
+  },
+  {
+    "name": "S02 multiplier bound loosened from 1e-12 to 1e-6 relative",
+    "runner": "verify",
+    "file": "src/exact.ts",
+    "find": "export const MULT_REL_TOL = 1e-12;",
+    "replace": "export const MULT_REL_TOL = 1e-6;",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 20,
+    "expectStatus": "FAIL",
+    "why": "DL-5: the bound is a declared tolerance; honest data sits 108x inside 1e-12, so loosening it changes no verdict on this capture — only M08/M20 (forged values between the two bounds) show what it buys"
+  },
+  {
+    "name": "S03 served-multiplier range check disabled in Step 25",
+    "runner": "verify",
+    "file": "tests/steps/bounds.ts",
+    "find": "if (!inRange(b.response.multiplier, noEdgeMin, noEdgeMax)) servedOutside++;",
+    "replace": "",
+    "expect": "PROVABLY FAIR — Conditional Pass",
+    "expectStep": 25,
+    "expectStatus": "FLAG",
+    "why": "DL-6: every served multiplier is already bound to the exact ladder cell by Steps 8/20/23, so the range half of Step 25 cannot fire on data those steps pass; it is a second line, not a sole guard"
+  }
+]

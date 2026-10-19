@@ -1,0 +1,59 @@
+{
+  "format": 1,
+  "compiler": {
+    "name": "typescript",
+    "version": "5.9.3"
+  },
+  "unitEntries": [
+    "tests/mines/FrameworkTests.ts",
+    "tests/mines/MinesTests.ts"
+  ],
+  "inputs": {
+    ".mocharc.yml": "740a5513cfdeb6b12e9da4a02c1dca865f5204541da4458b9aa9552ab81fe2fe",
+    "package-lock.json": "f60193748d5617920d3485335a94467c7136298b15f4524a16b6fdb0e50e53ba",
+    "scripts/build-standalone.mjs": "2859364f0afd9ff411cad98f4a9799062a2e893783daa2328ced059f27b23de1",
+    "scripts/check-standalone.mjs": "d54d7956d003beb09059b7f0971a93ad5f423741b9bbe52927da374a35eb0754",
+    "scripts/standalone-runtime.cjs": "9b247bcf042d17192ca92ef2d2168fca2a4bee2db1df798254e5138f271690c1",
+    "src/artifact-pins.ts": "302b8df9b0403f30cca24093c348ffb76808d7659c571b07636acd71eb60ae4e",
+    "src/diff-simulation.ts": "07ab3272fa89b7d4a30ad4e046fa108fc0a346ec41b1cb80f65c72d99253d1f3",
+    "src/diff.ts": "c60da7fbc7919feda66f121fa88958708bee92ea18c5b01aecf12e95ad6dbad2",
+    "src/domains.ts": "433384b51f0f3adb0b2c09919a0f79aa33c3ca1c5449736abe12b30b73819dca",
+    "src/exact.ts": "592d49fe15fcc878af6cc137699c8456f6d148295eef3b281200a7f7725753c7",
+    "src/layout.ts": "61534f193d0a54bc77890c8a0f8805357dcb4e10d3a0608ccb7bfa9870d51c4d",
+    "src/live-site-verifier.ts": "f1bbe61e2310c3f846526b92a00e53f2fc898d57715275bb68172485ab861ed0",
+    "src/loader.ts": "2ba35476822fbc2537b468d159065acd6e18c6b6826a780ecf14af78c184e299",
+    "src/operator-verifier.ts": "0605c14d607e90d6773c302d6fe6e02e38546a32954ae80df8e6cf901002ccee",
+    "src/profile-map.ts": "8afefef1f1e164a4c58770294dcc453672d3d6e90e113fc07696f402cd501059",
+    "src/replay.ts": "167e5f0510208ed76f935c4d995eec7deffadbd999cc05335d3fa01a3e55ef39",
+    "src/rng.ts": "58c19ab0a67533fb1d4a1c898f3dff576d73c25c80b71b9853539ebfab788891",
+    "src/rtp-claim-switch.ts": "89e91174a245cc3181ef309a5b8b5619660beb6898faa7e75fc44a47007d13c4",
+    "src/rtp-claim.ts": "c9a9c1c437ff2783c620c337d15817fe9df5902af6e290998d97bce6705f131c",
+    "src/rtp-settings.ts": "48fc7e42d4a40a6e2cb4e504d03b3526f9e44f422808db759f1ee595b51e05b4",
+    "src/scaling-edge.ts": "325384fb5b93339741c03c637e392601832894335fea881d37c6bee308497c8d",
+    "src/sim-census.ts": "f1edfce36248bee35ecbb7190774d20f2775e978391e87a052da608764ca75d9",
+    "src/sim-plan.ts": "52e8154ce3a2fcdc02d29bdbd80bfc41f1d4a4d5d63a00d28a8c44b9074ef357",
+    "src/simulate.ts": "c56ce0ab56bd91db792e95c2fc128123148a66800dc50a6ed29f7b70adbe138a",
+    "src/site-verifier.ts": "456916163ea21463ba62cdf75d6b2397b473c94435fb7c15ac8714b414ce2c31",
+    "src/stats.ts": "bc2398319127aa980f486ea7836782c56cdc9c0add459d75082cc2b523bdb884",
+    "src/types.ts": "048c9017f9cbb768df03d2e8a91a29676f78c392005d68bece6298947b51349d",
+    "tests/mines/FrameworkTests.ts": "9ef953b6ac46cca500d1d5a5e6833912fecfa23fcc9d037fad5dd0e11e4ecc0c",
+    "tests/mines/MinesTests.ts": "ab453ee8dbead2287cab5575751d997e6cc17cf383605365ba587fc019058e40",
+    "tests/mutations.ts": "4a6c065103d940cd412671a35c97d356f885a283a731e64b7d3d86cd773146f4",
+    "tests/steps/artifacts.ts": "f63fda4c9bef09e5c599726cfe932886fc1753a46790c4514426f1b540ac6fe3",
+    "tests/steps/bounds.ts": "e8fec98311dcbfc7f69edbbbf346307bedf847cf3f3c349964a98adef255f35a",
+    "tests/steps/commitment.ts": "369d0ca5c51fa1e45fb20cf388a9c7824990a6970329e3db1c098afc5941e379",
+    "tests/steps/context.ts": "763e4de042275eb4a06613b67094afd89185ce00d12b5114e81692a57b922588",
+    "tests/steps/dataset.ts": "36508b1875e303e0f0403f38bb985aa5badd4684be9dfc49b3d38cd25c1eab22",
+    "tests/steps/determinism.ts": "670f80c9ded9a2693e31e474ca2e3cd1f9f24104c68af17fd4015b8f5a0f7e32",
+    "tests/steps/multireveal.ts": "0c9346390e53d6f261f435d16efdb95f01467af1d45b30e82d3ee4d3a58feb9e",
+    "tests/steps/payouts.ts": "18c4ce6d3d4093bae21bbf6493437d50f13e853b50b4347e7c40b6e1214a3b51",
+    "tests/steps/simulation.ts": "3bcfbb8b5d584cd93b2d2bd71046e04cd14785b6bf53093283e74648da28d957",
+    "tests/steps/statistical.ts": "d4db9f7062a644fec652a214c13c3610243fe8cb109f49d014bab7c62fbe3f4e",
+    "tests/verify.ts": "7fa36c1e3584388f4ef1a9703eefb773e636b6bfce21178bc9848c95064d44ed",
+    "tsconfig.json": "f93bbfad5b96b8d80889dbae0b2154160ea66d78ff3b7001b3d0fac3b76e0f14"
+  },
+  "outputs": {
+    "test.js": "0a7264cfe786b4642cac50d7043418f1665882214b2af50f90406bbf3ee4e569",
+    "verify.js": "2fa72ed472fc4fddd39fdc79d99ab224b0b6d80920a2e017b158bde69a14bbe0"
+  }
+}

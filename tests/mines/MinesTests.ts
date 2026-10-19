@@ -1,6 +1,7 @@
 import assert from 'assert';
 import { computeMinePositions, computeMinePositionsFromBuffer, verifyHash, theoreticalMultiplier, winChance } from '../../src/rng';
 import { loadDataset, buildSeedMap } from '../../src/loader';
+import { moneyTol, MONEY_REL_TOL } from '../steps/payouts';
 
 // ── Test vectors — real bets from data/mines-master-6500bets.json ─────────────
 // First 7 bets of the first revealed epoch (server seed hash eecc6f36...),
@@ -108,9 +109,17 @@ describe('Cryptographic Core — Known-Answer Tests (7 bets from first epoch, 6 
   });
 
   it('HMAC key is hex-decoded (not raw UTF-8) — only hex decoding produces the correct known positions', () => {
-    const v = VECTORS[0];
-    const computed = computeMinePositions(SERVER_SEED, CLIENT_SEED, v.nonce, v.mineCount);
-    assert.deepStrictEqual(computed, [...v.expectedPositions], 'hex-decoded key must match');
+    // MANIFEST.md "Commitment and shuffle": the UTF-8 text of the seed as the key gives different mine
+    // positions on all 7 vectors. Until 19 Oct 2026 this test only re-checked the hex key on vector 0
+    // and never computed the UTF-8 one (Mike's QA: "Nothing checks the UTF-8 key claim").
+    const utf8Key = Buffer.from(SERVER_SEED, 'utf8');
+    assert.strictEqual(utf8Key.length, 64, 'the UTF-8 key is the 64 bytes of the hex text');
+    for (const v of VECTORS) {
+      const hex  = computeMinePositions(SERVER_SEED, CLIENT_SEED, v.nonce, v.mineCount);
+      const utf8 = computeMinePositionsFromBuffer(utf8Key, CLIENT_SEED, v.nonce, v.mineCount);
+      assert.deepStrictEqual(hex, [...v.expectedPositions], `nonce=${v.nonce}: the hex-decoded key must match`);
+      assert.notDeepStrictEqual(utf8, [...v.expectedPositions], `nonce=${v.nonce}: the UTF-8 key must NOT match`);
+    }
   });
 
   it('mine positions are always in range [0, 24] for all test vectors', () => {
@@ -283,20 +292,26 @@ describe('Full Dataset Verification — recomputes every bet and verifies all re
 
 describe('Payout Accuracy — confirms the platform paid the correct amount for every bet in the dataset', () => {
 
-  it(`win_amount = bet_amount × payout_multiplier for all winning bets (tolerance ±1e-10)`, () => {
+  it(`win_amount = bet_amount × payout_multiplier for all winning bets (money tolerance: relative ${MONEY_REL_TOL}, the verifier's moneyTol)`, () => {
+    // Same bound as verify Steps 7, 10 and 23 (tests/steps/payouts.ts moneyTol) — the old ±1e-10
+    // ABSOLUTE bound was ~8 orders looser than that on a $0.01 payout. A win with no
+    // no_house_edge_multiplier is a failure, not a skip: every win must be checked.
     let checked = 0;
+    let wins    = 0;
     for (const b of ds.bets) {
       if (b.response.outcome === 'loss') continue;
-      if (!b.response.no_house_edge_multiplier) continue;
-      const expected = parseFloat(b.response.amount_currency) * parseFloat(b.response.no_house_edge_multiplier);
+      wins++;
+      assert.ok(b.response.no_house_edge_multiplier, `win ${b.response.round_id} carries no no_house_edge_multiplier`);
+      const expected = parseFloat(b.response.amount_currency) * parseFloat(b.response.no_house_edge_multiplier!);
       const actual   = parseFloat(b.response.amount_won);
       assert.ok(
-        Math.abs(expected - actual) < 1e-10,
+        Number.isFinite(actual) && Math.abs(expected - actual) <= moneyTol(expected),
         `Payout mismatch bet ${b.response.round_id}: ${b.response.amount_currency} × ${b.response.no_house_edge_multiplier} = ${expected}, recorded ${b.response.amount_won}`,
       );
       checked++;
     }
     assert.ok(checked > 0, 'must have at least one winning bet to check');
+    assert.strictEqual(checked, wins, `checked ${checked} of ${wins} wins`);
   });
 
   it('loss bets always record amount_won = 0', () => {
@@ -312,4 +327,52 @@ describe('Payout Accuracy — confirms the platform paid the correct amount for 
     assert.ok(losses > 0, 'must have at least one loss bet');
   });
 
+});
+
+// ── The operator's own Verify-tab code (profile MINES-09) ─────────────────────
+
+describe('Operator source — Duel\'s own Mines Verify-tab code, executed unmodified (evidence/verify-tab, copied 2026-09-25)', () => {
+  // duel.com → Provably Fair → Verify (Mines) → Expand → Copy, saved verbatim (src/operator-verifier.ts)
+  const { runOperatorVerifier, checkOperatorCites, OPERATOR_VERIFIER_PINS, OPERATOR_VERIFIER_FILE, OPERATOR_EXPECTED_LOGS } =
+    require('../../src/operator-verifier') as typeof import('../../src/operator-verifier');
+  const { loadPhaseE } = require('../../src/loader') as typeof import('../../src/loader');
+  const pe = loadPhaseE();
+  const all = [...ds.bets, ...(pe ? pe.bets : [])];
+  const allSeeds = buildSeedMap([...ds.seeds, ...(pe ? pe.seeds : [])]);
+  const known = VECTORS.map((v, i) => ({ id: `known${i}`, serverSeed: SERVER_SEED, clientSeed: CLIENT_SEED, nonce: v.nonce, gridSize: 25, minesCount: v.mineCount }));
+  const captured = all.map((b, i) => ({ id: `bet${i}`, serverSeed: allSeeds.get(b.seed.serverSeedHashed) ?? '', clientSeed: b.seed.clientSeed,
+    nonce: b.seed.nonce, gridSize: 25, minesCount: b.request.mines_count }));
+  const run = runOperatorVerifier([...known, ...captured]);
+
+  it('the vendored operator file and its runner hash to their pins, the code ran, and it printed only its empty-input message', () => {
+    assert.deepStrictEqual(run.files.map(f => f.match), [true, true]);
+    assert.strictEqual(run.files[0].file, OPERATOR_VERIFIER_FILE);
+    assert.strictEqual(run.files[0].actual, OPERATOR_VERIFIER_PINS[OPERATOR_VERIFIER_FILE]);
+    assert.strictEqual(run.error, null);
+    assert.deepStrictEqual(run.logs, [...OPERATOR_EXPECTED_LOGS]);
+  });
+
+  it('every operator line src/rng.ts cites carries the quoted text verbatim', () => {
+    const c = checkOperatorCites();
+    assert.deepStrictEqual(c.bad, []);
+    assert.ok(c.checked > 0);
+  });
+
+  it('fixed vectors: the operator code returns the 7 known-answer layouts above', () => {
+    VECTORS.forEach((v, i) => {
+      assert.deepStrictEqual(run.mines!.get(`known${i}`), [...v.expectedPositions], `nonce=${v.nonce} mines=${v.mineCount}`);
+    });
+  });
+
+  it('every captured round of both datasets: the operator code returns the served mine set and src/rng.ts\'s', () => {
+    const bad: string[] = [];
+    all.forEach((b, i) => {
+      const got = run.mines!.get(`bet${i}`);
+      const served = [...b.response.mines_positions].sort((x, y) => x - y);
+      const pkg = computeMinePositions(captured[i].serverSeed, b.seed.clientSeed, b.seed.nonce, b.request.mines_count);
+      if (!got || got.join(',') !== served.join(',') || got.join(',') !== pkg.join(',')) bad.push(String(b.response.round_id));
+    });
+    assert.deepStrictEqual(bad.slice(0, 5), []);
+    assert.strictEqual(all.length, 7050);
+  });
 });

@@ -1,15 +1,34 @@
 {
   "name": "duel-mines-audit",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Provably fair audit \u2014 Duel.com Mines",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
-    "test": "mocha && npm run verify",
+    "release-manifest": "node scripts/release-manifest.mjs",
+    "test": "node scripts/check-standalone.mjs && node scripts/unit-parity.mjs && node verify.js",
     "verify": "ts-node tests/verify.ts",
-    "simulate": "ts-node src/simulate.ts"
+    "verify:standalone": "node verify.js",
+    "test:standalone": "node test.js && node verify.js",
+    "report": "PF_EMIT=1 ts-node tests/verify.ts",
+    "simulate": "PF_EMIT=1 ts-node src/simulate.ts",
+    "simulate:run": "ts-node src/simulate.ts",
+    "diff:simulation": "ts-node src/diff-simulation.ts",
+    "replay": "ts-node src/replay.ts",
+    "test:full": "npm run simulate:run && npm run diff:simulation && npm test",
+    "mutate": "ts-node tests/mutations.ts",
+    "mutations": "ts-node tests/mutations.ts",
+    "build": "node scripts/build-standalone.mjs",
+    "check:build": "node scripts/build-standalone.mjs --check",
+    "check:standalone": "node scripts/check-standalone.mjs",
+    "test:toolchain": "npm run check:build && mocha && npm run verify && npm run mutate",
+    "rtp-claim:write": "ts-node src/rtp-settings.ts"
   },
   "devDependencies": {
     "@types/mocha": "^10",
     "@types/node": "^22",
+    "chart.js": "4.4.7",
     "mocha": "^11",
     "ts-node": "^10",
     "typescript": "^5"

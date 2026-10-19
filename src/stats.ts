@@ -216,6 +216,11 @@ export function inverseCriticalZ(alpha: number): number {
   return t - (c0 + c1 * t + c2 * t * t) / (1 + d1 * t + d2 * t * t + d3 * t * t * t);
 }
 
+/** Two-sided normal p-value 2(1 − Φ(|z|)), the form runsTest uses (A&S erf, |error| < 1.5e-7). */
+export function normalTwoSidedP(z: number): number {
+  return 2 * (1 - normalCDF(Math.abs(z)));
+}
+
 // ── Internal helpers ──────────────────────────────────────────────────────────
 
 function normalCDF(z: number): number {

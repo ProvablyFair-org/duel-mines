@@ -1,0 +1,1639 @@
+{
+  "mineCounts": 24,
+  "minBetsPerMineCount": 100,
+  "betsPerMineCount": {
+    "1": 221,
+    "2": 227,
+    "3": 219,
+    "4": 228,
+    "5": 215,
+    "6": 217,
+    "7": 220,
+    "8": 221,
+    "9": 223,
+    "10": 222,
+    "11": 223,
+    "12": 418,
+    "13": 220,
+    "14": 222,
+    "15": 217,
+    "16": 228,
+    "17": 224,
+    "18": 224,
+    "19": 222,
+    "20": 212,
+    "21": 218,
+    "22": 221,
+    "23": 219,
+    "24": 1219
+  },
+  "totalPayoutCells": 300,
+  "cellsExercisedByLivePlay": 33,
+  "cellsNeverExercised": 267,
+  "uncoveredProbabilityShare": 0.6713026452249372,
+  "note": "A payout cell is one (mines_count, reveals k) multiplier the game can produce, k running from 1 to the 25 - m safe tiles. The primary dataset is k=1 only; all k>1 coverage comes from the Phase E corpus scored by steps 20-23. `cellsNeverExercised` are the combinations no captured bet reached, so neither corpus confirms their multipliers directly. The weight is probability, NOT RTP share: P(survive k) x multiplier(m, k) equals 0.999 for every cell by the identity step 16 proves, so RTP share would merely restate the cell count, while the chance of ever reaching a cell varies enormously. Step 16 covers the formula analytically, from probabilities derived independently of the operator config.",
+  "uncoveredCells": [
+    {
+      "minesCount": 1,
+      "reveals": 2,
+      "probabilityOfReaching": 0.92,
+      "multiplier": 1.0858695652173913
+    },
+    {
+      "minesCount": 1,
+      "reveals": 3,
+      "probabilityOfReaching": 0.8800000000000001,
+      "multiplier": 1.1352272727272728
+    },
+    {
+      "minesCount": 2,
+      "reveals": 2,
+      "probabilityOfReaching": 0.8433333333333334,
+      "multiplier": 1.1845849802371542
+    },
+    {
+      "minesCount": 1,
+      "reveals": 4,
+      "probabilityOfReaching": 0.8400000000000002,
+      "multiplier": 1.1892857142857143
+    },
+    {
+      "minesCount": 1,
+      "reveals": 5,
+      "probabilityOfReaching": 0.8000000000000002,
+      "multiplier": 1.24875
+    },
+    {
+      "minesCount": 2,
+      "reveals": 3,
+      "probabilityOfReaching": 0.77,
+      "multiplier": 1.2974025974025973
+    },
+    {
+      "minesCount": 1,
+      "reveals": 6,
+      "probabilityOfReaching": 0.7600000000000001,
+      "multiplier": 1.3144736842105265
+    },
+    {
+      "minesCount": 1,
+      "reveals": 7,
+      "probabilityOfReaching": 0.7200000000000001,
+      "multiplier": 1.3875
+    },
+    {
+      "minesCount": 2,
+      "reveals": 4,
+      "probabilityOfReaching": 0.7,
+      "multiplier": 1.4271428571428573
+    },
+    {
+      "minesCount": 4,
+      "reveals": 2,
+      "probabilityOfReaching": 0.7,
+      "multiplier": 1.4271428571428573
+    },
+    {
+      "minesCount": 1,
+      "reveals": 8,
+      "probabilityOfReaching": 0.68,
+      "multiplier": 1.4691176470588236
+    },
+    {
+      "minesCount": 1,
+      "reveals": 9,
+      "probabilityOfReaching": 0.64,
+      "multiplier": 1.5609375
+    },
+    {
+      "minesCount": 2,
+      "reveals": 5,
+      "probabilityOfReaching": 0.6333333333333333,
+      "multiplier": 1.5773684210526315
+    },
+    {
+      "minesCount": 1,
+      "reveals": 10,
+      "probabilityOfReaching": 0.6,
+      "multiplier": 1.665
+    },
+    {
+      "minesCount": 4,
+      "reveals": 3,
+      "probabilityOfReaching": 0.5782608695652174,
+      "multiplier": 1.727593984962406
+    },
+    {
+      "minesCount": 6,
+      "reveals": 2,
+      "probabilityOfReaching": 0.5700000000000001,
+      "multiplier": 1.7526315789473683
+    },
+    {
+      "minesCount": 2,
+      "reveals": 6,
+      "probabilityOfReaching": 0.57,
+      "multiplier": 1.7526315789473683
+    },
+    {
+      "minesCount": 1,
+      "reveals": 11,
+      "probabilityOfReaching": 0.5599999999999999,
+      "multiplier": 1.7839285714285715
+    },
+    {
+      "minesCount": 1,
+      "reveals": 12,
+      "probabilityOfReaching": 0.52,
+      "multiplier": 1.9211538461538462
+    },
+    {
+      "minesCount": 2,
+      "reveals": 7,
+      "probabilityOfReaching": 0.51,
+      "multiplier": 1.9588235294117646
+    },
+    {
+      "minesCount": 7,
+      "reveals": 2,
+      "probabilityOfReaching": 0.51,
+      "multiplier": 1.9588235294117646
+    },
+    {
+      "minesCount": 1,
+      "reveals": 13,
+      "probabilityOfReaching": 0.48000000000000004,
+      "multiplier": 2.0812500000000003
+    },
+    {
+      "minesCount": 4,
+      "reveals": 4,
+      "probabilityOfReaching": 0.4731225296442688,
+      "multiplier": 2.1115037593984964
+    },
+    {
+      "minesCount": 8,
+      "reveals": 2,
+      "probabilityOfReaching": 0.45333333333333337,
+      "multiplier": 2.2036764705882352
+    },
+    {
+      "minesCount": 2,
+      "reveals": 8,
+      "probabilityOfReaching": 0.4533333333333333,
+      "multiplier": 2.2036764705882352
+    },
+    {
+      "minesCount": 1,
+      "reveals": 14,
+      "probabilityOfReaching": 0.44,
+      "multiplier": 2.2704545454545455
+    },
+    {
+      "minesCount": 6,
+      "reveals": 3,
+      "probabilityOfReaching": 0.421304347826087,
+      "multiplier": 2.3712074303405575
+    },
+    {
+      "minesCount": 3,
+      "reveals": 6,
+      "probabilityOfReaching": 0.42130434782608694,
+      "multiplier": 2.3712074303405575
+    },
+    {
+      "minesCount": 9,
+      "reveals": 2,
+      "probabilityOfReaching": 0.4,
+      "multiplier": 2.4975
+    },
+    {
+      "minesCount": 1,
+      "reveals": 15,
+      "probabilityOfReaching": 0.39999999999999997,
+      "multiplier": 2.4975
+    },
+    {
+      "minesCount": 2,
+      "reveals": 9,
+      "probabilityOfReaching": 0.39999999999999997,
+      "multiplier": 2.4975
+    },
+    {
+      "minesCount": 4,
+      "reveals": 5,
+      "probabilityOfReaching": 0.38300395256917,
+      "multiplier": 2.608328173374613
+    },
+    {
+      "minesCount": 5,
+      "reveals": 4,
+      "probabilityOfReaching": 0.38300395256916997,
+      "multiplier": 2.608328173374613
+    },
+    {
+      "minesCount": 1,
+      "reveals": 16,
+      "probabilityOfReaching": 0.36,
+      "multiplier": 2.775
+    },
+    {
+      "minesCount": 3,
+      "reveals": 7,
+      "probabilityOfReaching": 0.35478260869565215,
+      "multiplier": 2.815808823529412
+    },
+    {
+      "minesCount": 7,
+      "reveals": 3,
+      "probabilityOfReaching": 0.35478260869565215,
+      "multiplier": 2.815808823529412
+    },
+    {
+      "minesCount": 10,
+      "reveals": 2,
+      "probabilityOfReaching": 0.35000000000000003,
+      "multiplier": 2.8542857142857145
+    },
+    {
+      "minesCount": 2,
+      "reveals": 10,
+      "probabilityOfReaching": 0.35,
+      "multiplier": 2.8542857142857145
+    },
+    {
+      "minesCount": 1,
+      "reveals": 17,
+      "probabilityOfReaching": 0.31999999999999995,
+      "multiplier": 3.121875
+    },
+    {
+      "minesCount": 4,
+      "reveals": 6,
+      "probabilityOfReaching": 0.306403162055336,
+      "multiplier": 3.2604102167182663
+    },
+    {
+      "minesCount": 6,
+      "reveals": 4,
+      "probabilityOfReaching": 0.306403162055336,
+      "multiplier": 3.2604102167182663
+    },
+    {
+      "minesCount": 2,
+      "reveals": 11,
+      "probabilityOfReaching": 0.30333333333333334,
+      "multiplier": 3.2934065934065933
+    },
+    {
+      "minesCount": 11,
+      "reveals": 2,
+      "probabilityOfReaching": 0.30333333333333334,
+      "multiplier": 3.2934065934065933
+    },
+    {
+      "minesCount": 3,
+      "reveals": 8,
+      "probabilityOfReaching": 0.2956521739130435,
+      "multiplier": 3.378970588235294
+    },
+    {
+      "minesCount": 8,
+      "reveals": 3,
+      "probabilityOfReaching": 0.2956521739130435,
+      "multiplier": 3.378970588235294
+    },
+    {
+      "minesCount": 5,
+      "reveals": 5,
+      "probabilityOfReaching": 0.29181253529079615,
+      "multiplier": 3.4234307275541793
+    },
+    {
+      "minesCount": 1,
+      "reveals": 18,
+      "probabilityOfReaching": 0.27999999999999997,
+      "multiplier": 3.567857142857143
+    },
+    {
+      "minesCount": 2,
+      "reveals": 12,
+      "probabilityOfReaching": 0.26,
+      "multiplier": 3.8423076923076924
+    },
+    {
+      "minesCount": 9,
+      "reveals": 3,
+      "probabilityOfReaching": 0.24347826086956526,
+      "multiplier": 4.103035714285714
+    },
+    {
+      "minesCount": 3,
+      "reveals": 9,
+      "probabilityOfReaching": 0.24347826086956523,
+      "multiplier": 4.103035714285714
+    },
+    {
+      "minesCount": 4,
+      "reveals": 7,
+      "probabilityOfReaching": 0.24189723320158107,
+      "multiplier": 4.129852941176471
+    },
+    {
+      "minesCount": 7,
+      "reveals": 4,
+      "probabilityOfReaching": 0.241897233201581,
+      "multiplier": 4.129852941176471
+    },
+    {
+      "minesCount": 1,
+      "reveals": 19,
+      "probabilityOfReaching": 0.23999999999999996,
+      "multiplier": 4.1625000000000005
+    },
+    {
+      "minesCount": 2,
+      "reveals": 13,
+      "probabilityOfReaching": 0.22,
+      "multiplier": 4.540909090909091
+    },
+    {
+      "minesCount": 13,
+      "reveals": 2,
+      "probabilityOfReaching": 0.21999999999999997,
+      "multiplier": 4.540909090909091
+    },
+    {
+      "minesCount": 6,
+      "reveals": 5,
+      "probabilityOfReaching": 0.21885940146809715,
+      "multiplier": 4.564574303405572
+    },
+    {
+      "minesCount": 5,
+      "reveals": 6,
+      "probabilityOfReaching": 0.21885940146809713,
+      "multiplier": 4.564574303405572
+    },
+    {
+      "minesCount": 1,
+      "reveals": 20,
+      "probabilityOfReaching": 0.19999999999999998,
+      "multiplier": 4.995
+    },
+    {
+      "minesCount": 3,
+      "reveals": 10,
+      "probabilityOfReaching": 0.19782608695652174,
+      "multiplier": 5.04989010989011
+    },
+    {
+      "minesCount": 10,
+      "reveals": 3,
+      "probabilityOfReaching": 0.19782608695652174,
+      "multiplier": 5.04989010989011
+    },
+    {
+      "minesCount": 4,
+      "reveals": 8,
+      "probabilityOfReaching": 0.18814229249011863,
+      "multiplier": 5.3098109243697476
+    },
+    {
+      "minesCount": 8,
+      "reveals": 4,
+      "probabilityOfReaching": 0.18814229249011857,
+      "multiplier": 5.3098109243697476
+    },
+    {
+      "minesCount": 2,
+      "reveals": 14,
+      "probabilityOfReaching": 0.18333333333333335,
+      "multiplier": 5.449090909090908
+    },
+    {
+      "minesCount": 14,
+      "reveals": 2,
+      "probabilityOfReaching": 0.18333333333333335,
+      "multiplier": 5.449090909090908
+    },
+    {
+      "minesCount": 5,
+      "reveals": 7,
+      "probabilityOfReaching": 0.16126482213438734,
+      "multiplier": 6.194779411764706
+    },
+    {
+      "minesCount": 7,
+      "reveals": 5,
+      "probabilityOfReaching": 0.1612648221343873,
+      "multiplier": 6.194779411764706
+    },
+    {
+      "minesCount": 1,
+      "reveals": 21,
+      "probabilityOfReaching": 0.16,
+      "multiplier": 6.24375
+    },
+    {
+      "minesCount": 3,
+      "reveals": 11,
+      "probabilityOfReaching": 0.1582608695652174,
+      "multiplier": 6.312362637362637
+    },
+    {
+      "minesCount": 11,
+      "reveals": 3,
+      "probabilityOfReaching": 0.1582608695652174,
+      "multiplier": 6.312362637362637
+    },
+    {
+      "minesCount": 6,
+      "reveals": 6,
+      "probabilityOfReaching": 0.153201581027668,
+      "multiplier": 6.5208204334365325
+    },
+    {
+      "minesCount": 2,
+      "reveals": 15,
+      "probabilityOfReaching": 0.15000000000000002,
+      "multiplier": 6.66
+    },
+    {
+      "minesCount": 4,
+      "reveals": 9,
+      "probabilityOfReaching": 0.1438735177865613,
+      "multiplier": 6.943598901098901
+    },
+    {
+      "minesCount": 9,
+      "reveals": 4,
+      "probabilityOfReaching": 0.1438735177865613,
+      "multiplier": 6.943598901098901
+    },
+    {
+      "minesCount": 3,
+      "reveals": 12,
+      "probabilityOfReaching": 0.12434782608695652,
+      "multiplier": 8.033916083916084
+    },
+    {
+      "minesCount": 2,
+      "reveals": 16,
+      "probabilityOfReaching": 0.12000000000000002,
+      "multiplier": 8.325000000000001
+    },
+    {
+      "minesCount": 1,
+      "reveals": 22,
+      "probabilityOfReaching": 0.12,
+      "multiplier": 8.325000000000001
+    },
+    {
+      "minesCount": 16,
+      "reveals": 2,
+      "probabilityOfReaching": 0.12,
+      "multiplier": 8.325000000000001
+    },
+    {
+      "minesCount": 8,
+      "reveals": 5,
+      "probabilityOfReaching": 0.11646903820816865,
+      "multiplier": 8.577386877828054
+    },
+    {
+      "minesCount": 5,
+      "reveals": 8,
+      "probabilityOfReaching": 0.11646903820816863,
+      "multiplier": 8.577386877828054
+    },
+    {
+      "minesCount": 4,
+      "reveals": 10,
+      "probabilityOfReaching": 0.10790513833992096,
+      "multiplier": 9.25813186813187
+    },
+    {
+      "minesCount": 10,
+      "reveals": 4,
+      "probabilityOfReaching": 0.10790513833992094,
+      "multiplier": 9.25813186813187
+    },
+    {
+      "minesCount": 6,
+      "reveals": 7,
+      "probabilityOfReaching": 0.1048221343873518,
+      "multiplier": 9.530429864253394
+    },
+    {
+      "minesCount": 7,
+      "reveals": 6,
+      "probabilityOfReaching": 0.10482213438735176,
+      "multiplier": 9.530429864253394
+    },
+    {
+      "minesCount": 3,
+      "reveals": 13,
+      "probabilityOfReaching": 0.09565217391304348,
+      "multiplier": 10.44409090909091
+    },
+    {
+      "minesCount": 13,
+      "reveals": 3,
+      "probabilityOfReaching": 0.09565217391304347,
+      "multiplier": 10.44409090909091
+    },
+    {
+      "minesCount": 2,
+      "reveals": 17,
+      "probabilityOfReaching": 0.09333333333333335,
+      "multiplier": 10.703571428571427
+    },
+    {
+      "minesCount": 17,
+      "reveals": 2,
+      "probabilityOfReaching": 0.09333333333333334,
+      "multiplier": 10.703571428571427
+    },
+    {
+      "minesCount": 9,
+      "reveals": 5,
+      "probabilityOfReaching": 0.08221343873517788,
+      "multiplier": 12.151298076923077
+    },
+    {
+      "minesCount": 5,
+      "reveals": 9,
+      "probabilityOfReaching": 0.08221343873517786,
+      "multiplier": 12.151298076923077
+    },
+    {
+      "minesCount": 1,
+      "reveals": 23,
+      "probabilityOfReaching": 0.07999999999999999,
+      "multiplier": 12.4875
+    },
+    {
+      "minesCount": 4,
+      "reveals": 11,
+      "probabilityOfReaching": 0.0791304347826087,
+      "multiplier": 12.624725274725273
+    },
+    {
+      "minesCount": 11,
+      "reveals": 4,
+      "probabilityOfReaching": 0.0791304347826087,
+      "multiplier": 12.624725274725273
+    },
+    {
+      "minesCount": 3,
+      "reveals": 14,
+      "probabilityOfReaching": 0.07173913043478261,
+      "multiplier": 13.925454545454546
+    },
+    {
+      "minesCount": 14,
+      "reveals": 3,
+      "probabilityOfReaching": 0.07173913043478261,
+      "multiplier": 13.925454545454546
+    },
+    {
+      "minesCount": 2,
+      "reveals": 18,
+      "probabilityOfReaching": 0.07,
+      "multiplier": 14.271428571428572
+    },
+    {
+      "minesCount": 18,
+      "reveals": 2,
+      "probabilityOfReaching": 0.07,
+      "multiplier": 14.271428571428572
+    },
+    {
+      "minesCount": 6,
+      "reveals": 8,
+      "probabilityOfReaching": 0.0698814229249012,
+      "multiplier": 14.295644796380092
+    },
+    {
+      "minesCount": 8,
+      "reveals": 6,
+      "probabilityOfReaching": 0.06988142292490118,
+      "multiplier": 14.295644796380092
+    },
+    {
+      "minesCount": 7,
+      "reveals": 7,
+      "probabilityOfReaching": 0.0662034532972748,
+      "multiplier": 15.089847285067874
+    },
+    {
+      "minesCount": 4,
+      "reveals": 12,
+      "probabilityOfReaching": 0.05652173913043479,
+      "multiplier": 17.674615384615386
+    },
+    {
+      "minesCount": 12,
+      "reveals": 4,
+      "probabilityOfReaching": 0.05652173913043479,
+      "multiplier": 17.674615384615386
+    },
+    {
+      "minesCount": 5,
+      "reveals": 10,
+      "probabilityOfReaching": 0.05652173913043478,
+      "multiplier": 17.674615384615386
+    },
+    {
+      "minesCount": 10,
+      "reveals": 5,
+      "probabilityOfReaching": 0.05652173913043478,
+      "multiplier": 17.674615384615386
+    },
+    {
+      "minesCount": 3,
+      "reveals": 15,
+      "probabilityOfReaching": 0.052173913043478265,
+      "multiplier": 19.1475
+    },
+    {
+      "minesCount": 15,
+      "reveals": 3,
+      "probabilityOfReaching": 0.052173913043478265,
+      "multiplier": 19.1475
+    },
+    {
+      "minesCount": 2,
+      "reveals": 19,
+      "probabilityOfReaching": 0.05,
+      "multiplier": 19.98
+    },
+    {
+      "minesCount": 19,
+      "reveals": 2,
+      "probabilityOfReaching": 0.05,
+      "multiplier": 19.98
+    },
+    {
+      "minesCount": 6,
+      "reveals": 9,
+      "probabilityOfReaching": 0.045217391304347834,
+      "multiplier": 22.09326923076923
+    },
+    {
+      "minesCount": 9,
+      "reveals": 6,
+      "probabilityOfReaching": 0.045217391304347834,
+      "multiplier": 22.09326923076923
+    },
+    {
+      "minesCount": 8,
+      "reveals": 7,
+      "probabilityOfReaching": 0.04045766590389016,
+      "multiplier": 24.69247737556561
+    },
+    {
+      "minesCount": 7,
+      "reveals": 8,
+      "probabilityOfReaching": 0.040457665903890154,
+      "multiplier": 24.69247737556561
+    },
+    {
+      "minesCount": 1,
+      "reveals": 24,
+      "probabilityOfReaching": 0.039999999999999994,
+      "multiplier": 24.975
+    },
+    {
+      "minesCount": 4,
+      "reveals": 13,
+      "probabilityOfReaching": 0.0391304347826087,
+      "multiplier": 25.53
+    },
+    {
+      "minesCount": 13,
+      "reveals": 4,
+      "probabilityOfReaching": 0.03913043478260869,
+      "multiplier": 25.53
+    },
+    {
+      "minesCount": 11,
+      "reveals": 5,
+      "probabilityOfReaching": 0.03768115942028986,
+      "multiplier": 26.51192307692308
+    },
+    {
+      "minesCount": 5,
+      "reveals": 11,
+      "probabilityOfReaching": 0.03768115942028985,
+      "multiplier": 26.51192307692308
+    },
+    {
+      "minesCount": 3,
+      "reveals": 16,
+      "probabilityOfReaching": 0.036521739130434785,
+      "multiplier": 27.353571428571428
+    },
+    {
+      "minesCount": 16,
+      "reveals": 3,
+      "probabilityOfReaching": 0.036521739130434785,
+      "multiplier": 27.353571428571428
+    },
+    {
+      "minesCount": 2,
+      "reveals": 20,
+      "probabilityOfReaching": 0.03333333333333333,
+      "multiplier": 29.97
+    },
+    {
+      "minesCount": 20,
+      "reveals": 2,
+      "probabilityOfReaching": 0.03333333333333333,
+      "multiplier": 29.97
+    },
+    {
+      "minesCount": 6,
+      "reveals": 10,
+      "probabilityOfReaching": 0.028260869565217395,
+      "multiplier": 35.34923076923077
+    },
+    {
+      "minesCount": 10,
+      "reveals": 6,
+      "probabilityOfReaching": 0.02826086956521739,
+      "multiplier": 35.34923076923077
+    },
+    {
+      "minesCount": 4,
+      "reveals": 14,
+      "probabilityOfReaching": 0.026086956521739132,
+      "multiplier": 38.295
+    },
+    {
+      "minesCount": 14,
+      "reveals": 4,
+      "probabilityOfReaching": 0.026086956521739132,
+      "multiplier": 38.295
+    },
+    {
+      "minesCount": 3,
+      "reveals": 17,
+      "probabilityOfReaching": 0.02434782608695652,
+      "multiplier": 41.03035714285714
+    },
+    {
+      "minesCount": 17,
+      "reveals": 3,
+      "probabilityOfReaching": 0.02434782608695652,
+      "multiplier": 41.03035714285714
+    },
+    {
+      "minesCount": 5,
+      "reveals": 12,
+      "probabilityOfReaching": 0.02422360248447205,
+      "multiplier": 41.24076923076923
+    },
+    {
+      "minesCount": 12,
+      "reveals": 5,
+      "probabilityOfReaching": 0.02422360248447205,
+      "multiplier": 41.24076923076923
+    },
+    {
+      "minesCount": 9,
+      "reveals": 7,
+      "probabilityOfReaching": 0.023798627002288332,
+      "multiplier": 41.97721153846154
+    },
+    {
+      "minesCount": 7,
+      "reveals": 9,
+      "probabilityOfReaching": 0.023798627002288325,
+      "multiplier": 41.97721153846154
+    },
+    {
+      "minesCount": 8,
+      "reveals": 8,
+      "probabilityOfReaching": 0.022476481057716758,
+      "multiplier": 44.446459276018096
+    },
+    {
+      "minesCount": 2,
+      "reveals": 21,
+      "probabilityOfReaching": 0.02,
+      "multiplier": 49.95
+    },
+    {
+      "minesCount": 21,
+      "reveals": 2,
+      "probabilityOfReaching": 0.02,
+      "multiplier": 49.95
+    },
+    {
+      "minesCount": 6,
+      "reveals": 11,
+      "probabilityOfReaching": 0.016956521739130436,
+      "multiplier": 58.91538461538461
+    },
+    {
+      "minesCount": 11,
+      "reveals": 6,
+      "probabilityOfReaching": 0.016956521739130436,
+      "multiplier": 58.91538461538461
+    },
+    {
+      "minesCount": 4,
+      "reveals": 15,
+      "probabilityOfReaching": 0.016600790513833993,
+      "multiplier": 60.17785714285714
+    },
+    {
+      "minesCount": 15,
+      "reveals": 4,
+      "probabilityOfReaching": 0.016600790513833993,
+      "multiplier": 60.17785714285714
+    },
+    {
+      "minesCount": 18,
+      "reveals": 3,
+      "probabilityOfReaching": 0.015217391304347827,
+      "multiplier": 65.64857142857143
+    },
+    {
+      "minesCount": 3,
+      "reveals": 18,
+      "probabilityOfReaching": 0.015217391304347825,
+      "multiplier": 65.64857142857143
+    },
+    {
+      "minesCount": 5,
+      "reveals": 13,
+      "probabilityOfReaching": 0.014906832298136647,
+      "multiplier": 67.01625
+    },
+    {
+      "minesCount": 13,
+      "reveals": 5,
+      "probabilityOfReaching": 0.014906832298136644,
+      "multiplier": 67.01625
+    },
+    {
+      "minesCount": 10,
+      "reveals": 7,
+      "probabilityOfReaching": 0.013386727688787185,
+      "multiplier": 74.62615384615385
+    },
+    {
+      "minesCount": 7,
+      "reveals": 10,
+      "probabilityOfReaching": 0.013386727688787183,
+      "multiplier": 74.62615384615385
+    },
+    {
+      "minesCount": 8,
+      "reveals": 9,
+      "probabilityOfReaching": 0.011899313501144166,
+      "multiplier": 83.95442307692308
+    },
+    {
+      "minesCount": 9,
+      "reveals": 8,
+      "probabilityOfReaching": 0.011899313501144166,
+      "multiplier": 83.95442307692308
+    },
+    {
+      "minesCount": 2,
+      "reveals": 22,
+      "probabilityOfReaching": 0.01,
+      "multiplier": 99.9
+    },
+    {
+      "minesCount": 22,
+      "reveals": 2,
+      "probabilityOfReaching": 0.009999999999999998,
+      "multiplier": 99.9
+    },
+    {
+      "minesCount": 4,
+      "reveals": 16,
+      "probabilityOfReaching": 0.009960474308300396,
+      "multiplier": 100.29642857142856
+    },
+    {
+      "minesCount": 16,
+      "reveals": 4,
+      "probabilityOfReaching": 0.009960474308300396,
+      "multiplier": 100.29642857142856
+    },
+    {
+      "minesCount": 6,
+      "reveals": 12,
+      "probabilityOfReaching": 0.009689440993788821,
+      "multiplier": 103.10192307692307
+    },
+    {
+      "minesCount": 12,
+      "reveals": 6,
+      "probabilityOfReaching": 0.009689440993788821,
+      "multiplier": 103.10192307692307
+    },
+    {
+      "minesCount": 5,
+      "reveals": 14,
+      "probabilityOfReaching": 0.008695652173913045,
+      "multiplier": 114.885
+    },
+    {
+      "minesCount": 14,
+      "reveals": 5,
+      "probabilityOfReaching": 0.008695652173913044,
+      "multiplier": 114.885
+    },
+    {
+      "minesCount": 19,
+      "reveals": 3,
+      "probabilityOfReaching": 0.008695652173913044,
+      "multiplier": 114.885
+    },
+    {
+      "minesCount": 3,
+      "reveals": 19,
+      "probabilityOfReaching": 0.008695652173913042,
+      "multiplier": 114.885
+    },
+    {
+      "minesCount": 11,
+      "reveals": 7,
+      "probabilityOfReaching": 0.007139588100686499,
+      "multiplier": 139.92403846153846
+    },
+    {
+      "minesCount": 7,
+      "reveals": 11,
+      "probabilityOfReaching": 0.007139588100686497,
+      "multiplier": 139.92403846153846
+    },
+    {
+      "minesCount": 8,
+      "reveals": 10,
+      "probabilityOfReaching": 0.005949656750572083,
+      "multiplier": 167.90884615384616
+    },
+    {
+      "minesCount": 10,
+      "reveals": 8,
+      "probabilityOfReaching": 0.005949656750572082,
+      "multiplier": 167.90884615384616
+    },
+    {
+      "minesCount": 9,
+      "reveals": 9,
+      "probabilityOfReaching": 0.005599676941714902,
+      "multiplier": 178.40314903846155
+    },
+    {
+      "minesCount": 4,
+      "reveals": 17,
+      "probabilityOfReaching": 0.005533596837944665,
+      "multiplier": 180.53357142857143
+    },
+    {
+      "minesCount": 17,
+      "reveals": 4,
+      "probabilityOfReaching": 0.005533596837944664,
+      "multiplier": 180.53357142857143
+    },
+    {
+      "minesCount": 6,
+      "reveals": 13,
+      "probabilityOfReaching": 0.0052173913043478265,
+      "multiplier": 191.475
+    },
+    {
+      "minesCount": 13,
+      "reveals": 6,
+      "probabilityOfReaching": 0.005217391304347825,
+      "multiplier": 191.475
+    },
+    {
+      "minesCount": 5,
+      "reveals": 15,
+      "probabilityOfReaching": 0.0047430830039525695,
+      "multiplier": 210.6225
+    },
+    {
+      "minesCount": 15,
+      "reveals": 5,
+      "probabilityOfReaching": 0.0047430830039525695,
+      "multiplier": 210.6225
+    },
+    {
+      "minesCount": 20,
+      "reveals": 3,
+      "probabilityOfReaching": 0.004347826086956522,
+      "multiplier": 229.77
+    },
+    {
+      "minesCount": 3,
+      "reveals": 20,
+      "probabilityOfReaching": 0.004347826086956521,
+      "multiplier": 229.77
+    },
+    {
+      "minesCount": 12,
+      "reveals": 7,
+      "probabilityOfReaching": 0.00356979405034325,
+      "multiplier": 279.8480769230769
+    },
+    {
+      "minesCount": 7,
+      "reveals": 12,
+      "probabilityOfReaching": 0.0035697940503432485,
+      "multiplier": 279.8480769230769
+    },
+    {
+      "minesCount": 2,
+      "reveals": 23,
+      "probabilityOfReaching": 0.003333333333333333,
+      "multiplier": 299.7
+    },
+    {
+      "minesCount": 23,
+      "reveals": 2,
+      "probabilityOfReaching": 0.003333333333333333,
+      "multiplier": 299.7
+    },
+    {
+      "minesCount": 8,
+      "reveals": 11,
+      "probabilityOfReaching": 0.0027765064836003054,
+      "multiplier": 359.80467032967033
+    },
+    {
+      "minesCount": 11,
+      "reveals": 8,
+      "probabilityOfReaching": 0.002776506483600305,
+      "multiplier": 359.80467032967033
+    },
+    {
+      "minesCount": 4,
+      "reveals": 18,
+      "probabilityOfReaching": 0.0027667984189723325,
+      "multiplier": 361.06714285714287
+    },
+    {
+      "minesCount": 18,
+      "reveals": 4,
+      "probabilityOfReaching": 0.002766798418972332,
+      "multiplier": 361.06714285714287
+    },
+    {
+      "minesCount": 6,
+      "reveals": 14,
+      "probabilityOfReaching": 0.0026086956521739132,
+      "multiplier": 382.95
+    },
+    {
+      "minesCount": 14,
+      "reveals": 6,
+      "probabilityOfReaching": 0.002608695652173913,
+      "multiplier": 382.95
+    },
+    {
+      "minesCount": 9,
+      "reveals": 10,
+      "probabilityOfReaching": 0.0024498586620002698,
+      "multiplier": 407.77862637362637
+    },
+    {
+      "minesCount": 10,
+      "reveals": 9,
+      "probabilityOfReaching": 0.002449858662000269,
+      "multiplier": 407.77862637362637
+    },
+    {
+      "minesCount": 5,
+      "reveals": 16,
+      "probabilityOfReaching": 0.0023715415019762848,
+      "multiplier": 421.245
+    },
+    {
+      "minesCount": 16,
+      "reveals": 5,
+      "probabilityOfReaching": 0.0023715415019762848,
+      "multiplier": 421.245
+    },
+    {
+      "minesCount": 21,
+      "reveals": 3,
+      "probabilityOfReaching": 0.0017391304347826088,
+      "multiplier": 574.425
+    },
+    {
+      "minesCount": 3,
+      "reveals": 21,
+      "probabilityOfReaching": 0.0017391304347826085,
+      "multiplier": 574.425
+    },
+    {
+      "minesCount": 7,
+      "reveals": 13,
+      "probabilityOfReaching": 0.0016475972540045763,
+      "multiplier": 606.3375
+    },
+    {
+      "minesCount": 13,
+      "reveals": 7,
+      "probabilityOfReaching": 0.001647597254004576,
+      "multiplier": 606.3375
+    },
+    {
+      "minesCount": 8,
+      "reveals": 12,
+      "probabilityOfReaching": 0.0011899313501144166,
+      "multiplier": 839.5442307692307
+    },
+    {
+      "minesCount": 12,
+      "reveals": 8,
+      "probabilityOfReaching": 0.0011899313501144166,
+      "multiplier": 839.5442307692307
+    },
+    {
+      "minesCount": 4,
+      "reveals": 19,
+      "probabilityOfReaching": 0.0011857707509881424,
+      "multiplier": 842.49
+    },
+    {
+      "minesCount": 6,
+      "reveals": 15,
+      "probabilityOfReaching": 0.0011857707509881424,
+      "multiplier": 842.49
+    },
+    {
+      "minesCount": 15,
+      "reveals": 6,
+      "probabilityOfReaching": 0.0011857707509881424,
+      "multiplier": 842.49
+    },
+    {
+      "minesCount": 19,
+      "reveals": 4,
+      "probabilityOfReaching": 0.0011857707509881422,
+      "multiplier": 842.49
+    },
+    {
+      "minesCount": 5,
+      "reveals": 17,
+      "probabilityOfReaching": 0.0010540184453227933,
+      "multiplier": 947.80125
+    },
+    {
+      "minesCount": 17,
+      "reveals": 5,
+      "probabilityOfReaching": 0.001054018445322793,
+      "multiplier": 947.80125
+    },
+    {
+      "minesCount": 9,
+      "reveals": 11,
+      "probabilityOfReaching": 0.000979943464800108,
+      "multiplier": 1019.4465659340659
+    },
+    {
+      "minesCount": 11,
+      "reveals": 9,
+      "probabilityOfReaching": 0.0009799434648001077,
+      "multiplier": 1019.4465659340659
+    },
+    {
+      "minesCount": 10,
+      "reveals": 10,
+      "probabilityOfReaching": 0.0009186969982501008,
+      "multiplier": 1087.4096703296705
+    },
+    {
+      "minesCount": 7,
+      "reveals": 14,
+      "probabilityOfReaching": 0.0006864988558352401,
+      "multiplier": 1455.21
+    },
+    {
+      "minesCount": 14,
+      "reveals": 7,
+      "probabilityOfReaching": 0.0006864988558352401,
+      "multiplier": 1455.21
+    },
+    {
+      "minesCount": 6,
+      "reveals": 16,
+      "probabilityOfReaching": 0.00047430830039525695,
+      "multiplier": 2106.2250000000004
+    },
+    {
+      "minesCount": 16,
+      "reveals": 6,
+      "probabilityOfReaching": 0.00047430830039525695,
+      "multiplier": 2106.2250000000004
+    },
+    {
+      "minesCount": 8,
+      "reveals": 13,
+      "probabilityOfReaching": 0.00045766590389016026,
+      "multiplier": 2182.815
+    },
+    {
+      "minesCount": 13,
+      "reveals": 8,
+      "probabilityOfReaching": 0.00045766590389016004,
+      "multiplier": 2182.815
+    },
+    {
+      "minesCount": 3,
+      "reveals": 22,
+      "probabilityOfReaching": 0.00043478260869565214,
+      "multiplier": 2297.7
+    },
+    {
+      "minesCount": 22,
+      "reveals": 3,
+      "probabilityOfReaching": 0.0004347826086956521,
+      "multiplier": 2297.7
+    },
+    {
+      "minesCount": 5,
+      "reveals": 18,
+      "probabilityOfReaching": 0.0003952569169960475,
+      "multiplier": 2527.47
+    },
+    {
+      "minesCount": 4,
+      "reveals": 20,
+      "probabilityOfReaching": 0.0003952569169960474,
+      "multiplier": 2527.47
+    },
+    {
+      "minesCount": 18,
+      "reveals": 5,
+      "probabilityOfReaching": 0.0003952569169960474,
+      "multiplier": 2527.47
+    },
+    {
+      "minesCount": 20,
+      "reveals": 4,
+      "probabilityOfReaching": 0.0003952569169960474,
+      "multiplier": 2527.47
+    },
+    {
+      "minesCount": 9,
+      "reveals": 12,
+      "probabilityOfReaching": 0.0003499798088571814,
+      "multiplier": 2854.450384615385
+    },
+    {
+      "minesCount": 12,
+      "reveals": 9,
+      "probabilityOfReaching": 0.00034997980885718137,
+      "multiplier": 2854.450384615385
+    },
+    {
+      "minesCount": 11,
+      "reveals": 10,
+      "probabilityOfReaching": 0.00030623233275003367,
+      "multiplier": 3262.229010989011
+    },
+    {
+      "minesCount": 10,
+      "reveals": 11,
+      "probabilityOfReaching": 0.0003062323327500336,
+      "multiplier": 3262.229010989011
+    },
+    {
+      "minesCount": 15,
+      "reveals": 7,
+      "probabilityOfReaching": 0.000249635947576451,
+      "multiplier": 4001.8275000000003
+    },
+    {
+      "minesCount": 7,
+      "reveals": 15,
+      "probabilityOfReaching": 0.00024963594757645096,
+      "multiplier": 4001.8275000000003
+    },
+    {
+      "minesCount": 6,
+      "reveals": 17,
+      "probabilityOfReaching": 0.00015810276679841898,
+      "multiplier": 6318.675
+    },
+    {
+      "minesCount": 17,
+      "reveals": 6,
+      "probabilityOfReaching": 0.00015810276679841895,
+      "multiplier": 6318.675
+    },
+    {
+      "minesCount": 8,
+      "reveals": 14,
+      "probabilityOfReaching": 0.00015255530129672007,
+      "multiplier": 6548.445
+    },
+    {
+      "minesCount": 14,
+      "reveals": 8,
+      "probabilityOfReaching": 0.00015255530129672001,
+      "multiplier": 6548.445
+    },
+    {
+      "minesCount": 5,
+      "reveals": 19,
+      "probabilityOfReaching": 0.00011293054771315642,
+      "multiplier": 8846.145
+    },
+    {
+      "minesCount": 19,
+      "reveals": 5,
+      "probabilityOfReaching": 0.0001129305477131564,
+      "multiplier": 8846.145
+    },
+    {
+      "minesCount": 9,
+      "reveals": 13,
+      "probabilityOfReaching": 0.00010768609503297891,
+      "multiplier": 9276.96375
+    },
+    {
+      "minesCount": 13,
+      "reveals": 9,
+      "probabilityOfReaching": 0.00010768609503297883,
+      "multiplier": 9276.96375
+    },
+    {
+      "minesCount": 12,
+      "reveals": 10,
+      "probabilityOfReaching": 0.00008749495221429534,
+      "multiplier": 11417.80153846154
+    },
+    {
+      "minesCount": 10,
+      "reveals": 12,
+      "probabilityOfReaching": 0.00008749495221429531,
+      "multiplier": 11417.80153846154
+    },
+    {
+      "minesCount": 11,
+      "reveals": 11,
+      "probabilityOfReaching": 0.00008166195540000897,
+      "multiplier": 12233.358791208791
+    },
+    {
+      "minesCount": 4,
+      "reveals": 21,
+      "probabilityOfReaching": 0.00007905138339920949,
+      "multiplier": 12637.35
+    },
+    {
+      "minesCount": 21,
+      "reveals": 4,
+      "probabilityOfReaching": 0.00007905138339920949,
+      "multiplier": 12637.35
+    },
+    {
+      "minesCount": 16,
+      "reveals": 7,
+      "probabilityOfReaching": 0.0000748907842729353,
+      "multiplier": 13339.425
+    },
+    {
+      "minesCount": 7,
+      "reveals": 16,
+      "probabilityOfReaching": 0.00007489078427293529,
+      "multiplier": 13339.425
+    },
+    {
+      "minesCount": 8,
+      "reveals": 15,
+      "probabilityOfReaching": 0.00004160599126274183,
+      "multiplier": 24010.965
+    },
+    {
+      "minesCount": 15,
+      "reveals": 8,
+      "probabilityOfReaching": 0.00004160599126274183,
+      "multiplier": 24010.965
+    },
+    {
+      "minesCount": 6,
+      "reveals": 18,
+      "probabilityOfReaching": 0.000039525691699604744,
+      "multiplier": 25274.7
+    },
+    {
+      "minesCount": 18,
+      "reveals": 6,
+      "probabilityOfReaching": 0.000039525691699604744,
+      "multiplier": 25274.7
+    },
+    {
+      "minesCount": 9,
+      "reveals": 14,
+      "probabilityOfReaching": 0.000026921523758244727,
+      "multiplier": 37107.855
+    },
+    {
+      "minesCount": 14,
+      "reveals": 9,
+      "probabilityOfReaching": 0.00002692152375824471,
+      "multiplier": 37107.855
+    },
+    {
+      "minesCount": 10,
+      "reveals": 13,
+      "probabilityOfReaching": 0.000020191142818683536,
+      "multiplier": 49477.14
+    },
+    {
+      "minesCount": 13,
+      "reveals": 10,
+      "probabilityOfReaching": 0.00002019114281868353,
+      "multiplier": 49477.14
+    },
+    {
+      "minesCount": 5,
+      "reveals": 20,
+      "probabilityOfReaching": 0.000018821757952192737,
+      "multiplier": 53076.87
+    },
+    {
+      "minesCount": 20,
+      "reveals": 5,
+      "probabilityOfReaching": 0.000018821757952192734,
+      "multiplier": 53076.87
+    },
+    {
+      "minesCount": 12,
+      "reveals": 11,
+      "probabilityOfReaching": 0.00001749899044285907,
+      "multiplier": 57089.00769230769
+    },
+    {
+      "minesCount": 11,
+      "reveals": 12,
+      "probabilityOfReaching": 0.000017498990442859066,
+      "multiplier": 57089.00769230769
+    },
+    {
+      "minesCount": 17,
+      "reveals": 7,
+      "probabilityOfReaching": 0.00001664239650509673,
+      "multiplier": 60027.4125
+    },
+    {
+      "minesCount": 7,
+      "reveals": 17,
+      "probabilityOfReaching": 0.000016642396505096728,
+      "multiplier": 60027.4125
+    },
+    {
+      "minesCount": 8,
+      "reveals": 16,
+      "probabilityOfReaching": 0.000008321198252548366,
+      "multiplier": 120054.825
+    },
+    {
+      "minesCount": 16,
+      "reveals": 8,
+      "probabilityOfReaching": 0.000008321198252548366,
+      "multiplier": 120054.825
+    },
+    {
+      "minesCount": 6,
+      "reveals": 19,
+      "probabilityOfReaching": 0.00000564652738565782,
+      "multiplier": 176922.9
+    },
+    {
+      "minesCount": 19,
+      "reveals": 6,
+      "probabilityOfReaching": 0.00000564652738565782,
+      "multiplier": 176922.9
+    },
+    {
+      "minesCount": 9,
+      "reveals": 15,
+      "probabilityOfReaching": 0.000004894822501499042,
+      "multiplier": 204093.2025
+    },
+    {
+      "minesCount": 15,
+      "reveals": 9,
+      "probabilityOfReaching": 0.000004894822501499039,
+      "multiplier": 204093.2025
+    },
+    {
+      "minesCount": 10,
+      "reveals": 14,
+      "probabilityOfReaching": 0.000003365190469780589,
+      "multiplier": 296862.84
+    },
+    {
+      "minesCount": 14,
+      "reveals": 10,
+      "probabilityOfReaching": 0.0000033651904697805888,
+      "multiplier": 296862.84
+    },
+    {
+      "minesCount": 11,
+      "reveals": 13,
+      "probabilityOfReaching": 0.0000026921523758244718,
+      "multiplier": 371078.55
+    },
+    {
+      "minesCount": 13,
+      "reveals": 11,
+      "probabilityOfReaching": 0.0000026921523758244705,
+      "multiplier": 371078.55
+    },
+    {
+      "minesCount": 12,
+      "reveals": 12,
+      "probabilityOfReaching": 0.0000024998557775512956,
+      "multiplier": 399623.05384615384
+    },
+    {
+      "minesCount": 18,
+      "reveals": 7,
+      "probabilityOfReaching": 0.000002080299563137092,
+      "multiplier": 480219.3
+    },
+    {
+      "minesCount": 7,
+      "reveals": 18,
+      "probabilityOfReaching": 0.000002080299563137091,
+      "multiplier": 480219.3
+    },
+    {
+      "minesCount": 8,
+      "reveals": 17,
+      "probabilityOfReaching": 9.245775836164851e-7,
+      "multiplier": 1080493.425
+    },
+    {
+      "minesCount": 17,
+      "reveals": 8,
+      "probabilityOfReaching": 9.245775836164851e-7,
+      "multiplier": 1080493.425
+    },
+    {
+      "minesCount": 9,
+      "reveals": 16,
+      "probabilityOfReaching": 4.894822501499042e-7,
+      "multiplier": 2040932.025
+    },
+    {
+      "minesCount": 16,
+      "reveals": 9,
+      "probabilityOfReaching": 4.894822501499039e-7,
+      "multiplier": 2040932.025
+    },
+    {
+      "minesCount": 10,
+      "reveals": 15,
+      "probabilityOfReaching": 3.0592640634368994e-7,
+      "multiplier": 3265491.24
+    },
+    {
+      "minesCount": 15,
+      "reveals": 10,
+      "probabilityOfReaching": 3.0592640634368994e-7,
+      "multiplier": 3265491.24
+    },
+    {
+      "minesCount": 11,
+      "reveals": 14,
+      "probabilityOfReaching": 2.2434603131870596e-7,
+      "multiplier": 4452942.6
+    },
+    {
+      "minesCount": 14,
+      "reveals": 11,
+      "probabilityOfReaching": 2.243460313187059e-7,
+      "multiplier": 4452942.6
+    },
+    {
+      "minesCount": 12,
+      "reveals": 13,
+      "probabilityOfReaching": 1.9229659827317658e-7,
+      "multiplier": 5195099.7
+    },
+    {
+      "minesCount": 13,
+      "reveals": 12,
+      "probabilityOfReaching": 1.9229659827317645e-7,
+      "multiplier": 5195099.7
+    }
+  ]
+}

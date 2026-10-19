@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-14T19:54:56.905Z",
+  "auditId": "PF-2026-DL04",
   "totalBets": 7050,
   "totalSeeds": 151,
   "steps": [
@@ -7,147 +7,1856 @@
       "step": 1,
       "name": "Seed Hash Integrity",
       "status": "PASS",
-      "detail": "130 revealed seeds verified. 3 phase-boundary skips."
+      "detail": "Every one of the 134 primary and 17 Phase E seed records in the capture plan is present and revealed. Primary: 133 transitions — 130 reveal the preceding commitment, 3 phase-opening reveals each equal the previous reveal and hash to the commitment two records back. Phase E: 16 transitions — 12 + 4 on the same rule. Every revealed plaintext is matched to a commitment; 0 unverifiable.",
+      "data": {
+        "seedRecords": 134,
+        "expectedSeeds": 134,
+        "verified": 130,
+        "phaseBoundarySkips": 3,
+        "phaseBoundaryBoundToCommitment": 3,
+        "unrevealed": 0,
+        "mismatches": 0,
+        "phaseE": {
+          "seedRecords": 17,
+          "expectedSeeds": 17,
+          "verified": 12,
+          "phaseBoundaryReveals": 4,
+          "phaseBoundaryBoundToCommitment": 4,
+          "unrevealed": 0,
+          "mismatches": 0
+        }
+      },
+      "profileIds": [
+        "MINES-01"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-01",
+          "coverage": "full",
+          "note": "every revealed plaintext in BOTH datasets is matched to a commitment under the one declared encoding (SHA-256 of the hex-decoded bytes, src/rng.ts verifyHash): a reveal must hash to the preceding record's serverSeedHashed or, at the rotation that opens a phase, be byte-identical to the previous reveal AND hash to the commitment two records back — anything else FAILs (the old form counted those reveals and matched them to nothing). Population from code: primary 134 records / 133 transitions / 3 boundary reveals, Phase E 17 / 16 / 4 (src/loader.ts); an unrevealed plaintext FAILs. Measured: primary 130 + 3 bound, Phase E 12 + 4 bound, 0 unrevealed, 0 mismatches. FAIL probed: M01 (a forged phase-opening plaintext, dataset re-pinned)"
+        }
+      ]
     },
     {
       "step": 2,
       "name": "Next-Seed Promotion (Commitment Linkage)",
       "status": "PASS",
-      "detail": "134/134 rotation transitions verified — previousNextHash === newActiveHash recomputed per rotation; next-seed pre-commitment chain intact"
+      "detail": "All 133 epoch transitions recomputed from the raw hashes: each epoch's serverSeedHashed equals the nextServerSeedHash recorded at the previous rotation, and the first epoch equals the hash recorded as \"next\" before capture began. This is a consistency check: it shows the 134 seed records form one chain, not when each hash was shown; that timing rests on the capture's recorded observations (MANIFEST.md, Limitations and trust; premise P7). The capture script's own `match` flags agree with the recomputation on all 134 records. The Phase E chain holds on the same terms: 16 links, its own pre-capture anchor, 17 capture flags in agreement.",
+      "data": {
+        "chainLinksChecked": 133,
+        "chainLinksOk": 133,
+        "expectedChainLinks": 133,
+        "preCaptureLinkPresent": true,
+        "preCaptureLinkVerified": true,
+        "rotationRecords": 134,
+        "captureFlagDisagreements": 0,
+        "phaseE": {
+          "chainLinksChecked": 16,
+          "chainLinksOk": 16,
+          "expectedChainLinks": 16,
+          "preCaptureLinkVerified": true,
+          "rotationRecords": 17,
+          "captureFlagDisagreements": 0
+        }
+      },
+      "profileIds": [
+        "MINES-02"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-02",
+          "coverage": "full",
+          "note": "every rotation link recomputed from the RAW fields — seeds[i].seed.nextServerSeedHash must equal seeds[i+1].seed.serverSeedHashed — in both datasets, link counts bound to EXPECTED_CHAIN_LINKS (133) and EXPECTED_PHASE_E_CHAIN_LINKS (16); the capture script's `nextSeedPromotion.match` boolean is only cross-checked (a disagreement FAILs). The pre-capture anchor of each dataset (seeds[0].nextSeedPromotion.previousNextHash === the first active hash) is asserted and its absence FAILs. Measured: 133/133 + 16/16, both anchors verified, 0 flag disagreements. FAIL probed: M02 (one nextServerSeedHash zeroed, dataset re-pinned)"
+        }
+      ]
     },
     {
       "step": 3,
       "name": "Hash Consistency Within Epoch",
       "status": "PASS",
-      "detail": "All 130 epochs: serverSeedHashed identical across all bets within each epoch"
+      "detail": "Epochs keyed by the capture timeline, not by the bets' own hash: every bet served under each of the 130 bet-bearing rotation records carries that record's committed serverSeedHashed and its clientSeed; the 4 remaining records are the end-of-phase rotations and carry no bets. 0 orphan bets. A bet's serverSeedHashed and clientSeed are the capture's copies of its rotation response (capture/mines-capture.reference.js lines 472–475), not served with the bet: this binds the capture's records to each other; Step 5's recomputation binds each served layout to the seed.",
+      "data": {
+        "rotationRecords": 134,
+        "betBearingEpochs": 130,
+        "emptyEpochs": 4,
+        "orphanBets": 0,
+        "disagreements": 0
+      },
+      "profileIds": [
+        "MINES-03"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-03",
+          "coverage": "full",
+          "note": "epochs are keyed on the CAPTURE TIMELINE (src/loader.ts groupByEpochWindow), not on the bets' own hash; every bet in a window must carry the rotation record's committed serverSeedHashed and its clientSeed, both HARD FAIL; orphans FAIL; bet-bearing and empty record counts bound to 130 and 4. Measured: 130 bet-bearing, 4 empty, 0 orphans, 0 disagreements. A bet's serverSeedHashed and clientSeed are the capture's copies of its rotation response (capture/mines-capture.reference.js lines 472–475), not served with the bet, so this binds the capture's records to each other; that each served layout came from that seed is Step 5. FAIL probed: M03 (epoch timeline shifted by one record)"
+        }
+      ]
     },
     {
       "step": 4,
       "name": "Nonce Audit",
-      "status": "PASS",
-      "detail": "130 epochs: nonces sequential 0–N, single client seed per epoch."
+      "status": "FLAG",
+      "detail": "130 primary epochs run 0..49 with no gap and no reuse; 12 Phase E epochs match their planned sizes. 1 nonce gap(s), every one a DECLARED capture retry (Phase E seeds[9] (d6ff34bbea913a10) nonce 12 (DL-2)): the operator consumed the nonce and the capture wrote no record. At every gap the revealed seed yields a well-formed layout (1 well-formed) — which shows the RNG is defined there, not what the operator served. Capture-origin FLAG: disclosed, verdict-neutral. 0 operator-side gaps, 0 reused nonces.",
+      "data": {
+        "epochs": 130,
+        "expectedEpochs": 130,
+        "epochSize": 50,
+        "nonceBase": 0,
+        "phaseEEpochs": 12,
+        "expectedPhaseEEpochs": 12,
+        "epochsWithGaps": 1,
+        "missedNonces": 1,
+        "operatorGaps": 0,
+        "captureOriginGaps": 1,
+        "declaredCaptureRetryGaps": 1,
+        "duplicateNonces": 0,
+        "gapsWellFormed": 1,
+        "gapsMalformed": 0,
+        "gapsUnrecomputable": 0
+      },
+      "origin": "capture",
+      "profileIds": [
+        "MINES-03",
+        "MINES-04"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-03",
+          "coverage": "full",
+          "note": "the within-window half: the bets of each timeline epoch (primary and Phase E) must agree on one client seed (HARD FAIL otherwise)"
+        },
+        {
+          "id": "MINES-04",
+          "coverage": "full",
+          "note": "every bet-bearing epoch of both datasets (130 primary + 12 Phase E, both bound) must start at the DECLARED base NONCE_BASE = 0 (src/loader.ts — never the minimum observed) and end at base + planned bets + declared gaps − 1; a repeated nonce FAILs. THE SEVERITY SPLIT: a gap listed in DECLARED_CAPTURE_RETRY_GAPS (each row with its evidence and a DL id) is an auditor-side capture retry → FLAG with origin = capture, disclosed and verdict-neutral (the Duel Video Poker mechanism: tests/verify.ts separates capture-origin from operator-origin flags; exit 0); any gap NOT in the register is operator-side → HARD FAIL; a register row with no gap behind it FAILs as stale; the revealed seed must yield a well-formed layout at every gap. Measured: primary 130 epochs 0..49, no gap; Phase E one gap — seeds[9] (d6ff34bb…) nonce 12, the declared capture retry (DL-2, inferred: a 30 s clock gap across it and the E3 pattern due there served 7 times not 8; round_id is not a per-player counter, so its jump there does not on its own show a lost round) — so the step reports FLAG:capture and the verdict stays Full Pass. This gap was UNASSERTED before 2026-09-23 (Step 4 read the primary dataset only). FAIL probed: M04 (register emptied → the gap is operator-side → FAIL), M04b (declared base 1 → FAIL)"
+        }
+      ]
     },
     {
       "step": 5,
       "name": "Mine Position Recomputation",
       "status": "PASS",
-      "detail": "6500/6500 verified, 0 mismatches, 0 skipped (unrevealed seeds)"
+      "detail": "All 6500 captured bets recomputed from the revealed seed of their epoch — 0 unverifiable, 0 mismatches. Draw bias bound (MINES-08), measured from src/rng.ts drawFromChunk on all 24 ranges 2..25: every accepted window is an exact whole number of ranges (e.g. range 25: 4294967275 = 25 × 171798691), so every swap index is exactly equiprobable — worst bias 0, inside the 2^-32 ceiling. Uncorrected v mod range would lean by up to 5.82e-9 relative (2.19e-10 absolute, itself under 2^-32 — so exactness, not the ceiling, is the binding assertion). Rejection census over the 6,500 recomputed rounds: 156,000 draws, 156,000 chunks read, 0 rejected, 0 cursor advances (expected rejections 2.36e-4). Player-verifier parity (MINES-24): the ProvablyFair.org site verifier (VerifyBets games/mines/derive.js + lib/hmac-sha256.js, vendored under verifier-parity/, both SHA-256 pins MATCH) was executed on all 7,050 captured rounds (6,500 primary + 550 Phase E) and returned the same layout as src/rng.ts on every one — 0 mismatches. Live-site parity (MINES-24): the deployed www.provablyfair.org/verify-bets bundle (3 chunks + runner, 4/4 SHA-256 pins MATCH) was executed on all 7,050 captured rounds and printed the same mine set as src/rng.ts on every one — 0 mismatches. Operator-code parity (MINES-09): Duel's own Mines Verify-tab code (evidence/verify-tab/duel-verify-tab-mines-2026-09-25.js, copied 2026-09-25; 2/2 SHA-256 pins MATCH) was executed unmodified on all 7,050 captured rounds: its generateMinesPositions returned the served mine set on 7,050 and src/rng.ts's on 7,050 (0 / 0 differ); operator lines cited by src/rng.ts 16/16 verbatim.",
+      "data": {
+        "bets": 6500,
+        "expectedBets": 6500,
+        "recomputed": 6500,
+        "skipped": 0,
+        "mismatches": 0,
+        "drawBias": {
+          "ceiling": 2.3283064365386963e-10,
+          "worstBias": 0,
+          "worstRelativeBias": 0,
+          "worstUncorrectedBias": 2.1913472343893612e-10,
+          "worstUncorrectedRelativeBias": 5.820766091346741e-9,
+          "inexactRanges": [],
+          "predicateProbeFailures": 0,
+          "perRange": [
+            {
+              "range": 2,
+              "maxFair": 4294967294,
+              "acceptedWindow": 4294967294,
+              "rangesAccepted": 2147483647,
+              "remainder": 0,
+              "rejectedValues": 2,
+              "bias": 0,
+              "uncorrectedRelativeBias": 0
+            },
+            {
+              "range": 3,
+              "maxFair": 4294967295,
+              "acceptedWindow": 4294967295,
+              "rangesAccepted": 1431655765,
+              "remainder": 0,
+              "rejectedValues": 1,
+              "bias": 0,
+              "uncorrectedRelativeBias": 6.984919309616089e-10
+            },
+            {
+              "range": 4,
+              "maxFair": 4294967292,
+              "acceptedWindow": 4294967292,
+              "rangesAccepted": 1073741823,
+              "remainder": 0,
+              "rejectedValues": 4,
+              "bias": 0,
+              "uncorrectedRelativeBias": 0
+            },
+            {
+              "range": 5,
+              "maxFair": 4294967295,
+              "acceptedWindow": 4294967295,
+              "rangesAccepted": 858993459,
+              "remainder": 0,
+              "rejectedValues": 1,
+              "bias": 0,
+              "uncorrectedRelativeBias": 1.1641532182693481e-9
+            },
+            {
+              "range": 6,
+              "maxFair": 4294967292,
+              "acceptedWindow": 4294967292,
+              "rangesAccepted": 715827882,
+              "remainder": 0,
+              "rejectedValues": 4,
+              "bias": 0,
+              "uncorrectedRelativeBias": 1.3969838619232178e-9
+            },
+            {
+              "range": 7,
+              "maxFair": 4294967292,
+              "acceptedWindow": 4294967292,
+              "rangesAccepted": 613566756,
+              "remainder": 0,
+              "rejectedValues": 4,
+              "bias": 0,
+              "uncorrectedRelativeBias": 1.6298145055770874e-9
+            },
+            {
+              "range": 8,
+              "maxFair": 4294967288,
+              "acceptedWindow": 4294967288,
+              "rangesAccepted": 536870911,
+              "remainder": 0,
+              "rejectedValues": 8,
+              "bias": 0,
+              "uncorrectedRelativeBias": 0
+            },
+            {
+              "range": 9,
+              "maxFair": 4294967292,
+              "acceptedWindow": 4294967292,
+              "rangesAccepted": 477218588,
+              "remainder": 0,
+              "rejectedValues": 4,
+              "bias": 0,
+              "uncorrectedRelativeBias": 2.0954757928848267e-9
+            },
+            {
+              "range": 10,
+              "maxFair": 4294967290,
+              "acceptedWindow": 4294967290,
+              "rangesAccepted": 429496729,
+              "remainder": 0,
+              "rejectedValues": 6,
+              "bias": 0,
+              "uncorrectedRelativeBias": 2.3283064365386963e-9
+            },
+            {
+              "range": 11,
+              "maxFair": 4294967292,
+              "acceptedWindow": 4294967292,
+              "rangesAccepted": 390451572,
+              "remainder": 0,
+              "rejectedValues": 4,
+              "bias": 0,
+              "uncorrectedRelativeBias": 2.561137080192566e-9
+            },
+            {
+              "range": 12,
+              "maxFair": 4294967292,
+              "acceptedWindow": 4294967292,
+              "rangesAccepted": 357913941,
+              "remainder": 0,
+              "rejectedValues": 4,
+              "bias": 0,
+              "uncorrectedRelativeBias": 2.7939677238464355e-9
+            },
+            {
+              "range": 13,
+              "maxFair": 4294967287,
+              "acceptedWindow": 4294967287,
+              "rangesAccepted": 330382099,
+              "remainder": 0,
+              "rejectedValues": 9,
+              "bias": 0,
+              "uncorrectedRelativeBias": 3.026798367500305e-9
+            },
+            {
+              "range": 14,
+              "maxFair": 4294967292,
+              "acceptedWindow": 4294967292,
+              "rangesAccepted": 306783378,
+              "remainder": 0,
+              "rejectedValues": 4,
+              "bias": 0,
+              "uncorrectedRelativeBias": 3.259629011154175e-9
+            },
+            {
+              "range": 15,
+              "maxFair": 4294967295,
+              "acceptedWindow": 4294967295,
+              "rangesAccepted": 286331153,
+              "remainder": 0,
+              "rejectedValues": 1,
+              "bias": 0,
+              "uncorrectedRelativeBias": 3.4924596548080444e-9
+            },
+            {
+              "range": 16,
+              "maxFair": 4294967280,
+              "acceptedWindow": 4294967280,
+              "rangesAccepted": 268435455,
+              "remainder": 0,
+              "rejectedValues": 16,
+              "bias": 0,
+              "uncorrectedRelativeBias": 0
+            },
+            {
+              "range": 17,
+              "maxFair": 4294967295,
+              "acceptedWindow": 4294967295,
+              "rangesAccepted": 252645135,
+              "remainder": 0,
+              "rejectedValues": 1,
+              "bias": 0,
+              "uncorrectedRelativeBias": 3.958120942115784e-9
+            },
+            {
+              "range": 18,
+              "maxFair": 4294967292,
+              "acceptedWindow": 4294967292,
+              "rangesAccepted": 238609294,
+              "remainder": 0,
+              "rejectedValues": 4,
+              "bias": 0,
+              "uncorrectedRelativeBias": 4.190951585769653e-9
+            },
+            {
+              "range": 19,
+              "maxFair": 4294967290,
+              "acceptedWindow": 4294967290,
+              "rangesAccepted": 226050910,
+              "remainder": 0,
+              "rejectedValues": 6,
+              "bias": 0,
+              "uncorrectedRelativeBias": 4.423782229423523e-9
+            },
+            {
+              "range": 20,
+              "maxFair": 4294967280,
+              "acceptedWindow": 4294967280,
+              "rangesAccepted": 214748364,
+              "remainder": 0,
+              "rejectedValues": 16,
+              "bias": 0,
+              "uncorrectedRelativeBias": 4.6566128730773926e-9
+            },
+            {
+              "range": 21,
+              "maxFair": 4294967292,
+              "acceptedWindow": 4294967292,
+              "rangesAccepted": 204522252,
+              "remainder": 0,
+              "rejectedValues": 4,
+              "bias": 0,
+              "uncorrectedRelativeBias": 4.889443516731262e-9
+            },
+            {
+              "range": 22,
+              "maxFair": 4294967292,
+              "acceptedWindow": 4294967292,
+              "rangesAccepted": 195225786,
+              "remainder": 0,
+              "rejectedValues": 4,
+              "bias": 0,
+              "uncorrectedRelativeBias": 5.122274160385132e-9
+            },
+            {
+              "range": 23,
+              "maxFair": 4294967284,
+              "acceptedWindow": 4294967284,
+              "rangesAccepted": 186737708,
+              "remainder": 0,
+              "rejectedValues": 12,
+              "bias": 0,
+              "uncorrectedRelativeBias": 5.3551048040390015e-9
+            },
+            {
+              "range": 24,
+              "maxFair": 4294967280,
+              "acceptedWindow": 4294967280,
+              "rangesAccepted": 178956970,
+              "remainder": 0,
+              "rejectedValues": 16,
+              "bias": 0,
+              "uncorrectedRelativeBias": 5.587935447692871e-9
+            },
+            {
+              "range": 25,
+              "maxFair": 4294967275,
+              "acceptedWindow": 4294967275,
+              "rangesAccepted": 171798691,
+              "remainder": 0,
+              "rejectedValues": 21,
+              "bias": 0,
+              "uncorrectedRelativeBias": 5.820766091346741e-9
+            }
+          ],
+          "census": {
+            "draws": 156000,
+            "chunksRead": 156000,
+            "rejectedChunks": 0,
+            "cursorAdvances": 0,
+            "expectedDraws": 156000,
+            "expectedRejectedChunks": 0.0002360902732774354
+          },
+          "issues": []
+        },
+        "siteVerifier": {
+          "files": [
+            {
+              "file": "games/mines/derive.js",
+              "pinnedSha256": "2321b23c91faf66542b1db4776548998778c616180033240bea338aeff48c993",
+              "vendoredSha256": "2321b23c91faf66542b1db4776548998778c616180033240bea338aeff48c993",
+              "match": true
+            },
+            {
+              "file": "lib/hmac-sha256.js",
+              "pinnedSha256": "bc30bfe9ef202905ece93de33440d41851abf16e910f90c2a567774a2b79d889",
+              "vendoredSha256": "bc30bfe9ef202905ece93de33440d41851abf16e910f90c2a567774a2b79d889",
+              "match": true
+            }
+          ],
+          "provenance": {
+            "siteRoot": "qa-workspace/duel/docusaurus/src/components/VerifyBets",
+            "repository": "mikepforg/pf-audit-duel",
+            "ref": "origin/main",
+            "head": "bd4d59cd9a3e75146f2575c5218a3fb9a8b2692d",
+            "headDate": "2026-09-19",
+            "readVia": "git cat-file -p origin/main:<path>",
+            "readOn": "2026-09-25",
+            "previouslyPinnedFrom": "repotree-sync @ 2ad89bc774c4817abfe8ed0422af7b3e03e7c477 (read 2026-09-24)"
+          },
+          "siteVerifierRounds": 7050,
+          "siteVerifierExpectedRounds": 7050,
+          "siteVerifierMismatches": 0,
+          "siteVerifierUnrecomputable": 0,
+          "issues": []
+        },
+        "liveSiteVerifier": {
+          "files": [
+            {
+              "file": "chunks/turbopack-828b80f561e7c968.js",
+              "pinnedSha256": "6e8629f444df945f8fecfdfe05e24f4fa6c63b6b1ecc8f39fc45e9c4f4ecc903",
+              "vendoredSha256": "6e8629f444df945f8fecfdfe05e24f4fa6c63b6b1ecc8f39fc45e9c4f4ecc903",
+              "match": true
+            },
+            {
+              "file": "chunks/34934e0e762aa37e.js",
+              "pinnedSha256": "9fb319dec0d79f9bf5851ec8e0052b6b2125e603be03d12b78a0fe99eed817d1",
+              "vendoredSha256": "9fb319dec0d79f9bf5851ec8e0052b6b2125e603be03d12b78a0fe99eed817d1",
+              "match": true
+            },
+            {
+              "file": "chunks/4f34301b2f166201.js",
+              "pinnedSha256": "8111e3f3e9a137888558f69547a19b0238d1c50a339b4c51095f9481785df0f5",
+              "vendoredSha256": "8111e3f3e9a137888558f69547a19b0238d1c50a339b4c51095f9481785df0f5",
+              "match": true
+            },
+            {
+              "file": "run-live-verifier.cjs",
+              "pinnedSha256": "b06a01332a26a931c73c58c1399b956958e3cf552741a925939d331c2a7f9488",
+              "vendoredSha256": "b06a01332a26a931c73c58c1399b956958e3cf552741a925939d331c2a7f9488",
+              "match": true
+            }
+          ],
+          "provenance": {
+            "page": "https://www.provablyfair.org/verify-bets",
+            "chunkBase": "https://www.provablyfair.org/_next/static/chunks/",
+            "fetchedOn": "2026-09-24",
+            "pageSha256AtFetch": "ab20af5a6157c914e7d448a98d711851366f5a5f374335f45f0afbf852fddecd",
+            "pageEtagAtFetch": "\"q4121ltuup261t\"",
+            "deploymentId": "dpl_CxkerpJA9YjmxnP8qfA4d2jqFdti",
+            "pageModule": 7721
+          },
+          "liveSiteRounds": 7050,
+          "liveSiteExpectedRounds": 7050,
+          "liveSiteMismatches": 0,
+          "liveSiteStandInModules": 34,
+          "issues": []
+        },
+        "operatorVerifier": {
+          "files": [
+            {
+              "file": "evidence/verify-tab/duel-verify-tab-mines-2026-09-25.js",
+              "pinnedSha256": "88f5268b0b1c359eb76d43b2f14e1402e47921154c1935ae2790256c02cff592",
+              "actualSha256": "88f5268b0b1c359eb76d43b2f14e1402e47921154c1935ae2790256c02cff592",
+              "match": true
+            },
+            {
+              "file": "verifier-parity/operator/run-operator-verifier.cjs",
+              "pinnedSha256": "70d47b03885d85b986008927f70c2174a21981c1b6a2a36d21bb0e3f3bf2f2cf",
+              "actualSha256": "70d47b03885d85b986008927f70c2174a21981c1b6a2a36d21bb0e3f3bf2f2cf",
+              "match": true
+            }
+          ],
+          "provenance": {
+            "copiedBy": "Paulo",
+            "copiedOn": "2026-09-25",
+            "from": "duel.com → Provably Fair → Verify, game Mines, Expand → Copy on the code panel (evidence/E03 shows the page, panel collapsed)",
+            "savedAs": "evidence/verify-tab/duel-verify-tab-mines-2026-09-25.js",
+            "sha256": "88f5268b0b1c359eb76d43b2f14e1402e47921154c1935ae2790256c02cff592",
+            "bytes": 3026,
+            "lines": 92
+          },
+          "rounds": 7050,
+          "expectedRounds": 7050,
+          "disagreeWithRng": 0,
+          "disagreeWithServed": 0,
+          "citesChecked": 16,
+          "citesBad": 0,
+          "issues": []
+        }
+      },
+      "profileIds": [
+        "MINES-07",
+        "MINES-08"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-07",
+          "coverage": "full",
+          "note": "the primary-dataset half: every one of the 6,500 bets — wins and losses, no filter — is recomputed from its revealed seed and compared with the served mines_positions as a SORTED SET (src/layout.ts sameLayout; the declaration's layoutRepresentation.orderMatters is false); a skipped bet FAILs and the count is bound to EXPECTED_BETS. Measured: 6,500/6,500, 0 skipped, 0 mismatches. The Phase E half (550) is Step 21. FAIL probed: M06 (client seed dropped from the HMAC message: Step 5 fails beside Step 6)"
+        },
+        {
+          "id": "MINES-08",
+          "coverage": "full",
+          "note": "maxFair PER RANGE as a computed bound — for all 24 ranges 2..25 the accepted window is MEASURED from src/rng.ts drawFromChunk (binary search + ~600 probes), HARD FAIL unless every window is a whole number of ranges and the worst per-index bias is <= 2^-32 — plus the rejection census over the 6,500 recomputed rounds, its draw count bound to recomputed x 24. Measured: 24/24 exact (range 25: 4294967275 = 25 x 171798691), worst bias 0, 156,000 draws, 0 rejected chunks, expected rejections 2.36e-4. FAIL probed: M05 (maxFair = 2^32 − 1 for every range)"
+        }
+      ]
     },
     {
       "step": 6,
       "name": "Client Seed Influence",
       "status": "PASS",
-      "detail": "646/650 bets: wrong clientSeed → different mine positions"
+      "detail": "5 bets sampled from each of the 130 revealed epochs. Substituting a wrong client seed changes the mine layout except where only C(25,m) layouts exist to change between; the surviving collisions sit at or below the rate combinatorics predicts (bound: expected + 5 sigma + 1), and all of them fall at m=1 and m=24, the two configurations with just 25 distinct layouts. Empty-seed control over all 6500 primary bets (clientSeed = \"\"): collisions held to the same model bound, sum of 1/C(25,m) + 5 sigma + 1.",
+      "data": {
+        "betsTested": 650,
+        "expectedTested": 650,
+        "changed": 646,
+        "collisions": 4,
+        "expectedCollisions": 5.969249448895427,
+        "collisionBound": 18.945018858561,
+        "collisionsByMineCount": {
+          "1": 1,
+          "24": 3
+        },
+        "samplePerEpoch": 5,
+        "epochs": 130,
+        "emptySeedControl": {
+          "betsTested": 6500,
+          "expectedTested": 6500,
+          "collisions": 56,
+          "expectedCollisions": 59.325656315086555,
+          "collisionBound": 98.08032974396838,
+          "collisionsByMineCount": {
+            "1": 7,
+            "2": 2,
+            "22": 1,
+            "24": 46
+          }
+        }
+      },
+      "profileIds": [
+        "MINES-06"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-06",
+          "coverage": "partial",
+          "note": "what IS asserted: (1) a WRONG client seed on 5 bets from each of the 130 revealed epochs (650, bound) changes the layout except for collisions held to the model rate sum(1/C(25,m)) + 5 sigma + 1 — measured 4 collisions, expected 5.97, bound 18.95; (2) an EMPTY-SEED CONTROL (clientSeed = \"\") over all 6,500 primary bets on the same model bound — measured 56 collisions, expected 59.33, bound 98.08 (new 2026-09-23); (3) the Phase D half and the predictable-seed disclosure are Step 17. FAIL probed: M06 (client seed dropped from the HMAC message → 650/650 collide). WHAT IS MISSING — and cannot be closed without a new capture: the profile requires the A–C client-seed generator to be a CSPRNG, and it is not: capture/mines-capture.reference.js generateClientSeed draws 16 characters with Math.random() for the 120 bet-bearing A–C epochs. It is DISCLOSED as MANIFEST.md DL-1 with that count; the property itself is a capture-design fact no verifier change can make true"
+        }
+      ]
     },
     {
       "step": 7,
       "name": "Payout Math",
       "status": "PASS",
-      "detail": "6500 bets checked, 0 errors (tolerance 1e-8)"
+      "detail": "6500 primary bets (2795 wins, 3705 losses) and the 417 Phase E rounds step 23 does not take (39 depth-1 wins, 378 losses): every win credits amount × no_house_edge_multiplier (money tolerance: relative 1e-12), every loss credits exactly \"0\"; 0 errors",
+      "data": {
+        "betsChecked": 6500,
+        "errors": 0,
+        "moneyRelTol": 1e-12,
+        "primaryWins": 2795,
+        "primaryLosses": 3705,
+        "phaseEWinsDepth1": 39,
+        "phaseELosses": 378
+      },
+      "profileIds": [
+        "MINES-11"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-11",
+          "coverage": "full",
+          "note": "EVERY settled round not scored by Step 23: all 6,500 primary bets and the 417 Phase E rounds that Step 23 does not take (39 depth-1 wins, 378 losses — before 2026-09-23 none of these 417 had a payout assertion). Every win must credit amount x the served with-edge multiplier within MONEY_REL_TOL = 1e-12 relative floored at 1 (for a $0.01 stake 1e-12 absolute — four orders inside the profile's 1e-8 ceiling; the declaration has no money grid, so the tolerance arm applies); every loss must credit exactly \"0\"; each win/loss population bound to src/loader.ts (2,795 / 3,705 / 39 / 378 / 133). The multiplier the credit uses is itself bound to the exact formula by Step 8 (every k = 1 win, primary and Phase E) and Step 23 (k > 1). Measured: 0 errors. FAIL probed: M07 (a Phase E loss credited 0.01, dataset re-pinned)"
+        }
+      ]
     },
     {
       "step": 8,
       "name": "Multiplier Formula (C(25,1)/C(25-m,1) × edge)",
       "status": "PASS",
-      "detail": "2795 winning bets: multiplier = 25/(25−m), payout_mult = 25/(25−m) × 0.999; 0 mismatches"
+      "detail": "2795 winning primary bets and the 39 Phase E wins settled at depth 1: multiplier = 25/(25−m) and payout_mult = 25/(25−m) × 999/1000 as exact rationals, served strings parsed exactly, relative bound 1e-12; 0 mismatches",
+      "data": {
+        "winningBets": 2795,
+        "phaseEWinsDepth1": 39,
+        "mismatches": 0,
+        "multRelTol": 1e-12,
+        "worstRelativeDeviation": 6.4064064064e-19,
+        "worstAt": "round 25075415 no_house_edge_multiplier"
+      },
+      "profileIds": [
+        "MINES-13"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-13",
+          "coverage": "full",
+          "note": "the k = 1 arm: both served strings of every winning primary bet and of the 39 Phase E wins settled at depth 1 (scored here since 2026-10-19; before, only Step 25's range held them) are parsed EXACTLY and compared with the exact rational — multiplier with C(25,1)/C(25−m,1), no_house_edge_multiplier with the same x 999/1000 — at MULT_REL_TOL = 1e-12 relative (src/exact.ts; it replaced 1e-6 ABSOLUTE). No exact equality is available because the operator's k > 1 values carry double-precision error (worst 9.2e-15, Step 20); the bound is justified by that computed number (108x headroom) and the worst deviation is emitted every run — here 6.4e-19, the 18th-decimal rounding. The derivation reads (m, k) only; the formula's origin is declared (MANIFEST.md, published fairness page). Measured: 2,795 primary + 39 Phase E depth-1 wins, 0 mismatches. FAIL probed: M08 (one served multiplier moved 1.3e-9 relative, dataset re-pinned — the old 1e-6 bound passed it)"
+        }
+      ]
     },
     {
       "step": 9,
       "name": "Win Condition (tile not in mines)",
       "status": "PASS",
-      "detail": "6500 bets verified: outcome=win iff revealed_positions[0] ∉ mines_positions; 0 errors"
+      "detail": "6500 primary + 550 Phase E rounds, outcome derived from the layout RECOMPUTED from the revealed seed (not the served mines_positions): win iff no opened tile is a mine; each of the 4083 busts ends on exactly the last opened tile with no earlier mine; the opened count equals the recorded depth on every round; every Phase E cash-out is a win and no bust is cashed out; 0 errors",
+      "data": {
+        "roundsChecked": 7050,
+        "skipped": 0,
+        "errors": 0,
+        "bustsChecked": 4083,
+        "depthChecked": 7050
+      },
+      "profileIds": [
+        "MINES-10"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-10",
+          "coverage": "full",
+          "note": "for EVERY round of both datasets (7,050, bound; an unrecomputable round FAILs) the outcome is derived from the layout RECOMPUTED from the revealed seed — never from the served mines_positions or the outcome label — and must equal the served outcome: win iff no opened tile is a recomputed mine; every bust (4,083, bound) must end on exactly the last opened tile with no earlier mine; the opened count must equal the recorded depth (1 for every primary bet — its plan; reached_k and the reveal-step count for Phase E); no tile may repeat or leave 0..24; and a Phase E round is cashed out iff it is a win. Measured: 0 errors. FAIL probed: M09 (win/loss arms of the derivation swapped). Step 21 adds the per-step is_mine leg, Step 22 the E5 leg"
+        }
+      ]
     },
     {
       "step": 10,
       "name": "Phase C Bet-Size Invariance ($10 bets)",
       "status": "PASS",
-      "detail": "200 Phase C bets ($10), 105 wins: multiplier formula identical, payout math correct; 0 errors"
+      "detail": "200 Phase C bets ($10, m=12): every layout recomputed here; 105 wins (floor 100) scored on the exact multiplier (relative 1e-12), on money (relative 1e-12), and served the IDENTICAL multiplier strings as the $0.01 m=12 wins; 0 errors",
+      "data": {
+        "phaseCBets": 200,
+        "wins": 105,
+        "minWins": 100,
+        "errors": 0,
+        "layoutsRecomputed": 200,
+        "layoutErrors": 0,
+        "moneyRelTol": 1e-12,
+        "multRelTol": 1e-12,
+        "worstRelativeDeviation": 8.008008008e-20
+      },
+      "profileIds": [
+        "MINES-12",
+        "MINES-11"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-12",
+          "coverage": "full",
+          "note": "every one of the 200 $10 bets (m = 12, the low count the profile asks for; stake and mine count asserted) has its layout RECOMPUTED here; every $10 win is scored on the exact multiplier (1e-12 relative), on money (1e-12 relative), and must be served the IDENTICAL multiplier strings as the $0.01 m = 12 wins of Phase A — the same formula at both stakes, compared as served; and the profile floor of >= 100 elevated-stake wins is ASSERTED (PHASE_C_MIN_WINS), not merely measured. Measured: 200 recomputed, 105 wins, 0 errors. FAIL probed: M10 (floor raised to 106)"
+        },
+        {
+          "id": "MINES-11",
+          "coverage": "full",
+          "note": "the elevated-stake money arm: the 105 $10 wins credited at the same 1e-12 relative bound as Step 7"
+        }
+      ]
     },
     {
       "step": 11,
-      "name": "Config Completeness (24 mine counts)",
+      "name": "Config Completeness & Payout-Cell Coverage",
       "status": "PASS",
-      "detail": "24/24 mine counts present"
+      "detail": "All 24 mine counts carry at least 100 live bets, and Phase A matches its plan of 200 per mine count (profile floor 50). The multi-reveal phase matches its plan in code (5 sub-phases, bets, mine counts and target depths), covering 4 depths and 7 mine counts, and its first picks span all 25 tiles. Payout-cell coverage across (mines, reveals), and the share of reachable probability on cells live play never reached, are itemised in outputs/payout-coverage.json; the formula itself is covered analytically by step 16.",
+      "data": {
+        "mineCountsCovered": 24,
+        "mineCountsExpected": 24,
+        "minBetsPerMineCount": 100,
+        "leanestMineCountBets": 212,
+        "totalPayoutCells": 300,
+        "cellsExercisedByLivePlay": 33,
+        "cellsNeverExercised": 267,
+        "uncoveredProbabilityShare": 0.6713026452249372,
+        "phaseAPerMineCount": 200,
+        "phaseAOffPlan": 0,
+        "phaseESubPhasesOffPlan": 0,
+        "phaseEDepths": [
+          1,
+          2,
+          3,
+          5
+        ],
+        "phaseEMineCounts": [
+          2,
+          3,
+          4,
+          5,
+          8,
+          12,
+          15
+        ],
+        "firstPickTilesSpanned": 25
+      },
+      "profileIds": [
+        "MINES-15"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-15",
+          "coverage": "full",
+          "note": "asserted against the PLAN IN CODE (src/loader.ts), FLAG on any shortfall: Phase A carries exactly PHASE_A_BETS_PER_MINE_COUNT = 200 bets on each of the 24 mine counts (profile floor 50); every multi-reveal sub-phase matches PHASE_E_PLAN — bets, mine counts (request and response) and target depth: E1 m3 k5, E2 m5 k3, E3 m12 k3, E4 m15 k2, E5 m{2,4,8,15} k1 at first picks {3,7,11,17,23} — covering 4 depths and 7 mine counts; and the Phase E first picks span all 25 tiles (FIRST_PICK_TILES_REQUIRED). The whole-primary floor of 100 per mine count and the 300-cell reach inventory (outputs/payout-coverage.json, pinned) remain. Measured: 24 x 200, 5/5 sub-phases on plan, 25/25 first picks. FAIL (FLAG) probed: M11 (plan says E2 used 6 mines)"
+        }
+      ]
     },
     {
       "step": 12,
       "name": "House Edge Audit (effective_edge = 0.1%)",
       "status": "PASS",
-      "detail": "6500 bets: effective_edge = 0.1 (0.1%) for all; 0 deviations"
+      "detail": "6500 bets: effective_edge = 0.1 (0.1%) for all; 0 deviations",
+      "profileIds": [
+        "MINES-19"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-19",
+          "coverage": "full",
+          "note": "the comparison arm only: the served effective_edge must equal the literal 0.1 on all 6,500 primary bets, HARD FAIL otherwise; the derivation is Step 16, which reads no operator data. Measured: 0 deviations. FAIL probed: M12"
+        }
+      ]
     },
     {
       "step": 13,
       "name": "Population & Phase Labels",
       "status": "PASS",
-      "detail": "6500/6500 bets and 134/134 seed records against the capture plan in src/loader.ts (code constants, not the dataset header); per phase A=4800/4800 B=1000/1000 C=200/200 D=500/500; last bet phase: D"
+      "detail": "All 6500 primary bets and 134 seed records, and all 550 Phase E bets and 17 seed records, carry valid phase labels, and every total and per-phase count matches the capture plan in src/loader.ts — code constants, not the datasets' own headers.",
+      "data": {
+        "betPhases": {
+          "A": 4800,
+          "B": 1000,
+          "C": 200,
+          "D": 500
+        },
+        "seedPhases": {
+          "A": 97,
+          "B": 21,
+          "C": 5,
+          "D": 11
+        },
+        "bets": 6500,
+        "seeds": 134,
+        "phaseEBetPhases": {
+          "E1": 100,
+          "E2": 100,
+          "E3": 200,
+          "E4": 100,
+          "E5": 50
+        },
+        "phaseESeedPhases": {
+          "E1": 3,
+          "E2": 3,
+          "E3": 6,
+          "E4": 3,
+          "E5": 2
+        },
+        "phaseEBets": 550,
+        "phaseESeeds": 17
+      },
+      "profileIds": [
+        "MINES-05"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-05",
+          "coverage": "full",
+          "note": "the population half of G-BIND, for BOTH datasets: primary bets 6,500 and seeds 134 with the per-phase split A 4,800/97, B 1,000/21, C 200/5, D 500/11; the secondary (Phase E, pinned by SHA-256) counted the same way — bets 550 and seed records 17, per sub-phase E1..E5 bets 100/100/200/100/50 and seeds 3/3/6/3/2 (EXPECTED_PHASE_E_SEEDS was declared and read by nothing until 2026-09-23); all constants in src/loader.ts, an undeclared label FAILs. Measured: all at plan. FAIL probed: M13 (Phase E seed plan says E3 has 5 records). The epoch half is Step 15"
+        }
+      ]
     },
     {
       "step": 14,
       "name": "Dataset Hash",
       "status": "PASS",
-      "detail": "Expected: 331f74ff98b88d06242d57e806186548612f13c4269eb754ebb571d8a6fc9b20 | Actual: 331f74ff98b88d06242d57e806186548612f13c4269eb754ebb571d8a6fc9b20"
+      "detail": "Master expected: 331f74ff98b88d06242d57e806186548612f13c4269eb754ebb571d8a6fc9b20 | actual: 331f74ff98b88d06242d57e806186548612f13c4269eb754ebb571d8a6fc9b20; Phase E expected: def563907949db10d584256a13b33102dfa46d33509424f642f803d74cd1b17b | actual: def563907949db10d584256a13b33102dfa46d33509424f642f803d74cd1b17b",
+      "profileIds": [
+        "MINES-26"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-26",
+          "coverage": "full",
+          "note": "both dataset files are pinned by SHA-256 as constants in src/loader.ts and enforced by the tests/verify.ts pre-flight BEFORE any step (exit 1 on mismatch, and on absence for the secondary); this step re-asserts BOTH pins as a scored step whose own branch is now FAIL (it was FLAG). Measured: both MATCH. FAIL probed: M14 (wrong master pin with the pre-flight abort removed — the only way to reach this branch)"
+        }
+      ]
     },
     {
       "step": 15,
       "name": "Epoch Size",
       "status": "PASS",
-      "detail": "130 epochs; min=50, max=50 bets per epoch"
+      "detail": "Exactly 130 primary epochs of exactly 50 bets each, as pinned in src/loader.ts, reconciling to the declared 6500 bets; every one of the 17 Phase E rotation records holds exactly the bets its per-record plan declares, reconciling to 550.",
+      "data": {
+        "epochs": 130,
+        "expectedEpochs": 130,
+        "minSize": 50,
+        "maxSize": 50,
+        "expectedSize": 50,
+        "offEpochs": 0,
+        "phaseERecords": 17,
+        "phaseEOffPlan": 0
+      },
+      "profileIds": [
+        "MINES-05"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-05",
+          "coverage": "full",
+          "note": "the epoch half: 130 primary epochs of exactly EPOCH_SIZE = 50 (both directions FAIL) with 130 x 50 === 6,500 asserted; and the Phase E epochs — keyed on its own capture timeline — each hold exactly the bets EXPECTED_PHASE_E_EPOCH_SIZES declares for that rotation record (ten of 50, seeds[9] 49 around the declared capture-retry gap, seeds[10] 1), the table summing to 550 and covering all 17 records. Measured: 0 off-plan. FAIL probed: M15 (one bet moved between seeds[9] and seeds[10])"
+        }
+      ]
     },
     {
       "step": 16,
       "name": "Probability Independence (Anti-Circularity)",
       "status": "PASS",
-      "detail": "300 (mines, reveals) combinations checked (mines 1–24, k 1–(25−m)); RTP = [C(25−m,k)/C(25,k)] × [C(25,k)/C(25−m,k) × 0.999] = 0.999 by construction. Max deviation: 0.00000000% (worst: mines=2, k=14)"
+      "detail": "300 (mines, reveals) cells tested (mines 1–24, k 1–(25−m)). Counting anchor: all 2^25 tile subsets enumerated; on every cell the counted survivals equal the integer C(25−m,k) and the total C(25,k), and the operator formula × counted survival probability equals the RTP table's exact row (each row is held to the claim by RTP-CLAIM on this step, not here). src/rng.ts multiplier and win-chance product agree with the counted values within 1e-12 relative. Negative controls rejected: the corrupted closed form C(26−m,k) fails the exact identity, and a layout with one mine moved is refused by the layout comparator. The float identity lies within 0.0001 of 1 − the row's edge on every cell (0.999 on 294; on the 6 full-board cash-outs whose first stake tier in Duel's settings, E14, is above 0.1 %, that tier's edge).",
+      "data": {
+        "cells": 300,
+        "expectedCells": 300,
+        "mineCounts": 24,
+        "deviationBound": 0.0001,
+        "maxDeviation": 2.220446049250313e-16,
+        "worstMineCount": 2,
+        "worstK": 14,
+        "targetRTP": 0.999,
+        "cellsAboveBaseTier": 6,
+        "countingAnchor": {
+          "cells": 300,
+          "subsetsEnumerated": 33554432,
+          "anchorErrors": 0,
+          "exactRtpErrors": 0,
+          "adapterErrors": 0,
+          "worstAdapterRelativeDeviation": 6.489251757813204e-16,
+          "adapterRelTol": 1e-12
+        },
+        "negativeControls": {
+          "corruptedFormulaRejectedOnCells": 300,
+          "layoutCorruptionRejected": true
+        }
+      },
+      "profileIds": [
+        "MINES-18",
+        "MINES-19"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-18",
+          "coverage": "full",
+          "note": "the survival probability comes from COUNTING: src/exact.ts enumerateSurvivalCounts visits all 2^25 subsets of the grid and tallies the k-subsets avoiding m given tiles — no binomial formula in the path — and on all 300 cells the count must equal the integer C(25−m,k) (BigInt), the total C(25,k), and the operator formula x the counted survival probability must equal that cell's exact row in the RTP table (1 − the edge of the cell's first stake tier in E14: 999/1000 on 294 cells, 0.9986, 0.9982 and 0.9979 on the six full-board cash-outs) EXACTLY in rational arithmetic. The adapter's own theoreticalMultiplier and winChance product must agree with the counted values at 1e-12, so a wrong comb() no longer cancels out of the identity. NEGATIVE CONTROLS run every time and FAIL the step if not rejected: the corrupted closed form C(26−m,k) (rejected on 300/300 cells) and a real recomputed layout with one mine moved (refused by the comparator Steps 5/10/17 use). No operator win-chance field is read. FAIL probed: M16 (winChance off by one), M16b (comb() off by one)"
+        },
+        {
+          "id": "MINES-19",
+          "coverage": "full",
+          "note": "the derivation leg: 1 − P(survive k) x mult(m, k) derived per cell for all 300 cells from the counted survival probability and the declared closed form at the cell's first-tier edge, exactly (0 cells off 1 − that edge; 999/1000 on 294 cells), with the float identity's widest deviation emitted as the magnitude (2.2e-16 at m=2, k=14) against RTP_DEVIATION_BOUND = 1e-4 (stricter than the profile's FLAG). No operator edge field enters it"
+        }
+      ]
     },
     {
       "step": 17,
       "name": "Phase D — Client Seed Variation",
       "status": "PASS",
-      "detail": "500 bets, 10 distinct client seeds, mine counts: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24; recomputation: 500/500 match"
+      "detail": "500 bets, 10 distinct client seeds, mine counts: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24; recomputation: 500/500 match. PREDICTABLE-SEED DISCLOSURE: all 10 Phase D seeds decode to the capture's millisecond clock ('pfaudit' + Date.now() in base 36), each within the minute before its rotation; exposed epochs = rotation records 123–132 (10 epochs, 500 bets), as disclosed in MANIFEST.md DL-3. By the capture's timestamps, each epoch's server-seed hash had been recorded as the previous rotation's nextServerSeedHash before its client seed existed.",
+      "data": {
+        "phaseDBets": 500,
+        "recomputed": 500,
+        "matched": 500,
+        "distinctClientSeeds": 10,
+        "exposedEpochs": [
+          {
+            "seedIndex": 123,
+            "clientSeed": "pfauditmo125o3q",
+            "decodedAt": "2026-04-16T05:47:56.102Z",
+            "rotationAt": "2026-04-16T05:47:56.529Z",
+            "lagSeconds": 0.427,
+            "commitmentLeadSeconds": 1.574
+          },
+          {
+            "seedIndex": 124,
+            "clientSeed": "pfauditmo128b0c",
+            "decodedAt": "2026-04-16T05:49:59.100Z",
+            "rotationAt": "2026-04-16T05:49:59.517Z",
+            "lagSeconds": 0.417,
+            "commitmentLeadSeconds": 122.571
+          },
+          {
+            "seedIndex": 125,
+            "clientSeed": "pfauditmo12b08c",
+            "decodedAt": "2026-04-16T05:52:05.100Z",
+            "rotationAt": "2026-04-16T05:52:05.516Z",
+            "lagSeconds": 0.416,
+            "commitmentLeadSeconds": 125.583
+          },
+          {
+            "seedIndex": 126,
+            "clientSeed": "pfauditmo12dypn",
+            "decodedAt": "2026-04-16T05:54:23.099Z",
+            "rotationAt": "2026-04-16T05:54:23.562Z",
+            "lagSeconds": 0.463,
+            "commitmentLeadSeconds": 137.583
+          },
+          {
+            "seedIndex": 127,
+            "clientSeed": "pfauditmo12gr0s",
+            "decodedAt": "2026-04-16T05:56:33.100Z",
+            "rotationAt": "2026-04-16T05:56:33.520Z",
+            "lagSeconds": 0.42,
+            "commitmentLeadSeconds": 129.538
+          },
+          {
+            "seedIndex": 128,
+            "clientSeed": "pfauditmo12jg8t",
+            "decodedAt": "2026-04-16T05:58:39.101Z",
+            "rotationAt": "2026-04-16T05:58:39.522Z",
+            "lagSeconds": 0.421,
+            "commitmentLeadSeconds": 125.581
+          },
+          {
+            "seedIndex": 129,
+            "clientSeed": "pfauditmo12m5gs",
+            "decodedAt": "2026-04-16T06:00:45.100Z",
+            "rotationAt": "2026-04-16T06:00:45.533Z",
+            "lagSeconds": 0.433,
+            "commitmentLeadSeconds": 125.578
+          },
+          {
+            "seedIndex": 130,
+            "clientSeed": "pfauditmo12ouot",
+            "decodedAt": "2026-04-16T06:02:51.101Z",
+            "rotationAt": "2026-04-16T06:02:51.530Z",
+            "lagSeconds": 0.429,
+            "commitmentLeadSeconds": 125.568
+          },
+          {
+            "seedIndex": 131,
+            "clientSeed": "pfauditmo12rnro",
+            "decodedAt": "2026-04-16T06:05:02.100Z",
+            "rotationAt": "2026-04-16T06:05:02.551Z",
+            "lagSeconds": 0.451,
+            "commitmentLeadSeconds": 130.57
+          },
+          {
+            "seedIndex": 132,
+            "clientSeed": "pfauditmo12ug2r",
+            "decodedAt": "2026-04-16T06:07:12.099Z",
+            "rotationAt": "2026-04-16T06:07:12.530Z",
+            "lagSeconds": 0.431,
+            "commitmentLeadSeconds": 129.548
+          }
+        ],
+        "minCommitmentLeadSeconds": 1.574
+      },
+      "profileIds": [
+        "MINES-06"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-06",
+          "coverage": "partial",
+          "note": "the Phase D half, now HARD FAIL (it was FLAG): all 500 Phase D bets recompute under the client seed actually used (an unrecomputable bet FAILs), >= 2 distinct seeds (10). THE PREDICTABLE-SEED DISCLOSURE, derived from the data: every Phase D seed decodes ('pfaudit' + base-36 milliseconds) to a timestamp 0.416–0.463 s before its own rotation record, and the exposed epochs — rotation records 123–132, 500 bets — must equal PHASE_D_PREDICTABLE_EPOCHS, which MANIFEST.md DL-3 publishes; by the capture's timestamps each epoch's server-seed hash had been recorded as the previous rotation's nextServerSeedHash before its client seed existed (shortest lead 1.574 s, seeds[123]). FAIL probed: M17 (the disclosed list omits record 132). Partial for the package-wide reason on Step 6: the A–C generator is Math.random(), not a CSPRNG (DL-1)"
+        }
+      ]
     },
     {
       "step": 18,
       "name": "Simulation Results — Pass 1 Integrity",
       "status": "PASS",
-      "detail": "24,000,000 rounds × 24 configs; mean RTP=99.9041%; chi2: 0/24 uncorrected, 0/24 at Bonferroni α/24=0.000417; serial: 0/24 uncorrected, 0/24 at Bonferroni"
+      "detail": "24,000,000 rounds × 24 configs (plan from src/sim-plan.ts), every statistic re-derived from the artifact's integer census: mine-position uniformity with the without-replacement correction 0/24 below the Bonferroni-corrected α/24; serial independence (lag-1 |z| > 3.5 or win/loss runs p < α/24) 0/24; the artifact's own figures agree with the re-derivation (0 disagreements); the first 10,000 rounds of all 24 configs replayed from the pinned seeds reproduce the checkpoint census (0 mismatches). The legacy median-split runs statistic the artifact also carries is vacuous (z = 0, p = 1) on 12/24 configs and is not scored",
+      "data": {
+        "totalRounds": 24000000,
+        "configs": 24,
+        "avgSimulatedRTP": 0.9990409758893285,
+        "theoreticalRTP": 0.999,
+        "alpha": 0.01,
+        "bonferroniAlpha": 0.0004166666666666667,
+        "chi2FailsWithoutReplacement": 0,
+        "chi2FailsPearsonUncorrected": 0,
+        "serialFailsBonferroni": 0,
+        "legacyRunsVacuousConfigs": 12,
+        "crossCheckDisagreements": 0,
+        "worstCrossCheckGap": 2.822987220198812e-11,
+        "worstCrossCheckAt": "m=13 r1Z",
+        "rederiveTolerance": {
+          "atol": 1e-14,
+          "rtol": 1e-9
+        },
+        "checkpointReplay": {
+          "roundsPerConfig": 10000,
+          "configs": 24,
+          "mismatches": 0
+        },
+        "perConfig": [
+          {
+            "mineCount": 1,
+            "positionChi2WR": 21.4049,
+            "positionPValueWR": 0.6147394591414932,
+            "r1Z": -0.7498554803958997,
+            "runsZWinLoss": 0.7498186583800438,
+            "runsPValueWinLoss": 0.45336379383672076,
+            "simulatedRTP": 0.9992924156250002
+          },
+          {
+            "mineCount": 2,
+            "positionChi2WR": 25.542547826086956,
+            "positionPValueWR": 0.3767763096166996,
+            "r1Z": -1.5441087359725292,
+            "runsZWinLoss": 1.544026325338679,
+            "runsPValueWinLoss": 0.12258198869401604,
+            "simulatedRTP": 0.9990640663043479
+          },
+          {
+            "mineCount": 3,
+            "positionChi2WR": 27.400272727272725,
+            "positionPValueWR": 0.28614388866395535,
+            "r1Z": -0.8307139010244541,
+            "runsZWinLoss": 0.8305791445670677,
+            "runsPValueWinLoss": 0.4062113157691827,
+            "simulatedRTP": 0.9990488147727273
+          },
+          {
+            "mineCount": 4,
+            "positionChi2WR": 34.23428571428571,
+            "positionPValueWR": 0.08059051432231468,
+            "r1Z": 0.2121947633700923,
+            "runsZWinLoss": -0.21492263522426902,
+            "runsPValueWinLoss": 0.8298277077566012,
+            "simulatedRTP": 0.9994626321428571
+          },
+          {
+            "mineCount": 5,
+            "positionChi2WR": 24.313499999999998,
+            "positionPValueWR": 0.44379225679945433,
+            "r1Z": 1.4946717503195706,
+            "runsZWinLoss": -1.4968022412245692,
+            "runsPValueWinLoss": 0.13444478419989925,
+            "simulatedRTP": 0.9994145850000001
+          },
+          {
+            "mineCount": 6,
+            "positionChi2WR": 21.757747368421054,
+            "positionPValueWR": 0.5937233560070982,
+            "r1Z": -2.335012816102646,
+            "runsZWinLoss": 2.333275070005703,
+            "runsPValueWinLoss": 0.019633670218472732,
+            "simulatedRTP": 0.998755507894737
+          },
+          {
+            "mineCount": 7,
+            "positionChi2WR": 19.156723809523807,
+            "positionPValueWR": 0.7435805631559772,
+            "r1Z": -0.07688142610246403,
+            "runsZWinLoss": 0.07649136962085795,
+            "runsPValueWinLoss": 0.9390280440660357,
+            "simulatedRTP": 0.9981203249999999
+          },
+          {
+            "mineCount": 8,
+            "positionChi2WR": 17.443376470588237,
+            "positionPValueWR": 0.8291463342050689,
+            "r1Z": -1.3900778694730485,
+            "runsZWinLoss": 1.3887820540520768,
+            "runsPValueWinLoss": 0.16489914739751033,
+            "simulatedRTP": 0.9985827705882353
+          },
+          {
+            "mineCount": 9,
+            "positionChi2WR": 12.835791666666665,
+            "positionPValueWR": 0.968750295781922,
+            "r1Z": 0.17876642098490722,
+            "runsZWinLoss": -0.179936580760253,
+            "runsPValueWinLoss": 0.8572023742243435,
+            "simulatedRTP": 0.99895005
+          },
+          {
+            "mineCount": 10,
+            "positionChi2WR": 24.313183999999996,
+            "positionPValueWR": 0.4438100759719815,
+            "r1Z": -0.165006298456409,
+            "runsZWinLoss": 0.16392343706966828,
+            "runsPValueWinLoss": 0.8697914066738202,
+            "simulatedRTP": 0.9986320350000001
+          },
+          {
+            "mineCount": 11,
+            "positionChi2WR": 30.244332467532463,
+            "positionPValueWR": 0.17678516302921632,
+            "r1Z": -0.3336408584365674,
+            "runsZWinLoss": 0.33285642768945445,
+            "runsPValueWinLoss": 0.7392427971383806,
+            "simulatedRTP": 0.9996225910714286
+          },
+          {
+            "mineCount": 12,
+            "positionChi2WR": 16.97563846153846,
+            "positionPValueWR": 0.8496992029709203,
+            "r1Z": -1.0575637440212589,
+            "runsZWinLoss": 1.0564788291915361,
+            "runsPValueWinLoss": 0.2907495693122286,
+            "simulatedRTP": 0.9999336807692308
+          },
+          {
+            "mineCount": 13,
+            "positionChi2WR": 30.155946153846152,
+            "positionPValueWR": 0.1796367835922087,
+            "r1Z": -1.9419827473452758,
+            "runsZWinLoss": 1.941060133530859,
+            "runsPValueWinLoss": 0.05225084700156879,
+            "simulatedRTP": 0.9992872125000002
+          },
+          {
+            "mineCount": 14,
+            "positionChi2WR": 20.381103896103898,
+            "positionPValueWR": 0.674910136289893,
+            "r1Z": -0.4576953335884886,
+            "runsZWinLoss": 0.4569084022578548,
+            "runsPValueWinLoss": 0.6477369279992051,
+            "simulatedRTP": 1.0000330568181819
+          },
+          {
+            "mineCount": 15,
+            "positionChi2WR": 21.288272,
+            "positionPValueWR": 0.6216664039218361,
+            "r1Z": -0.014856396143147915,
+            "runsZWinLoss": 0.013773202155370657,
+            "runsPValueWinLoss": 0.9890108616634263,
+            "simulatedRTP": 0.9991898100000001
+          },
+          {
+            "mineCount": 16,
+            "positionChi2WR": 26.62763333333333,
+            "positionPValueWR": 0.3221068552981572,
+            "r1Z": -1.5081733435653548,
+            "runsZWinLoss": 1.507003252352985,
+            "runsPValueWinLoss": 0.13180987893739293,
+            "simulatedRTP": 0.9981230999999999
+          },
+          {
+            "mineCount": 17,
+            "positionChi2WR": 19.52505,
+            "positionPValueWR": 0.7234397796391157,
+            "r1Z": -1.939690292791443,
+            "runsZWinLoss": 1.937567643030038,
+            "runsPValueWinLoss": 0.052675856679911925,
+            "simulatedRTP": 0.99934965
+          },
+          {
+            "mineCount": 18,
+            "positionChi2WR": 10.05842857142857,
+            "positionPValueWR": 0.9943018637591662,
+            "r1Z": -1.760359968329273,
+            "runsZWinLoss": 1.7588831575970474,
+            "runsPValueWinLoss": 0.07859726864419758,
+            "simulatedRTP": 1.000352217857143
+          },
+          {
+            "mineCount": 19,
+            "positionChi2WR": 41.560526315789474,
+            "positionPValueWR": 0.014445775417965545,
+            "r1Z": 1.7507494406367594,
+            "runsZWinLoss": -1.751066168566045,
+            "runsPValueWinLoss": 0.07993442869343204,
+            "simulatedRTP": 0.9975847500000001
+          },
+          {
+            "mineCount": 20,
+            "positionChi2WR": 15.614004000000001,
+            "positionPValueWR": 0.9015020912058748,
+            "r1Z": -1.075735630684649,
+            "runsZWinLoss": 1.0736083106905956,
+            "runsPValueWinLoss": 0.2829983437518071,
+            "simulatedRTP": 0.997526475
+          },
+          {
+            "mineCount": 21,
+            "positionChi2WR": 22.255371428571426,
+            "positionPValueWR": 0.5640276328711256,
+            "r1Z": -0.10772787159256136,
+            "runsZWinLoss": 0.10753689743507425,
+            "runsPValueWinLoss": 0.914362950807964,
+            "simulatedRTP": 1.0018346625
+          },
+          {
+            "mineCount": 22,
+            "positionChi2WR": 19.212709090909087,
+            "positionPValueWR": 0.7405525497343433,
+            "r1Z": -1.4286284491710726,
+            "runsZWinLoss": 1.4212972146088605,
+            "runsPValueWinLoss": 0.15523047302394444,
+            "simulatedRTP": 0.9989334000000002
+          },
+          {
+            "mineCount": 23,
+            "positionChi2WR": 23.2207043478261,
+            "positionPValueWR": 0.5068023670419382,
+            "r1Z": 1.3021463705582794,
+            "runsZWinLoss": -1.3079536623885637,
+            "runsPValueWinLoss": 0.19088916123004251,
+            "simulatedRTP": 0.9973891125000001
+          },
+          {
+            "mineCount": 24,
+            "positionChi2WR": 20.132849999999976,
+            "positionPValueWR": 0.689196670805371,
+            "r1Z": -0.45339429783431595,
+            "runsZWinLoss": 0.45335537914918894,
+            "runsPValueWinLoss": 0.6502929087396416,
+            "simulatedRTP": 0.9985005
+          }
+        ]
+      },
+      "profileIds": [
+        "MINES-20"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-20",
+          "coverage": "full",
+          "note": "24 mine counts x 1,000,000 rounds on PINNED fresh seeds — plan and seeds in src/sim-plan.ts, shared with the simulator, and the artifact bound to them (configs, roundsPerConfig, totalRounds are no longer read from the artifact). STATISTICS RE-DERIVED IN VERIFY from the integer census the artifact now carries (25 tile counts, wins, adjacent win pairs, transitions, end outcomes): mine-position uniformity WITH the without-replacement correction (Pearson x 24/(25−m)), lag-1 autocorrelation, the runs test on the win/loss dichotomy, and RTP; the artifact's own figures are cross-checked at 1e-14 + 1e-9 relative (worst gap 2.8e-11) and never scored. REPLAYABLE: the first 10,000 rounds of every config are replayed from the pinned seeds each run and must reproduce the checkpoint census exactly; `npm run replay` replays all 24,000,000 and every census field. PINNED: outputs/simulation-results.json is in src/artifact-pins.ts, carries no run metadata, and was regenerated on 2026-09-23 with all 1,768 previously pinned leaves identical. Measured: 0/24 below the Bonferroni alpha on the corrected position test (min p 0.0144, m=19), 0/24 serial. Found on the way and disclosed (DL-7): the legacy median-split runs statistic is vacuous (z = 0, p = 1) on 12/24 configs (every m >= 13); it is no longer scored. FAIL probed: M18 (forged statistic, artifact re-pinned), M18b (pinned seed changed → checkpoint replay fails)"
+        }
+      ]
     },
     {
       "step": 19,
       "name": "Simulation Results — Pass 2 Cherry-Pick Test",
       "status": "PASS",
-      "detail": "130 seeds × mines=3; Test A: 1/130 fails (expected ≤2); Test B: 7/130 flags (≤14 = 2×7 threshold); 7 isolated-early, 0 broad — no cherry-picking detected"
-    },
-    {
-      "step": 24,
-      "name": "Artifact Integrity (pinned artifacts of record)",
-      "status": "PASS",
-      "detail": "2 artifact(s) checked against src/artifact-pins.ts; rtp-convergence.html matches its pin; simulation-results.json matches its pin"
+      "detail": "130 seeds × mines=3; Test A: 1/130 seeds fail chi-squared at α=0.01 (recomputed from the per-seed rows; FAIL above the 5σ+1 bound 7.97 = 1.30 expected + 5σ + 1); Test B: 7/130 flags (FLAG above 14 = 2×7, FAIL above 28); 7 isolated-early; broad (early AND late window both off at p<0.05): 0/130 seeds, scored as a count against Binomial(130, 0.05 × 0.05 = 0.0025): P(K ≥ 0) = 1.0000, FLAG at K ≥ 2, FAIL at K ≥ 3; 0 broad at p<0.001 in both windows (FAIL if any), every early/late p-value re-derived from the win counts; Test C (served-config return vs its own 199-window null, early window = the captured epoch and replayed): 3/130 seeds flag at p<0.05 (FAIL above 18.67 = N·0.045 + 5σ + 1; detection power 0.464 at f=0.1, 1.000 at f=0.25, 1.000 at f=0.5); false-alarm rate on a fair game of each verdict-moving rule, at the per-seed nulls below (cap 0.05 for a FLAG, 0.01 for a FAIL): Test A FAIL 6.2e-5, Test B FLAG 0.0014 / FAIL 2.9e-12, Test C FAIL 6.3e-6, broad FLAG 0.0425 / FAIL 0.0044, broad at p<0.001 FAIL 2.3e-4; union over the step ≤ 0.0441 for FLAG or worse, ≤ 0.0047 for FAIL; every rule within its cap; per-seed null of each rule, the larger of nominal and exact (exact: the rule's own chi-squared test summed over every win count at win chance 0.88): Test A 0.0102 (nominal 0.01, exact 0.0102 on 10,000 rounds), Test B 0.0475 (nominal 0.0475, exact 0.0433), Test C 0.045 (exact), broad 0.0025 (nominal 0.0025, exact 0.0456 on 50 rounds × 0.0501 on 9,950 = 0.0023), broad at p<0.001 1.8e-6 (nominal 1.0e-6, exact 0.0018 × 0.0010 = 1.8e-6) — no cherry-picking detected",
+      "data": {
+        "seedsTested": 130,
+        "testAFails": 1,
+        "testAFailsSimulatorScalar": 1,
+        "testAAlpha": 0.01,
+        "testAExpected": 1.3,
+        "testABound": 7.97230112035671,
+        "testAIssues": [],
+        "testAWinChance": 0.88,
+        "cherryPickFlags": 7,
+        "flagThreshold": 14,
+        "failThreshold": 28,
+        "isolatedEarly": 7,
+        "broadFlags": 0,
+        "broadWindowAlpha": 0.05,
+        "broadPerSeedNull": 0.0025,
+        "broadTailProbability": 1,
+        "broadFlagAt": 2,
+        "broadFailAt": 3,
+        "broadSeeds": [],
+        "broadSevere": 0,
+        "broadSevereP": 0.001,
+        "broadSeverePerSeedNull": 0.000001,
+        "exactNull": {
+          "earlyWindow": 0.04559701162228147,
+          "lateWindow": 0.05009354841868016,
+          "earlyWindowSevere": 0.0017637188592432049,
+          "lateWindowSevere": 0.0010209011455319123,
+          "fullWindowTestA": 0.010180207579967468,
+          "perSeedTestA": 0.010180207579967468,
+          "perSeedTestB": 0.04331289551283359,
+          "perSeed": 0.002284116109447879,
+          "perSeedSevere": 0.0000018005826037976254
+        },
+        "perSeedNull": {
+          "nullTestA": 0.010180207579967468,
+          "nullTestB": 0.0475,
+          "nullTestC": 0.045,
+          "nullBroad": 0.0025,
+          "nullSevere": 0.0000018005826037976254
+        },
+        "falseAlarmCaps": {
+          "flagCap": 0.05,
+          "failCap": 0.01
+        },
+        "falseAlarm": {
+          "testAFail": 0.00006231511702898395,
+          "testBFlag": 0.001357984649635188,
+          "testBFail": 2.873498252859411e-12,
+          "testCFail": 0.000006303808518362687,
+          "broadFlag": 0.04245246417266535,
+          "broadFail": 0.004412960461059974,
+          "broadSevereFail": 0.00023404855559273045,
+          "unionBoundFail": 0.004715627945073549,
+          "unionBoundFlagOrFail": 0.044113116303440614
+        },
+        "rulesOverCap": [],
+        "testBRecomputedFlags": 7,
+        "testBRowDisagreements": 0,
+        "testC": {
+          "flags": 3,
+          "alpha": 0.05,
+          "nullFlagProbability": 0.045,
+          "windowsPerSeed": 200,
+          "expected": 5.85,
+          "bound": 18.668153409056764,
+          "bindFailures": 0,
+          "rowDisagreements": 0,
+          "earlyWindowReplayFailures": 0,
+          "power": [
+            {
+              "fractionPicked": 0.1,
+              "detectionPower": 0.4643127133006418
+            },
+            {
+              "fractionPicked": 0.25,
+              "detectionPower": 0.9999305829885735
+            },
+            {
+              "fractionPicked": 0.5,
+              "detectionPower": 0.9999999999999952
+            }
+          ],
+          "minEarlyZ": -1.8274476702461795,
+          "maxEarlyZ": 3.225831749303857
+        }
+      },
+      "profileIds": [
+        "MINES-21"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-21",
+          "coverage": "full",
+          "note": "every revealed seed (130, bound) x 10,000 nonces (SIM_NONCES_PER_SEED), early window = nonces 0–49 = the captured epoch. TEST C is the profile's statistic: the return of the configs the casino ACTUALLY SERVED in that epoch (the 50 captured mine counts by nonce, taken from the dataset in verify and required to equal the row's servedConfigs) against the exact per-config mean and variance, standardised per 50-round window; the null is the seed's own 199 later windows with the same config sequence — an empirical block-resampling null — p = (1 + rank)/200, lower tail. EVERY WINDOW IS RE-DERIVED in verify from the row's win bitmasks, and the early window is REPLAYED from the revealed seed and must equal the win/loss outcomes the casino served in the capture. Pre-registered: flag at p < 0.05 (exact null flag probability 9/200), FAIL above N x 0.045 + 5 sigma + 1 = 18.67. DETECTION POWER printed: 0.464 if 10 % of seeds were picked, 0.9999 at 25 %, ~1 at 50 %. Tests A and B remain, both re-derived (Test B p-values were read from the rows until 2026-09-23; its \"broad\" branch was unreachable until then). \"Broad\" (a seed off in both its early and late window at p < 0.05) is scored as a COUNT: K broad seeds against Binomial(130, 0.05 x 0.05), FLAG at K >= 2 (P = 0.0425), FAIL at K >= 3 (P = 0.0044); one broad seed, which a fair game shows with probability 0.28 at 130 seeds, does not move the step. Every verdict-moving rule of the step prints its false-alarm rate on a fair game against the 5 % (FLAG) / 1 % (FAIL) caps. Measured: Test C 3/130, Test A 1/130, Test B 7/130, 0 broad. FAIL probed: M19 (forged Test C rank), M19b (forged Test B p-value), M19d (three seeds forged broad); FLAG probed: M19c (two seeds forged broad); each with the artifact re-pinned"
+        }
+      ]
     },
     {
       "step": 20,
       "name": "Multi-Reveal Multiplier Chain",
       "status": "PASS",
-      "detail": "795 reveal steps verified across k={1,2,3,4,5} (max k=5); formula C(25,k)/C(25-m,k) matches API multiplier at each step; 0 mismatches"
+      "detail": "All 795 non-mine reveal steps across the 550-bet Phase E corpus, spanning k=1..5: the API multiplier equals the exact rational C(25,k)/C(25-m,k) at every step (relative bound 1e-12), and on each of the 378 mine steps the multiplier standing before the fatal reveal equals the formula at depth k-1.",
+      "data": {
+        "revealStepsChecked": 795,
+        "expectedRevealSteps": 795,
+        "mineStepsChecked": 378,
+        "missingMultipliers": 0,
+        "kValues": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "maxK": 5,
+        "mismatches": 0,
+        "multRelTol": 1e-12,
+        "worstRelativeDeviation": 9.211273913043478e-15,
+        "worstAt": "round 25753723 step 4"
+      },
+      "profileIds": [
+        "MINES-17",
+        "MINES-13"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-17",
+          "coverage": "full",
+          "note": "the rung leg: per-step multipliers are recorded (perStepMultipliersRecorded true) and EVERY rung is compared with the exact rational at 1e-12 relative — the 795 safe steps with C(25,k)/C(25−m,k) at their depth, and the 378 MINE steps (skipped until 2026-09-23) with the multiplier standing before the fatal reveal, the formula at k − 1 (exactly 1 at k − 1 = 0); counts bound, deepest k = 5, a missing multiplier FAILs. Measured: 1,173 rungs, worst deviation 9.2e-15. FAIL probed: M20 (one rung moved ~6e-10, dataset re-pinned), M20b (mine-step reference wrong)"
+        },
+        {
+          "id": "MINES-13",
+          "coverage": "full",
+          "note": "the k > 1 depth arm: the served multiplier equals the exact closed form at every depth 1..5 on 795 rungs from (m, k) only, at the 1e-12 relative bound (see Step 8 for why exact equality is not available: the operator's double-precision product)"
+        }
+      ]
     },
     {
       "step": 21,
-      "name": "Mine-Set Invariance Across Reveals",
+      "name": "Mine-Set Invariance Across Reveals (per-step, order-independent)",
       "status": "PASS",
-      "detail": "550 Phase E bets with API-returned mine sets checked: mine layout recomputed from RNG matches API response (mine set fixed at round start, unchanged by reveal sequence); 0 mismatches, 0 skipped (unrevealed seeds)"
+      "detail": "All 550 Phase E bets that disclose mines_positions: the layout recomputed from (serverSeed, clientSeed, nonce, mines) matches the API response. At every one of the 1173 reveal steps the reported is_mine equals membership of the opened tile in that seed-derived layout, and each step's revealed_positions is the exact prefix of the tiles opened so far — including the 11 bets that opened tiles out of ascending order. The mine set is fixed at round start and independent of the reveal sequence. 0 unverifiable.",
+      "data": {
+        "betsChecked": 550,
+        "expectedDisclosures": 550,
+        "mismatches": 0,
+        "skipped": 0,
+        "betsWithRevealSteps": 550,
+        "revealStepsChecked": 1173,
+        "expectedRevealSteps": 1173,
+        "perStepIsMineErrors": 0,
+        "prefixErrors": 0,
+        "nonAscendingOrders": 11,
+        "expectedNonAscendingOrders": 11
+      },
+      "profileIds": [
+        "MINES-07",
+        "MINES-17",
+        "MINES-10"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-07",
+          "coverage": "full",
+          "note": "the Phase E half: all 550 Phase E layouts recomputed and compared as a set with the served mines_positions, count bound to 550, an unrecomputable bet FAILs. Measured: 550/550"
+        },
+        {
+          "id": "MINES-17",
+          "coverage": "full",
+          "note": "mine-set invariance and reveal-ORDER legs: at all 1,173 reveal steps the reported is_mine equals membership in the SEED-DERIVED layout and each step's revealed_positions is the exact prefix opened so far; order-independence evidence bound to 11 non-ascending rounds. FAIL probed: M21"
+        },
+        {
+          "id": "MINES-10",
+          "coverage": "full",
+          "note": "the per-step leg over the whole Phase E corpus (1,173/1,173 is_mine flags equal the layout)"
+        }
+      ]
     },
     {
       "step": 22,
       "name": "Reveal-Position Independence (Phase E5)",
       "status": "PASS",
-      "detail": "50 bets with varied reveal positions (tiles: {3,7,11,17,23}); mine recomputation + win condition correct for all non-zero tile reveals; 0 errors"
+      "detail": "All 50 Phase E5 bets, which reveal tiles other than tile 0: the mine layout recomputes correctly and outcome=win holds exactly when no revealed tile is a mine. The revealed POSITION does not alter the layout.",
+      "data": {
+        "betsChecked": 50,
+        "expectedE5Bets": 50,
+        "tilesRevealed": [
+          3,
+          7,
+          11,
+          17,
+          23
+        ],
+        "errors": 0
+      },
+      "profileIds": [
+        "MINES-17",
+        "MINES-10"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-17",
+          "coverage": "full",
+          "note": "the reveal-POSITION leg: all 50 E5 bets (bound), which open tiles other than 0 first, recompute and derive their outcome from the recomputed layout. Measured: 50/50. FAIL probed: M22"
+        },
+        {
+          "id": "MINES-10",
+          "coverage": "full",
+          "note": "the E5 leg of the recomputed-layout outcome (Step 9 carries all 7,050 rounds)"
+        }
+      ]
     },
     {
       "step": 23,
       "name": "Cash-Out Payout Correctness (k>1)",
       "status": "PASS",
-      "detail": "133 multi-reveal cash-outs verified (k=2:14, k=3:74, k=5:45); noEdge = C(25,k)/C(25−m,k), edge = noEdge × 0.999, payout = amount × edge — all derived independently and matched against API response; 0 errors"
+      "detail": "All 133 multi-reveal cash-outs at k>1 (k=2:14, k=3:74, k=5:45): the final multiplier equals the exact rational C(25,k)/C(25-m,k) at the reached k and the with-edge multiplier C(25,k)/C(25-m,k) × 999/1000 (relative bound 1e-12), and the payout equals amount × with-edge multiplier (money tolerance: relative 1e-12).",
+      "data": {
+        "cashOutsChecked": 133,
+        "expectedCashOuts": 133,
+        "byK": {
+          "2": 14,
+          "3": 74,
+          "5": 45
+        },
+        "errors": 0,
+        "moneyRelTol": 1e-12,
+        "multRelTol": 1e-12,
+        "worstRelativeDeviation": 5.877930434782608e-15
+      },
+      "profileIds": [
+        "MINES-11",
+        "MINES-13",
+        "MINES-17"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-11",
+          "coverage": "full",
+          "note": "the multi-reveal money leg: all 133 cash-outs at k > 1 (bound) credit amount x the served with-edge multiplier at 1e-12 relative. Measured: 0 errors"
+        },
+        {
+          "id": "MINES-13",
+          "coverage": "full",
+          "note": "the cash-out arm: final multiplier AND with-edge multiplier equal the exact rationals at the recorded reached_k (step 9 binds reached_k to the opened count), 1e-12 relative; worst 5.9e-15. FAIL probed: M23"
+        },
+        {
+          "id": "MINES-17",
+          "coverage": "full",
+          "note": "the cash-out leg: the settled multiplier at the reached depth equals the formula (133/133)"
+        }
+      ]
+    },
+    {
+      "step": 24,
+      "name": "Artifact Integrity (pinned artifacts of record)",
+      "status": "PASS",
+      "detail": "6 artifacts of record in outputs/ (rtp-convergence.html, determinism-log.json, chi-squared-results.json, payout-coverage.json, simulation-results.json, verification-results.json) match their SHA-256 pins in src/artifact-pins.ts byte for byte, none carries run metadata, and every numeric leaf of the 5 JSON artifacts lies in the value domain src/domains.ts declares for it (bounds from code).",
+      "data": {
+        "artifactsPinned": 6,
+        "mismatches": 0,
+        "artifacts": {
+          "rtp-convergence.html": "match",
+          "determinism-log.json": "match",
+          "chi-squared-results.json": "match",
+          "payout-coverage.json": "match",
+          "simulation-results.json": "match",
+          "verification-results.json": "match"
+        },
+        "domainLeavesChecked": 11796,
+        "domainProblems": 0
+      },
+      "profileIds": [
+        "MINES-27"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-27",
+          "coverage": "full",
+          "note": "every artifact the report quotes — rtp-convergence.html, determinism-log.json, chi-squared-results.json, payout-coverage.json, simulation-results.json and verification-results.json — is pinned by SHA-256 in src/artifact-pins.ts, un-ignored by name in .gitignore, and re-hashed from the COMMITTED copy (absent or altered = HARD FAIL). NONE carries run metadata: generatedAt and executionTimeMs were removed from the simulation artifact and generatedAt from verification-results.json (the runtime lives in outputs/run/diff.json). A plain verify writes only outputs/run/; committed copies change only under PF_EMIT=1 / npm run simulate. VALUE DOMAINS: every numeric leaf of the five JSON artifacts is held to a domain declared in src/domains.ts with bounds from code, and an UNDECLARED leaf fails like an impossible one (the count is emitted each run; 0 problems); the HTML chart's numbers are the convergence series of the domain-checked simulation artifact. Byte identity is asserted for the committed evidence; a regeneration is compared field by field at 1e-14 + 1e-12 (verify for its own artifacts, src/diff-simulation.ts for the simulation). FAIL probed: M24 (artifact edited without re-pin), M24b (impossible value, artifact RE-PINNED → domain failure)"
+        }
+      ]
+    },
+    {
+      "step": 25,
+      "name": "Multiplier Monotonicity & Bounds",
+      "status": "PASS",
+      "detail": "The exact ladder C(25,k)/C(25−m,k) × 999/1000 is strictly increasing in k for every m (276 adjacent pairs) and in m for every k (276 pairs); all 7107 served multipliers lie inside the ladder's range. The ladder maximum is at m=12,k=13. Cap half n/a under the proposed rule R2 (pending profile owner): Duel declares no max-odds cap for Mines (src/loader.ts DECLARED_MAX_ODDS, evidence enumerated there), and a walk of all 161,440 keys of both datasets finds no cap-like field.",
+      "data": {
+        "pairsInK": 276,
+        "pairsInM": 276,
+        "violations": 0,
+        "servedChecked": 7107,
+        "servedOutside": 0,
+        "ladderMax": 5195099.7,
+        "ladderMaxAt": "m=12,k=13",
+        "ladderMin": 1.040625,
+        "declaredMaxOdds": null,
+        "capHalf": "n/a (no cap declared; proposed rule R2, pending profile owner)",
+        "capKeysScanned": 161440,
+        "capFieldKeys": [],
+        "capServedChecked": 0,
+        "servedAboveCap": 0,
+        "cellsAboveCap": 0
+      },
+      "profileIds": [
+        "MINES-14"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-14",
+          "coverage": "full",
+          "note": "UNDER THE PROPOSED RULE R2, PENDING PROFILE OWNER. Monotonicity half (FLAG policy): over the exact ladder C(25,k)/C(25−m,k) x 999/1000, strictly increasing in k for every m (276 adjacent pairs) and in m for every k (276 pairs), exact rational comparisons; and all 7,107 served multipliers (primary and Phase E, rungs and settlements) lie inside the ladder's own range [1.040625, 5,195,099.7]. FLAG probed: M25 (comparator reversed). Cap half: R2 scores \"every quoted multiplier within the declared max-odds cap\" on what the operator SERVED or SETTLED, and makes it n/a with the evidence cited when the operator declares no cap. Duel declares none in what was checked — src/loader.ts DECLARED_MAX_ODDS = null lists it: no cap-like key in either dataset, none on the captured screens E01-E05, E07, E09-E11; NOT checked: Terms of Service, in-game rules panel, Zero Edge page, E06, E08, the live site other than the mines settings endpoint (E14, fetched 2026-10-05 in a logged-in session: a max-profit limit, no multiplier cap; MANIFEST.md DL-6). The n/a is re-checked every run: Step 25 walks all 161,440 keys of both datasets and FLAGs if a cap-like field appears while none is declared (FLAG probed: M25c, a meta.maxPayout field added and the dataset re-pinned); with a cap declared every served paid multiplier is held to it and formula cells above it are counted, not failed (FLAG probed: M25b, cap 10x against served 24.975x)"
+        }
+      ]
+    },
+    {
+      "step": 26,
+      "name": "Live-Sample Fit (win rate & mine positions)",
+      "status": "PASS",
+      "detail": "24 mine-count groups over the 6500 primary bets; win rate vs the binomial and mine positions vs the uniform lattice (without-replacement corrected), each at Bonferroni alpha 0.01/24; the first-drawn mine of all 6500 bets (draw order recomputed) vs the uniform lattice at alpha 0.01; 0 group fit(s) below it",
+      "data": {
+        "groups": 24,
+        "alpha": 0.01,
+        "bonferroniAlpha": 0.0004166666666666667,
+        "failing": 0,
+        "minWinRatePValue": 0.03446790181764858,
+        "minPositionPValue": 0.1106927078441492,
+        "firstDrawBets": 6500,
+        "firstDrawChi2": 14.353846153846156,
+        "firstDrawPValue": 0.9382505689338939,
+        "perMineCount": [
+          {
+            "mineCount": 1,
+            "bets": 221,
+            "wins": 206,
+            "winRateChi2": 4.471342383107076,
+            "winRatePValue": 0.03446790181764858,
+            "positionChi2WR": 26.85067873303167,
+            "positionPValueWR": 0.31146146677653497
+          },
+          {
+            "mineCount": 2,
+            "bets": 227,
+            "wins": 205,
+            "winRateChi2": 0.8825895422332938,
+            "winRatePValue": 0.3474934043428304,
+            "positionChi2WR": 18.120666538977204,
+            "positionPValueWR": 0.7971159141524192
+          },
+          {
+            "mineCount": 3,
+            "bets": 219,
+            "wins": 189,
+            "winRateChi2": 0.5983810709838113,
+            "winRatePValue": 0.4391963883460773,
+            "positionChi2WR": 27.357409713574096,
+            "positionPValueWR": 0.2880709375543036
+          },
+          {
+            "mineCount": 4,
+            "bets": 228,
+            "wins": 185,
+            "winRateChi2": 1.3872702589807824,
+            "winRatePValue": 0.23886662893737354,
+            "positionChi2WR": 21.56140350877193,
+            "positionPValueWR": 0.6054269064792099
+          },
+          {
+            "mineCount": 5,
+            "bets": 215,
+            "wins": 163,
+            "winRateChi2": 2.354651162790701,
+            "winRatePValue": 0.12490982415921914,
+            "positionChi2WR": 19.869767441860464,
+            "positionPValueWR": 0.7041576018662892
+          },
+          {
+            "mineCount": 6,
+            "bets": 217,
+            "wins": 172,
+            "winRateChi2": 1.2664322095561467,
+            "winRatePValue": 0.26043706352740637,
+            "positionChi2WR": 23.377152558816395,
+            "positionPValueWR": 0.4976350194430512
+          },
+          {
+            "mineCount": 7,
+            "bets": 220,
+            "wins": 160,
+            "winRateChi2": 0.057720057720058046,
+            "winRatePValue": 0.8101364618244385,
+            "positionChi2WR": 31.385281385281377,
+            "positionPValueWR": 0.1429815806569268
+          },
+          {
+            "mineCount": 8,
+            "bets": 221,
+            "wins": 147,
+            "winRateChi2": 0.22371573063614736,
+            "winRatePValue": 0.6362231866595345,
+            "positionChi2WR": 19.544317274421083,
+            "positionPValueWR": 0.7223725152956723
+          },
+          {
+            "mineCount": 9,
+            "bets": 223,
+            "wins": 153,
+            "winRateChi2": 2.0568323368211265,
+            "winRatePValue": 0.1515248750909891,
+            "positionChi2WR": 31.297458893871447,
+            "positionPValueWR": 0.14538980717021266
+          },
+          {
+            "mineCount": 10,
+            "bets": 222,
+            "wins": 132,
+            "winRateChi2": 0.02702702702702651,
+            "winRatePValue": 0.8694170607412404,
+            "positionChi2WR": 25.22522522522522,
+            "positionPValueWR": 0.3936054021246521
+          },
+          {
+            "mineCount": 11,
+            "bets": 223,
+            "wins": 128,
+            "winRateChi2": 0.17715916370624782,
+            "winRatePValue": 0.6738260634240852,
+            "positionChi2WR": 21.46596004891969,
+            "positionPValueWR": 0.6111082639440434
+          },
+          {
+            "mineCount": 12,
+            "bets": 418,
+            "wins": 216,
+            "winRateChi2": 0.017727886148939137,
+            "winRatePValue": 0.8940778306094561,
+            "positionChi2WR": 28.04343025395657,
+            "positionPValueWR": 0.2582123258552591
+          },
+          {
+            "mineCount": 13,
+            "bets": 220,
+            "wins": 102,
+            "winRateChi2": 0.23601398601398527,
+            "winRatePValue": 0.6270999642989792,
+            "positionChi2WR": 23.986013986013983,
+            "positionPValueWR": 0.4623973412783873
+          },
+          {
+            "mineCount": 14,
+            "bets": 222,
+            "wins": 94,
+            "winRateChi2": 0.24757224757224763,
+            "winRatePValue": 0.6187897440947236,
+            "positionChi2WR": 25.57809757809758,
+            "positionPValueWR": 0.37491337874057906
+          },
+          {
+            "mineCount": 15,
+            "bets": 217,
+            "wins": 89,
+            "winRateChi2": 0.09293394777265648,
+            "winRatePValue": 0.7604798670891546,
+            "positionChi2WR": 8.14746543778802,
+            "positionPValueWR": 0.9989334042462135
+          },
+          {
+            "mineCount": 16,
+            "bets": 228,
+            "wins": 87,
+            "winRateChi2": 0.46080043859649245,
+            "winRatePValue": 0.49725012458659623,
+            "positionChi2WR": 11.254385964912274,
+            "positionPValueWR": 0.9870791988576818
+          },
+          {
+            "mineCount": 17,
+            "bets": 224,
+            "wins": 78,
+            "winRateChi2": 0.8194590336134435,
+            "winRatePValue": 0.36533837916052725,
+            "positionChi2WR": 27.44432773109244,
+            "positionPValueWR": 0.2841717144950314
+          },
+          {
+            "mineCount": 18,
+            "bets": 224,
+            "wins": 69,
+            "winRateChi2": 0.8733347505668922,
+            "winRatePValue": 0.35003376008181064,
+            "positionChi2WR": 24.55442176870748,
+            "positionPValueWR": 0.43028680691259524
+          },
+          {
+            "mineCount": 19,
+            "bets": 222,
+            "wins": 58,
+            "winRateChi2": 0.5501817607080762,
+            "winRatePValue": 0.4582434363235114,
+            "positionChi2WR": 32.69416785206259,
+            "positionPValueWR": 0.1106927078441492
+          },
+          {
+            "mineCount": 20,
+            "bets": 212,
+            "wins": 36,
+            "winRateChi2": 1.2075471698113205,
+            "winRatePValue": 0.27181844325549487,
+            "positionChi2WR": 18.962264150943394,
+            "positionPValueWR": 0.7539990752594218
+          },
+          {
+            "mineCount": 21,
+            "bets": 218,
+            "wins": 30,
+            "winRateChi2": 0.8128003494975976,
+            "winRatePValue": 0.3672936196144533,
+            "positionChi2WR": 16.469200524246393,
+            "positionPValueWR": 0.8704009301661776
+          },
+          {
+            "mineCount": 22,
+            "bets": 221,
+            "wins": 27,
+            "winRateChi2": 0.00987248046071572,
+            "winRatePValue": 0.9208521578187745,
+            "positionChi2WR": 27.406005758946943,
+            "positionPValueWR": 0.285886756689566
+          },
+          {
+            "mineCount": 23,
+            "bets": 219,
+            "wins": 18,
+            "winRateChi2": 0.01429422275163799,
+            "winRatePValue": 0.9048329363608667,
+            "positionChi2WR": 16.21441334127459,
+            "positionPValueWR": 0.8801816602314532
+          },
+          {
+            "mineCount": 24,
+            "bets": 1219,
+            "wins": 51,
+            "winRateChi2": 0.1071916871752805,
+            "winRatePValue": 0.7433642956417892,
+            "positionChi2WR": 12.275635767022136,
+            "positionPValueWR": 0.9766210550188296
+          }
+        ]
+      },
+      "profileIds": [
+        "MINES-22"
+      ],
+      "profileChecks": [
+        {
+          "id": "MINES-22",
+          "coverage": "full",
+          "note": "scored, informational (it was an unscored info block; policy INFORMATIONAL, Mike 2026-09-29: a deviation is INFO — reported, never counted, verdict unchanged): over the 6,500 primary bets, (a) the win rate per mine count against the binomial (24 groups, Bonferroni 0.01/24), (b) the served mine positions per mine count against the uniform lattice with the without-replacement correction, and (c) the FIRST-DRAWN mine of every bet against the uniform lattice — the capture records the layout as a set, so the draw order is recovered by recomputing the shuffle (src/rng.ts shuffleTilesFromBuffer, whose sorted prefix is the served layout per Step 5): positions[m − 1] is the first mine placed. Measured: 0 fits deviate; min win-rate p 0.0345, min position p 0.111, first-draw p 0.938. The PLAYER's first pick is tile 0 on every primary bet, so it is not a variable here; Phase E first picks span 25/25 (Step 11). INFO probed: M26 (alpha 0.9)"
+        }
+      ]
     }
   ],
+  "profileCoverage": {
+    "game": "mines",
+    "profileVersion": "1.0.2",
+    "notApplicable": [
+      {
+        "id": "MINES-16",
+        "reason": "applies = { path: money.balanceField, notNull: true } is false — the declaration sets money.balanceField = null. declarationTruth verified today: a key walk over every record of data/mines-master-6500bets.json and data/mines-phaseE-550bets.json (meta, 151 seed records, 7,050 bet records, every nested reveal step) finds NO key matching /balance|wallet/i, so there is no consecutive-bet wallet delta to reconcile. What IS verified is the settle-response credit: amount_won on every primary win and every k > 1 cash-out at rel 1e-12 (Steps 7, 10, 23), which the profile does not count as a balance ledger"
+      }
+    ],
+    "packageChecks": [
+      {
+        "id": "MINES-09",
+        "artifact": "tests/mines/MinesTests.ts (Operator source block) + src/rng.ts OPERATOR_SOURCE_CITES + src/operator-verifier.ts + Step 5 fifth leg",
+        "coverage": "full",
+        "note": "THE OPERATOR SOURCE IS IN REACH (corrected 2026-09-25 — the earlier note said no Duel Mines source was; that was wrong: Duel publishes it). Duel's own Mines code, shown in the code panel of duel.com → Provably Fair → Verify (Expand → Copy), was copied verbatim by Paulo on 2026-09-25 to evidence/verify-tab/duel-verify-tab-mines-2026-09-25.js (SHA-256 88f5268b…, 3,026 bytes; evidence/E03 shows the same panel collapsed). The asserts, each met: (1) \"unit tests reproduce captured bets from their revealed seeds … against the operator's published source\" — the Operator source block in tests/mines/MinesTests.ts EXECUTES that file unmodified (src/operator-verifier.ts: pinned SHA-256, child-process runner verifier-parity/operator/run-operator-verifier.cjs, the file's own generateMinesPositions) on all 7,050 captured rounds of both datasets and requires its mine set to equal the served mines_positions and src/rng.ts computeMinePositions: 7,050/7,050, 0 differ; (2) \"fixed vectors\" — the same block requires the operator code to return the 7 known-answer layouts (server seed b255e0f5…, client seed EveJlkDtA24dfvBr, nonces 0-6), beside the existing src/rng.ts vectors and the commitment vector; (3) \"the adapter cites the operator source line it ports\" — src/rng.ts OPERATOR_SOURCE_CITES names 16 lines of the pinned file with the text each must carry (L30 hex-decoded key … L82 first m, sorted), and checkOperatorCites FAILs any line that does not carry it: 16/16 verbatim. Step 5 (fifth leg) runs the same execution and citation check in the verifier and FAILs on a hash mismatch, any disagreement, a round count other than 7,050, or a broken citation. FAIL probed: M05f (a comment of the operator file changed without a re-pin → hash mismatch), M05g (the file's HMAC digest byte order reversed AND re-pinned → layouts disagree), M05h (a citation moved to a line that does not carry its text). What this does NOT establish: that the Verify button runs exactly the code the panel shows, or that Duel's server runs it (MANIFEST.md DL-4, premise P2)"
+      },
+      {
+        "id": "MINES-23",
+        "artifact": "MANIFEST.md#verification-results (S5-MATRIX block)",
+        "coverage": "full",
+        "note": "MANIFEST \"Verification results\" carries the framework's standardized matrix between S5-MATRIX markers: the eight rows S5-1 … S5-8 in the methodology's order (replay protection, input validation, seed integrity under adversarial input, cross-player isolation, payout field integrity, nonce sequence enforcement, parameter boundary enforcement, game-specific state), each with a Pass / Flag / Hard Fail / Not tested result and tied to the steps and the capture. All eight are \"Not tested\": the capture recorded normal play and sent no adversarial request, which each row states with what the data does show (MANIFEST.md DL-10). The ten offline consistency checks keep their own ids EC-1 … EC-10 (they were S5-01 … S5-10, which collided with the framework ids). The profile floor — every matrix test executed — needs a new, deliberate probe capture"
+      },
+      {
+        "id": "MINES-24",
+        "artifact": "verifier-parity/ + src/site-verifier.ts + src/live-site-verifier.ts + Step 5 (docusaurus and live-site legs) + scripts/check-site-verifier.mjs [--live]",
+        "coverage": "full",
+        "note": "TWO site verifiers are pinned and executed. (1) DOCUSAURUS: the site verifier the profile names — the ProvablyFair.org VerifyBets component's games/mines/derive.js and the one file it imports, lib/hmac-sha256.js — is HASH-MATCHED and EXECUTED: the package records both SHA-256 (src/site-verifier.ts SITE_VERIFIER_PINS: derive.js 2321b23c…, hmac-sha256.js bc30bfe9…, re-vendored 2026-09-25 from the site's origin/main @ bd4d59c; the earlier repotree-sync @ 2ad89bc bytes differed only in the source-URL comment) and holds byte-exact copies in verifier-parity/; Step 5 FAILs unless the copies hash to the pins, then runs the site's own deriveMines on every captured round with a revealed seed — 7,050, bound to EXPECTED_BETS + EXPECTED_PHASE_E_BETS — and FAILs on any layout that differs from src/rng.ts computeMinePositions. Measured: 7,050/7,050, 0 mismatches. scripts/check-site-verifier.mjs <site derive.js> compares a site checkout with the pins (exit 1 on any difference, on a changed import set, or with no argument); run 2026-09-25 against the site's origin/main @ bd4d59c (files read with git cat-file): both MATCH, exit 0. FAIL probed: M05b (one logic line of the vendored derive.js changed AND re-pinned → layouts disagree), M05c (a byte changed without re-pin → hash mismatch). (2) LIVE SITE: the page a player opens, https://www.provablyfair.org/verify-bets (a Next.js build, source not available to this audit), GET 2026-09-24: the three chunks the Mines derivation needs (Turbopack runtime turbopack-828b80f5…, page chunk 34934e0e… carrying module 7721 → verifyDuelsGame, process-shim chunk 4f34301b…) are vendored byte for byte in verifier-parity/live-site/chunks/ and pinned with the runner in src/live-site-verifier.ts LIVE_SITE_PINS; Step 5 runs the site's OWN code (its Turbopack runtime instantiates the page module; the page's React/UI modules are inert stand-ins, none in the verifier's closure) on the same 7,050 rounds with the call the page's Verify button makes and FAILs on any mine set that differs from src/rng.ts. Measured: 7,050/7,050, 0 mismatches. node scripts/check-site-verifier.mjs --live re-downloads the page and each pinned chunk (GET) and compares hashes; run 2026-09-24: 3/3 MATCH, exit 0. FAIL probed: M05d (the vendored page chunk's Duel Mines line changed AND re-pinned → layouts disagree), M05e (a byte changed without re-pin → hash mismatch). The two site verifiers were also compared with each other in a scratch harness on the 7,050 rounds: 0 disagreements. Duel's OWN Verify-tab code (the declaration's rng.operatorVerifier) is a third verifier: copied 2026-09-25 and executed on the same 7,050 rounds by Step 5's fifth leg (MINES-09, 0 disagreements); pasting rounds into the live Verify tab itself was not done (MANIFEST.md DL-4, premise P2)"
+      },
+      {
+        "id": "MINES-25",
+        "artifact": "MANIFEST.md#verify-a-bet",
+        "coverage": "full",
+        "note": "MANIFEST \"Verify a bet\" states, in order: where the seed is revealed (the Provably Fair panel shows only serverSeedHashed and the nonce, and the player saves that hash before the first bet on a seed; after Rotate seed the bet's transaction detail carries the plaintext — the capture read every revealed seed from /api/v2/user/transactions/{id}), which fields to copy (serverSeedHashed, clientSeed, nonce, mines_count, mines_positions, revealed_positions, outcome, serverSeed — the declaration's names), the commitment encoding (SHA-256 of the hex-DECODED 32 bytes, compared with the saved hash: hash equality, with the timing assurance coming from the player's own pre-bet copy), the shuffle, and the tile numbering (0-based, 0–24). Its pasteable script was run on 2026-09-23 against a captured round (epoch eecc6f36…, nonce 0, 14 mines): committed true, matches true; its hash field was renamed hashMatches on 2026-10-05 and the script re-run on the same round: hashMatches true, matches true"
+      },
+      {
+        "id": "MINES-28",
+        "artifact": "verify.js + test.js + standalone-manifest.json + scripts/ + package.json + .nvmrc + MANIFEST.md",
+        "coverage": "full",
+        "note": "ZERO-INSTALL: verify.js and test.js are generated from the TypeScript by scripts/build-standalone.mjs (ported from LIQD Mines) and run on bare Node 22 with no node_modules; scripts/check-standalone.mjs refuses a bundle that drifted from its sources. `npm test` = check-standalone → unit-parity → node verify.js, so a fresh clone needs no install to verify. TEST-COUNT PARITY: scripts/unit-parity.mjs requires the zero-install unit count to equal both MANIFEST.md's stated count and the Mocha count, and fails on any skipped or cancelled test. AUDIT ID: AUDIT_ID = PF-2026-DL04 is a constant in src/loader.ts and is emitted into outputs/verification-results.json. REGENERATION DIFFED: `npm run test:full` re-simulates into outputs/run/ and src/diff-simulation.ts compares the result with the committed artifact field by field (integers and strings exact, 1e-14 + 1e-12 otherwise), recording the runtime in outputs/run/diff-simulation.json. Step counts: 26 in README.md, MANIFEST.md and the suite. Runtime pinned (engines 22.x, .nvmrc). The verdict line is PROVABLY FAIR — Full Pass with 25/26 PASS and one capture-origin FLAG (Step 4, DL-2), exit 0"
+      },
+      {
+        "id": "MINES-29",
+        "artifact": "tests/mutations.json + tests/survivors.json + tests/mutations.ts (npm run mutate)",
+        "coverage": "full",
+        "note": "a step-named registry run in disposable temp copies (tests/mutations.ts, ported from LIQD with multi-file `edits`): 48 must-fail entries, each with the result it must produce: 37 turn their named step FAIL, 7 turn it FLAG (M11, M19c, M25, M25b, M25c with Conditional Pass; MC3a, MC3b with RTP FIGURE OVERSTATED, exit 5), M26 must leave Step 26 at INFO with the verdict unchanged, and 3 name no step (M27 must fail the unit suite; MC3as and MC3bs must exit 1 with the committed RTP table reported as differing). Every one of the 26 scored steps is reached BY NAME by at least one entry — the runner fails an entry whose verdict flips through a different step, and fails the gate if any step has none. The FORGED-EVIDENCE battery is in the same registry: M01, M02, M07, M08, M20, M25c forge a dataset AND re-pin its SHA-256 as a forger would; M18, M19, M19b, M19c, M19d, M24b forge the simulation artifact AND re-pin it; M05b and M05d forge the vendored docusaurus and live-site verifiers AND re-pin them; M24, M05c and M05e edit an artifact without re-pinning; added 2026-09-25 for the operator's own Verify-tab code (MINES-09): M05g forges it AND re-pins it, M05f edits it without re-pinning, M05h breaks a src/rng.ts citation. Three declared survivors in tests/survivors.json, each tied to a limitation id (DL-11, DL-5, DL-6)"
+      },
+      {
+        "id": "MINES-30",
+        "artifact": "MANIFEST.md#limitations-and-trust (Declared Limitations DL-1 … DL-11, Load-Bearing Premises) + MANIFEST.md#evidence (E01-E14)",
+        "coverage": "full",
+        "note": "MANIFEST.md carries the declared-limitations register DL-1 … DL-11, each row with its measured magnitude and its closure evidence (the step or artifact that binds it, or what would close it), and a Load-Bearing Premises table marking the unwitnessed premises ASSUMED (P1 the operator's server takes the retry branch its published code shows, P2 the Verify button runs the code its panel shows, P3 the API tile numbering is the board the player sees, P7 the capture is a faithful record of what Duel served and when, on which the pre-bet timing of the commitments rests) beside the witnessed ones; MANIFEST Evidence numbers every exhibit E01-E14 with a file and a role; no internal QA folder ships (`ls` finds no results/ directory and no .pf-* file)"
+      }
+    ]
+  },
   "info": [
     {
       "label": "RTP Analysis",
@@ -164,11 +1873,21 @@
     {
       "label": "Serial Independence (Wald-Wolfowitz runs test on mine_count sequence)",
       "detail": "runs=2701, expected=3241.5, z=-13.448, p=0.0000. Underpowered at live sample size — see simulation for definitive test."
+    },
+    {
+      "label": "Scaling-edge settings, E14: the duel.com config as fetched 2026-10-05 in a logged-in session (read-only GET)",
+      "detail": "24/24 bodies match their SHA-256 pins and evidence/settings/SHA256SUMS; 300 tier lists for the 300 (mines 1–24, depth 1 … 25 − m) cells, 27,254 tiers; every tier carries its own list's mines and depth on 300; contiguous (first min_bet 0, each min_bet = the previous max_bet) on 300; edge +0.01% per tier on 300; last tier 1.0% on 300; first tier 0.1% on 294, higher on 6 (m=10 d=15 0.14%, m=11 d=14 0.18%, m=12 d=13 0.21%, m=13 d=12 0.21%, m=14 d=11 0.18%, m=15 d=10 0.14%); max_bet × (C(25,d)/C(25−m,d) × (1 − edge) − 1) = $25,000,000 × edge on 27,254 of 27,254 tiers and the last tier's profit = $250,000 on 300 of 300 lists (relative 1e-12)"
+    },
+    {
+      "label": "Captured bets against the E14 0.1% tier",
+      "detail": "7,050 bets (6,500 primary + 550 Phase E), 7,673 (bet, depth) pairs over 33 (mines, depth) cells: 7,673 inside the 0.1% tier, 0 outside; effective_edge 0.1 served on 7,050 of 7,050; closest to the tier limit: $10.00 against $27,139.87 (12 mines, depth 1); largest potential profit at the 0.1% edge $9.21 (12 mines, depth 1, $10.00 stake)"
     }
   ],
   "summary": {
-    "passed": 24,
-    "flags": 0,
+    "passed": 25,
+    "flags": 1,
+    "operatorFlags": 0,
+    "captureFlags": 1,
     "hardFail": 0,
     "verdict": "PROVABLY FAIR — Full Pass"
   }

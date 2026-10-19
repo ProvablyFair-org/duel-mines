@@ -1,0 +1,695 @@
+[
+  {
+    "name": "M01 forged phase-opening reveal (seeds[97] plaintext changed, dataset re-pinned)",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 1,
+    "expectStatus": "FAIL",
+    "edits": [
+      {
+        "file": "data/mines-master-6500bets.json",
+        "find": "\"serverSeedHashed\": \"d3d3dd69ce358290923fdb59bc947b9e89dfa0ea347fdce24003d2a4de7cfcb3\",\n        \"nextServerSeedHash\": \"3749565b472d7e155d1a77b8d2d71fd083aeaa06ce473b932d133a4ce45dd732\",\n        \"serverSeed\": \"99bbde17e5c4805031832f809b1143d7b6d6accb14f42a7f7ec4c7e291240048\"",
+        "replace": "\"serverSeedHashed\": \"d3d3dd69ce358290923fdb59bc947b9e89dfa0ea347fdce24003d2a4de7cfcb3\",\n        \"nextServerSeedHash\": \"3749565b472d7e155d1a77b8d2d71fd083aeaa06ce473b932d133a4ce45dd732\",\n        \"serverSeed\": \"99bbde17e5c4805031832f809b1143d7b6d6accb14f42a7f7ec4c7e291240040\""
+      },
+      {
+        "file": "src/loader.ts",
+        "find": "331f74ff98b88d06242d57e806186548612f13c4269eb754ebb571d8a6fc9b20",
+        "replace": "c210a73ff83036b09c3f6778d53ba939bf2521556e4e63faea10d18ec758a6f1"
+      }
+    ],
+    "guard": "Step 1 must match every phase-opening reveal to a commitment; the old form only counted them"
+  },
+  {
+    "name": "M02 broken forward link (seeds[10].nextServerSeedHash changed, dataset re-pinned)",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 2,
+    "expectStatus": "FAIL",
+    "edits": [
+      {
+        "file": "data/mines-master-6500bets.json",
+        "find": "\"nextServerSeedHash\": \"dfd729e7c396ba9c7e04fb1422a4862656c816e17341bc132d2479f881f03cf4\"",
+        "replace": "\"nextServerSeedHash\": \"0000000000000000000000000000000000000000000000000000000000000000\""
+      },
+      {
+        "file": "src/loader.ts",
+        "find": "331f74ff98b88d06242d57e806186548612f13c4269eb754ebb571d8a6fc9b20",
+        "replace": "38989d1a71dedc4c98e82ac757723a3f098258f38eb82b3add24f2b819a87a66"
+      }
+    ],
+    "guard": "Step 2 recomputes every rotation link from the raw fields"
+  },
+  {
+    "name": "M03 epoch timeline shifted by one record",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 3,
+    "expectStatus": "FAIL",
+    "file": "src/loader.ts",
+    "find": "if (seeds[j].at <= b.at) idx = j; else break;",
+    "replace": "if (seeds[j].at <= b.at) idx = Math.max(0, j - 1); else break;",
+    "guard": "Step 3 keys epochs on the capture timeline and requires each bet to carry its record's hash and client seed"
+  },
+  {
+    "name": "M04 the declared capture-retry gap removed from the register",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 4,
+    "expectStatus": "FAIL",
+    "file": "src/loader.ts",
+    "find": "Object.freeze([{ dataset: 'phaseE', seedIndex: 9, nonce: 12, dl: 'DL-2' }]);",
+    "replace": "Object.freeze([]);",
+    "guard": "Step 4: an undeclared gap is operator-side and a HARD FAIL"
+  },
+  {
+    "name": "M04b nonce base declared as 1",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 4,
+    "expectStatus": "FAIL",
+    "file": "src/loader.ts",
+    "find": "export const NONCE_BASE = 0;",
+    "replace": "export const NONCE_BASE = 1;",
+    "guard": "Step 4: the base is a declared constant, never the minimum observed"
+  },
+  {
+    "name": "M05 rejection correction removed (maxFair = 2^32 − 1 for every range)",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 5,
+    "expectStatus": "FAIL",
+    "file": "src/rng.ts",
+    "find": "return MAX_UINT32 - (MAX_UINT32 % range);",
+    "replace": "return MAX_UINT32;",
+    "guard": "Step 5 draw-bias bound: every accepted window must be a whole number of ranges"
+  },
+  {
+    "name": "M05b vendored site verifier derive.js: shuffle cursor starts one step late (vendored copy re-pinned)",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 5,
+    "expectStatus": "FAIL",
+    "edits": [
+      {
+        "file": "verifier-parity/games/mines/derive.js",
+        "find": "let cursor = GRID_SIZE - 1 - i;",
+        "replace": "let cursor = GRID_SIZE - i;"
+      },
+      {
+        "file": "src/site-verifier.ts",
+        "find": "'2321b23c91faf66542b1db4776548998778c616180033240bea338aeff48c993'",
+        "replace": "'f6dd7d801c565dfb4786d320bb6e632f5efd5ca5dab9f6238d397d9c838b873a'"
+      }
+    ],
+    "guard": "Step 5 player-verifier parity (MINES-24): the site's derive.js is EXECUTED on every captured round and must return src/rng.ts's layout; a forger who also re-pins the hash is caught by the layouts"
+  },
+  {
+    "name": "M05c vendored site verifier derive.js edited without a re-pin",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 5,
+    "expectStatus": "FAIL",
+    "file": "verifier-parity/games/mines/derive.js",
+    "find": "const HOUSE_EDGE_FACTOR = 0.999;",
+    "replace": "const HOUSE_EDGE_FACTOR = 0.998;",
+    "guard": "Step 5 player-verifier parity (MINES-24): the vendored bytes must hash to SITE_VERIFIER_PINS — an edit outside the layout path is still caught"
+  },
+  {
+    "name": "M05d vendored LIVE-site bundle: the Duel Mines path reports mines from the second shuffled slot on (chunk re-pinned)",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 5,
+    "expectStatus": "FAIL",
+    "edits": [
+      {
+        "file": "verifier-parity/live-site/chunks/34934e0e762aa37e.js",
+        "find": "a=(await ai(t,r,n,is)).slice(0,i)",
+        "replace": "a=(await ai(t,r,n,is)).slice(1,i+1)"
+      },
+      {
+        "file": "src/live-site-verifier.ts",
+        "find": "'9fb319dec0d79f9bf5851ec8e0052b6b2125e603be03d12b78a0fe99eed817d1'",
+        "replace": "'497b9bd68b88801f3a46ebbd15005eb29747750e503fe548241c3d1684bbac08'"
+      }
+    ],
+    "guard": "Step 5 live-site parity (MINES-24): the deployed www.provablyfair.org bundle is EXECUTED on every captured round and must print src/rng.ts's mine set; a forger who also re-pins the chunk is caught by the layouts"
+  },
+  {
+    "name": "M05e vendored LIVE-site bundle edited without a re-pin",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 5,
+    "expectStatus": "FAIL",
+    "file": "verifier-parity/live-site/chunks/34934e0e762aa37e.js",
+    "find": "Mine positions: [${a.join(\", \")}]",
+    "replace": "Mine positions:  [${a.join(\", \")}]",
+    "guard": "Step 5 live-site parity (MINES-24): the vendored bytes must hash to LIVE_SITE_PINS before anything runs"
+  },
+  {
+    "name": "M05f operator Verify-tab file edited without a re-pin (a comment changed)",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 5,
+    "expectStatus": "FAIL",
+    "file": "evidence/verify-tab/duel-verify-tab-mines-2026-09-25.js",
+    "find": "// Code written in javascript",
+    "replace": "// Code written in JavaScript",
+    "guard": "Step 5 operator-code parity (MINES-09): the vendored Verify-tab file must hash to OPERATOR_VERIFIER_PINS before it runs — an edit anywhere in it is caught"
+  },
+  {
+    "name": "M05g operator Verify-tab file: HMAC digest byte order reversed (file re-pinned)",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 5,
+    "expectStatus": "FAIL",
+    "edits": [
+      {
+        "file": "evidence/verify-tab/duel-verify-tab-mines-2026-09-25.js",
+        "find": "  return bytesToHex(new Uint8Array(signature)); // Return signature as hex",
+        "replace": "  return bytesToHex(new Uint8Array(signature).reverse()); // Return signature as hex"
+      },
+      {
+        "file": "src/operator-verifier.ts",
+        "find": "'88f5268b0b1c359eb76d43b2f14e1402e47921154c1935ae2790256c02cff592',\n  'verifier-parity",
+        "replace": "'7994f9ff3d08dc4daf680e2d122928e1b99e3652bad682318ccddfee079a9c1f',\n  'verifier-parity"
+      }
+    ],
+    "guard": "Step 5 operator-code parity (MINES-09): the operator's code is EXECUTED on every captured round and must return the served mine set and src/rng.ts's; a changed file that a forger also re-pins is caught by the layouts"
+  },
+  {
+    "name": "M05h src/rng.ts cites an operator line that does not carry the quoted text (L56 → L57)",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 5,
+    "expectStatus": "FAIL",
+    "file": "src/rng.ts",
+    "find": "{ line: 56, text: 'let cursor = gridSize - 1 - i;'",
+    "replace": "{ line: 57, text: 'let cursor = gridSize - 1 - i;'",
+    "guard": "Step 5 operator-code parity (MINES-09): every citation in src/rng.ts OPERATOR_SOURCE_CITES must quote the pinned operator file at the line it names"
+  },
+  {
+    "name": "M06 client seed dropped from the HMAC message",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 6,
+    "expectStatus": "FAIL",
+    "file": "src/rng.ts",
+    "find": "const message = `${clientSeed}:${nonce}:${cursor}`;",
+    "replace": "const message = `:${nonce}:${cursor}`;",
+    "guard": "Step 6: a wrong or empty client seed must change the layout at the model-predicted rate"
+  },
+  {
+    "name": "M07 a Phase E loss credited 0.01 (dataset re-pinned)",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 7,
+    "expectStatus": "FAIL",
+    "edits": [
+      {
+        "file": "data/mines-phaseE-550bets.json",
+        "find": "\"round_id\": 25753730,\n        \"outcome\": \"loss\",\n        \"mines_count\": 3,\n        \"revealed_positions\": [\n          10,\n          11,\n          12\n        ],\n        \"mines_positions\": [\n          12,\n          17,\n          22\n        ],\n        \"multiplier\": \"1.298701298701298702\",\n        \"no_house_edge_multiplier\": null,\n        \"amount_won\": \"0\"",
+        "replace": "\"round_id\": 25753730,\n        \"outcome\": \"loss\",\n        \"mines_count\": 3,\n        \"revealed_positions\": [\n          10,\n          11,\n          12\n        ],\n        \"mines_positions\": [\n          12,\n          17,\n          22\n        ],\n        \"multiplier\": \"1.298701298701298702\",\n        \"no_house_edge_multiplier\": null,\n        \"amount_won\": \"0.01\""
+      },
+      {
+        "file": "src/loader.ts",
+        "find": "def563907949db10d584256a13b33102dfa46d33509424f642f803d74cd1b17b",
+        "replace": "b0b42db37d84df700caa76e5a1fd31c90302babeb2c72bd6931c32613e4a54b6"
+      }
+    ],
+    "guard": "Step 7 now scores every Phase E loss and depth-1 win; before 2026-09-23 none of the 417 was checked"
+  },
+  {
+    "name": "M08 one served k=1 multiplier nudged by 1.3e-9 relative (dataset re-pinned)",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 8,
+    "expectStatus": "FAIL",
+    "edits": [
+      {
+        "file": "data/mines-master-6500bets.json",
+        "find": "\"multiplier\": \"2.272727272727272727\"",
+        "replace": "\"multiplier\": \"2.272727275727272727\""
+      },
+      {
+        "file": "src/loader.ts",
+        "find": "331f74ff98b88d06242d57e806186548612f13c4269eb754ebb571d8a6fc9b20",
+        "replace": "0e0633fd23f7e22d4004fec2d84941853b5e4a66af6e1217e7b6a19ace5a7514"
+      }
+    ],
+    "guard": "Step 8 exact rational at 1e-12 relative; the old 1e-6 absolute bound passed this"
+  },
+  {
+    "name": "M09 outcome derived with the win/loss arms swapped",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 9,
+    "expectStatus": "FAIL",
+    "file": "tests/steps/payouts.ts",
+    "find": "const derived = hits.some(h => h) ? 'loss' : 'win';",
+    "replace": "const derived = hits.some(h => h) ? 'win' : 'loss';",
+    "guard": "Step 9 derives the outcome from the recomputed layout"
+  },
+  {
+    "name": "M10 Phase C floor raised above the 105 measured wins",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 10,
+    "expectStatus": "FAIL",
+    "file": "src/loader.ts",
+    "find": "export const PHASE_C_MIN_WINS = 100;",
+    "replace": "export const PHASE_C_MIN_WINS = 106;",
+    "guard": "Step 10 asserts the profile floor of elevated-stake wins; before it was `cChecked > 0`"
+  },
+  {
+    "name": "M11 multi-reveal plan says E2 used 6 mines",
+    "runner": "verify",
+    "expect": "PROVABLY FAIR — Conditional Pass",
+    "expectStep": 11,
+    "expectStatus": "FLAG",
+    "file": "src/loader.ts",
+    "find": "E2: { mines: [5],  targetK: 3, bets: 100 },",
+    "replace": "E2: { mines: [6],  targetK: 3, bets: 100 },",
+    "guard": "Step 11 asserts the Phase E plan in code (FLAG policy)"
+  },
+  {
+    "name": "M12 effective_edge compared with 0.2",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 12,
+    "expectStatus": "FAIL",
+    "file": "tests/steps/payouts.ts",
+    "find": "if (b.response.effective_edge !== 0.1) edgeErrors++;",
+    "replace": "if (b.response.effective_edge !== 0.2) edgeErrors++;",
+    "guard": "Step 12 compares the operator edge field on every bet"
+  },
+  {
+    "name": "M13 Phase E seed plan says E3 has 5 records",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 13,
+    "expectStatus": "FAIL",
+    "file": "src/loader.ts",
+    "find": "Object.freeze({ E1: 3, E2: 3, E3: 6, E4: 3, E5: 2 });",
+    "replace": "Object.freeze({ E1: 3, E2: 3, E3: 5, E4: 3, E5: 2 });",
+    "guard": "Step 13 counts the Phase E seed records against code (EXPECTED_PHASE_E_SEEDS was read by nothing)"
+  },
+  {
+    "name": "M14 master pin wrong AND the pre-flight abort removed",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 14,
+    "expectStatus": "FAIL",
+    "edits": [
+      {
+        "file": "src/loader.ts",
+        "find": "const EXPECTED_HASH  = '331f74ff98b88d06242d57e806186548612f13c4269eb754ebb571d8a6fc9b20';",
+        "replace": "const EXPECTED_HASH  = '0000000000000000000000000000000000000000000000000000000000000000';"
+      },
+      {
+        "file": "tests/verify.ts",
+        "find": "  console.error('\\n  ABORT: dataset hash mismatch — data may be corrupted or tampered. Verification cannot proceed.\\n');\n  process.exit(1);",
+        "replace": "  console.error('pre-flight disabled by mutation');"
+      }
+    ],
+    "guard": "Step 14 own branch is FAIL (it was FLAG); normally unreachable behind the pre-flight abort"
+  },
+  {
+    "name": "M15 Phase E epoch plan moved one bet between seeds[9] and seeds[10]",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 15,
+    "expectStatus": "FAIL",
+    "file": "src/loader.ts",
+    "find": "8: 50, 9: 49, 10: 1,",
+    "replace": "8: 50, 9: 50, 10: 0,",
+    "guard": "Step 15 runs the epoch-size test over the Phase E corpus too"
+  },
+  {
+    "name": "M16 winChance off by one tile",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 16,
+    "expectStatus": "FAIL",
+    "file": "src/rng.ts",
+    "find": "return (n - mineCount - revealsSoFar) / (n - revealsSoFar);",
+    "replace": "return (n - mineCount - revealsSoFar + 1) / (n - revealsSoFar);",
+    "guard": "Step 16 checks the adapter against the counting anchor; the old identity cancelled a shared error"
+  },
+  {
+    "name": "M16b binomial comb() off by one in the adapter",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 16,
+    "expectStatus": "FAIL",
+    "file": "src/rng.ts",
+    "find": "result = result * (n - i) / (i + 1);",
+    "replace": "result = result * (n - i + 1) / (i + 1);",
+    "guard": "Step 16 counting anchor: a wrong comb() used on both sides of the identity no longer cancels"
+  },
+  {
+    "name": "M17 disclosed exposed epochs omit record 132",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 17,
+    "expectStatus": "FAIL",
+    "file": "src/loader.ts",
+    "find": "Object.freeze([123, 124, 125, 126, 127, 128, 129, 130, 131, 132]);",
+    "replace": "Object.freeze([123, 124, 125, 126, 127, 128, 129, 130, 131]);",
+    "guard": "Step 17 binds the predictable-seed disclosure (DL-3) to the data"
+  },
+  {
+    "name": "M18 forged Pass-1 statistic (positionChi2WR of m=1), artifact re-pinned",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 18,
+    "expectStatus": "FAIL",
+    "edits": [
+      {
+        "file": "outputs/simulation-results.json",
+        "find": "\"positionChi2WR\": 21.4049,",
+        "replace": "\"positionChi2WR\": 5.4049,"
+      },
+      {
+        "file": "src/artifact-pins.ts",
+        "find": "b6ce72390eaa5159d3c770ca96e6e4bd1b9d04dc03a11e453b00dd6c23f1de87",
+        "replace": "809c3819f3579f94c9550f3e97a2b75bde5ff94a1358edaee3c58978f00ccc4e"
+      }
+    ],
+    "guard": "Step 18 re-derives every statistic from the census; a forged figure disagrees"
+  },
+  {
+    "name": "M18b pinned simulation seed for m=1 changed",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 18,
+    "expectStatus": "FAIL",
+    "file": "src/sim-plan.ts",
+    "find": "client: '857902ce8e141aff4bd073ede94cc708'",
+    "replace": "client: '857902ce8e141aff4bd073ede94cc709'",
+    "guard": "Step 18 replays the first 10,000 rounds of every config from the pinned seeds"
+  },
+  {
+    "name": "M19 forged Test C null rank, artifact re-pinned",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 19,
+    "expectStatus": "FAIL",
+    "edits": [
+      {
+        "file": "outputs/simulation-results.json",
+        "find": "\"testC_nullRank\": 75,",
+        "replace": "\"testC_nullRank\": 1,"
+      },
+      {
+        "file": "src/artifact-pins.ts",
+        "find": "b6ce72390eaa5159d3c770ca96e6e4bd1b9d04dc03a11e453b00dd6c23f1de87",
+        "replace": "e12fd0a9884cdba7edfdeb89ba21e1a256897aea2a8b998326dd19b576362a88"
+      }
+    ],
+    "guard": "Step 19 re-derives every Test C window from the win bitmasks"
+  },
+  {
+    "name": "M19b forged Test B early p-value, artifact re-pinned",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 19,
+    "expectStatus": "FAIL",
+    "edits": [
+      {
+        "file": "outputs/simulation-results.json",
+        "find": "\"earlyP\": 0.6634215158168548,",
+        "replace": "\"earlyP\": 0.0134215158168548,"
+      },
+      {
+        "file": "src/artifact-pins.ts",
+        "find": "b6ce72390eaa5159d3c770ca96e6e4bd1b9d04dc03a11e453b00dd6c23f1de87",
+        "replace": "347530303684551f5e7424927faf049accc217a3c6bf0e74929e91ca0725e6e0"
+      }
+    ],
+    "guard": "Step 19 re-derives Test B p-values from the win counts; they were read from the rows"
+  },
+  {
+    "name": "M19c two seeds forged off in both windows (early 39/50, late 8,686/9,950; p-values re-derived), artifact re-pinned",
+    "runner": "verify",
+    "expect": "PROVABLY FAIR — Conditional Pass",
+    "expectStep": 19,
+    "expectStatus": "FLAG",
+    "edits": [
+      {
+        "file": "outputs/simulation-results.json",
+        "find": "\"serverSeedHashed\": \"2d3a2c76d354a0a859d84b9fe8183e8f48cf6e973e0264947af3f95c1505e72b\",\n        \"clientSeed\": \"NxcarOV28bkerHJk\",\n        \"mineCount\": 3,\n        \"earlyWins\": 45,\n        \"earlyTotal\": 50,\n        \"earlyP\": 0.6634215158168548,\n        \"lateWins\": 8694,\n        \"lateTotal\": 9950,\n        \"lateP\": 0.05578571768171248,\n        \"testA_chi2_fail\": false,",
+        "replace": "\"serverSeedHashed\": \"2d3a2c76d354a0a859d84b9fe8183e8f48cf6e973e0264947af3f95c1505e72b\",\n        \"clientSeed\": \"NxcarOV28bkerHJk\",\n        \"mineCount\": 3,\n        \"earlyWins\": 39,\n        \"earlyTotal\": 50,\n        \"earlyP\": 0.02955745156015055,\n        \"lateWins\": 8686,\n        \"lateTotal\": 9950,\n        \"lateP\": 0.03081088398654719,\n        \"testA_chi2_fail\": false,"
+      },
+      {
+        "file": "outputs/simulation-results.json",
+        "find": "\"serverSeedHashed\": \"ce942f0e6c52470ba0ed994aaa4b508c763a09f04e2f23d25645ec30fda74022\",\n        \"clientSeed\": \"datWCpUusET02jWw\",\n        \"mineCount\": 3,\n        \"earlyWins\": 46,\n        \"earlyTotal\": 50,\n        \"earlyP\": 0.38408824947385156,\n        \"lateWins\": 8759,\n        \"lateTotal\": 9950,\n        \"lateP\": 0.9262608418511067,\n        \"testA_chi2_fail\": false,",
+        "replace": "\"serverSeedHashed\": \"ce942f0e6c52470ba0ed994aaa4b508c763a09f04e2f23d25645ec30fda74022\",\n        \"clientSeed\": \"datWCpUusET02jWw\",\n        \"mineCount\": 3,\n        \"earlyWins\": 39,\n        \"earlyTotal\": 50,\n        \"earlyP\": 0.02955745156015055,\n        \"lateWins\": 8686,\n        \"lateTotal\": 9950,\n        \"lateP\": 0.03081088398654719,\n        \"testA_chi2_fail\": false,"
+      },
+      {
+        "file": "src/artifact-pins.ts",
+        "find": "b6ce72390eaa5159d3c770ca96e6e4bd1b9d04dc03a11e453b00dd6c23f1de87",
+        "replace": "373474bfeda7d9b1f784aed874989d8ed98c465c49c7eb6176051f68173815dc"
+      }
+    ],
+    "guard": "Step 19 broad count rule (6 Oct 2026): K = 2 seeds off in both windows, P(K >= 2 | Binomial(130, 0.0025)) = 0.0425 < 0.05 is a FLAG; one such seed alone is not"
+  },
+  {
+    "name": "M19d three seeds forged off in both windows (early 39/50, late 8,686/9,950; p-values re-derived), artifact re-pinned",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 19,
+    "expectStatus": "FAIL",
+    "edits": [
+      {
+        "file": "outputs/simulation-results.json",
+        "find": "\"serverSeedHashed\": \"2d3a2c76d354a0a859d84b9fe8183e8f48cf6e973e0264947af3f95c1505e72b\",\n        \"clientSeed\": \"NxcarOV28bkerHJk\",\n        \"mineCount\": 3,\n        \"earlyWins\": 45,\n        \"earlyTotal\": 50,\n        \"earlyP\": 0.6634215158168548,\n        \"lateWins\": 8694,\n        \"lateTotal\": 9950,\n        \"lateP\": 0.05578571768171248,\n        \"testA_chi2_fail\": false,",
+        "replace": "\"serverSeedHashed\": \"2d3a2c76d354a0a859d84b9fe8183e8f48cf6e973e0264947af3f95c1505e72b\",\n        \"clientSeed\": \"NxcarOV28bkerHJk\",\n        \"mineCount\": 3,\n        \"earlyWins\": 39,\n        \"earlyTotal\": 50,\n        \"earlyP\": 0.02955745156015055,\n        \"lateWins\": 8686,\n        \"lateTotal\": 9950,\n        \"lateP\": 0.03081088398654719,\n        \"testA_chi2_fail\": false,"
+      },
+      {
+        "file": "outputs/simulation-results.json",
+        "find": "\"serverSeedHashed\": \"ce942f0e6c52470ba0ed994aaa4b508c763a09f04e2f23d25645ec30fda74022\",\n        \"clientSeed\": \"datWCpUusET02jWw\",\n        \"mineCount\": 3,\n        \"earlyWins\": 46,\n        \"earlyTotal\": 50,\n        \"earlyP\": 0.38408824947385156,\n        \"lateWins\": 8759,\n        \"lateTotal\": 9950,\n        \"lateP\": 0.9262608418511067,\n        \"testA_chi2_fail\": false,",
+        "replace": "\"serverSeedHashed\": \"ce942f0e6c52470ba0ed994aaa4b508c763a09f04e2f23d25645ec30fda74022\",\n        \"clientSeed\": \"datWCpUusET02jWw\",\n        \"mineCount\": 3,\n        \"earlyWins\": 39,\n        \"earlyTotal\": 50,\n        \"earlyP\": 0.02955745156015055,\n        \"lateWins\": 8686,\n        \"lateTotal\": 9950,\n        \"lateP\": 0.03081088398654719,\n        \"testA_chi2_fail\": false,"
+      },
+      {
+        "file": "outputs/simulation-results.json",
+        "find": "\"serverSeedHashed\": \"51e136eefd036700aab769144553dbff18f4d9bc31601a6197a2e391e8598970\",\n        \"clientSeed\": \"QfpCgsRdMX8w1CZb\",\n        \"mineCount\": 3,\n        \"earlyWins\": 45,\n        \"earlyTotal\": 50,\n        \"earlyP\": 0.6634215158168548,\n        \"lateWins\": 8773,\n        \"lateTotal\": 9950,\n        \"lateP\": 0.5999644690742922,\n        \"testA_chi2_fail\": false,",
+        "replace": "\"serverSeedHashed\": \"51e136eefd036700aab769144553dbff18f4d9bc31601a6197a2e391e8598970\",\n        \"clientSeed\": \"QfpCgsRdMX8w1CZb\",\n        \"mineCount\": 3,\n        \"earlyWins\": 39,\n        \"earlyTotal\": 50,\n        \"earlyP\": 0.02955745156015055,\n        \"lateWins\": 8686,\n        \"lateTotal\": 9950,\n        \"lateP\": 0.03081088398654719,\n        \"testA_chi2_fail\": false,"
+      },
+      {
+        "file": "src/artifact-pins.ts",
+        "find": "b6ce72390eaa5159d3c770ca96e6e4bd1b9d04dc03a11e453b00dd6c23f1de87",
+        "replace": "61a49ff9559a4c239b8834a409fa4d9b5cfa854ea16dae4d559d273ca79dec25"
+      }
+    ],
+    "guard": "Step 19 broad count rule (6 Oct 2026): K = 3 seeds off in both windows, P(K >= 3 | Binomial(130, 0.0025)) = 0.0044 < 0.01 is a FAIL"
+  },
+  {
+    "name": "M20 one Phase E rung nudged by ~6e-10 relative (dataset re-pinned)",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 20,
+    "expectStatus": "FAIL",
+    "edits": [
+      {
+        "file": "data/mines-phaseE-550bets.json",
+        "find": "\"multiplier\": \"1.578947368421045983\"",
+        "replace": "\"multiplier\": \"1.578947368521045983\""
+      },
+      {
+        "file": "src/loader.ts",
+        "find": "def563907949db10d584256a13b33102dfa46d33509424f642f803d74cd1b17b",
+        "replace": "497fc62f409757c03845b5de66ac81b4533e357ab33e47256f51b4138ad83138"
+      }
+    ],
+    "guard": "Step 20 exact rational at 1e-12 relative"
+  },
+  {
+    "name": "M20b mine-step multiplier compared with 2 at depth 0",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 20,
+    "expectStatus": "FAIL",
+    "file": "tests/steps/multireveal.ts",
+    "find": "k - 1 === 0 ? { num: 1n, den: 1n }",
+    "replace": "k - 1 === 0 ? { num: 2n, den: 1n }",
+    "guard": "Step 20 examines the 378 mine steps it used to skip"
+  },
+  {
+    "name": "M21 non-ascending reveal orders pinned at 12",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 21,
+    "expectStatus": "FAIL",
+    "file": "src/loader.ts",
+    "find": "export const EXPECTED_PHASE_E_NON_ASCENDING_ORDERS = 11;",
+    "replace": "export const EXPECTED_PHASE_E_NON_ASCENDING_ORDERS = 12;",
+    "guard": "Step 21 binds the order-independence evidence to the capture plan"
+  },
+  {
+    "name": "M22 E5 outcome predicate inverted",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 22,
+    "expectStatus": "FAIL",
+    "file": "tests/steps/multireveal.ts",
+    "find": "const hitMine = b.response.revealed_positions.some(p => computed.includes(p));",
+    "replace": "const hitMine = b.response.revealed_positions.some(p => !computed.includes(p));",
+    "guard": "Step 22 derives the E5 outcome from the recomputed layout"
+  },
+  {
+    "name": "M23 cash-out with-edge multiplier compared at depth k−1",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 23,
+    "expectStatus": "FAIL",
+    "file": "tests/steps/multireveal.ts",
+    "find": "relativeDeviation(b.response.no_house_edge_multiplier, exactMultiplier(m, reachedK, true))",
+    "replace": "relativeDeviation(b.response.no_house_edge_multiplier, exactMultiplier(m, reachedK - 1, true))",
+    "guard": "Step 23 compares the with-edge settlement multiplier exactly"
+  },
+  {
+    "name": "M24 payout-coverage artifact edited without a re-pin",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 24,
+    "expectStatus": "FAIL",
+    "file": "outputs/payout-coverage.json",
+    "find": "\"cellsExercisedByLivePlay\": 33,",
+    "replace": "\"cellsExercisedByLivePlay\": 34,",
+    "guard": "Step 24 pins every artifact of record"
+  },
+  {
+    "name": "M24b impossible value forged into the simulation artifact, artifact re-pinned",
+    "runner": "verify",
+    "expect": "NOT PROVABLY FAIR",
+    "expectStep": 24,
+    "expectStatus": "FAIL",
+    "edits": [
+      {
+        "file": "outputs/simulation-results.json",
+        "find": "\"configs\": 24,",
+        "replace": "\"configs\": 25,"
+      },
+      {
+        "file": "src/artifact-pins.ts",
+        "find": "b6ce72390eaa5159d3c770ca96e6e4bd1b9d04dc03a11e453b00dd6c23f1de87",
+        "replace": "674457d94205dee40104fc3995b725e520ea7cd29a19961cddae000d0d82ef46"
+      }
+    ],
+    "guard": "Step 24 value domains: a re-pinned forgery still fails on a value no plan permits"
+  },
+  {
+    "name": "M25 monotonicity comparator reversed",
+    "runner": "verify",
+    "expect": "PROVABLY FAIR — Conditional Pass",
+    "expectStep": 25,
+    "expectStatus": "FLAG",
+    "file": "tests/steps/bounds.ts",
+    "find": "if (compareRational(exactMultiplier(m, k + 1, true), exactMultiplier(m, k, true)) <= 0) {",
+    "replace": "if (compareRational(exactMultiplier(m, k + 1, true), exactMultiplier(m, k, true)) >= 0) {",
+    "guard": "Step 25 asserts strict monotonicity in depth (FLAG policy)"
+  },
+  {
+    "name": "M25b a max-odds cap of 10x declared (served paid multipliers reach 24.975x)",
+    "runner": "verify",
+    "expect": "PROVABLY FAIR — Conditional Pass",
+    "expectStep": 25,
+    "expectStatus": "FLAG",
+    "file": "src/loader.ts",
+    "find": "export const DECLARED_MAX_ODDS: number | null = null;",
+    "replace": "export const DECLARED_MAX_ODDS: number | null = 10;",
+    "guard": "Step 25 cap half (proposed rule R2): every SERVED paid multiplier is compared with a declared cap (FLAG policy)"
+  },
+  {
+    "name": "M25c a cap-like field (meta.maxPayout) appears in the Phase E capture while no cap is declared (dataset re-pinned)",
+    "runner": "verify",
+    "expect": "PROVABLY FAIR — Conditional Pass",
+    "expectStep": 25,
+    "expectStatus": "FLAG",
+    "edits": [
+      {
+        "file": "data/mines-phaseE-550bets.json",
+        "find": "\"schema\": \"duel-mines-capture-phaseE-v1\",",
+        "replace": "\"schema\": \"duel-mines-capture-phaseE-v1\",\n    \"maxPayout\": null,"
+      },
+      {
+        "file": "src/loader.ts",
+        "find": "def563907949db10d584256a13b33102dfa46d33509424f642f803d74cd1b17b",
+        "replace": "c1098176cd09c01c72b5d1ceb7b5499659d7d75f03475d013c216b27253785e3"
+      }
+    ],
+    "guard": "Step 25 cap half: the n/a for an undeclared cap is re-checked against the data — a cap-like field with no declared cap FLAGs"
+  },
+  {
+    "name": "M26 live-sample alpha set to 0.9",
+    "runner": "verify",
+    "expect": "PROVABLY FAIR — Full Pass",
+    "expectStep": 26,
+    "expectStatus": "INFO",
+    "file": "tests/steps/bounds.ts",
+    "find": "const LIVE_FIT_ALPHA = 0.01;",
+    "replace": "const LIVE_FIT_ALPHA = 0.9;",
+    "guard": "Step 26 scores the live-sample fit (INFORMATIONAL policy, Mike 2026-09-29: a deviation is INFO, the verdict stays Full Pass); it was an unscored info block"
+  },
+  {
+    "name": "M27 commitment encoding switched to UTF-8 (unit suite)",
+    "runner": "mocha",
+    "file": "src/rng.ts",
+    "find": "const seedBytes = Buffer.from(serverSeed, 'hex');",
+    "replace": "const seedBytes = Buffer.from(serverSeed, 'utf8');",
+    "expect": "commit-reveal",
+    "guard": "the unit vectors pin the hex-decoded commitment encoding"
+  },
+  {
+    "name": "MC3a one setting misses its stated figure: 1 mine, cash-out after 24 tiles paid 1 % less",
+    "runner": "test",
+    "regen": [
+      "rtp-table",
+      "record"
+    ],
+    "expect": "RTP FIGURE OVERSTATED",
+    "expectStep": 16,
+    "expectStatus": "FLAG",
+    "expectExit": 5,
+    "file": "src/exact.ts",
+    "find": "  const num = binomialBig(GRID, k) * (withEdge ? EDGE_NUM : 1n);\n  const den = binomialBig(GRID - m, k) * (withEdge ? EDGE_DEN : 1n);",
+    "replace": "  const num = binomialBig(GRID, k) * (withEdge ? EDGE_NUM : 1n) * (withEdge && m === 1 && k === 24 ? 99n : 100n); // MUTATION: one cell paid 1 % less\n  const den = binomialBig(GRID - m, k) * (withEdge ? EDGE_DEN : 1n) * 100n;",
+    "guard": "FIXPASS2 class C3, 14 Oct 2026: (i) a miss on ONE setting must end RTP FIGURE OVERSTATED, exit 5, never exit 1 or 2. The paid multiplier of one paytable cell no captured bet reached (1 mine, a cash-out after k = 24 tiles; the captured wins are k = 1 for every mine count and k ≤ 5 in Phase E) is lowered by 1 % in the game model (src/exact.ts exactMultiplier, which the settlement checks and the RTP table both read): that setting returns 98.901 %, 0.999 pp under its tier's stated 99.9 % (house_edge 0.001; flat 99.9 % claim until 19 Oct 2026; the table reads exactMultiplier through exactMultiplierAtEdge). Table and record regenerated in the copy (the record's pin in src/artifact-pins.ts re-made). Runner test = mocha then verify: no unit test, Step 16 identity, simulation check or operator-FLAG branch may end the run first; Step 16 carries MINES-19 and becomes the FLAG."
+  },
+  {
+    "name": "MC3as the same change as MC3a, RTP table NOT regenerated: a stale table is a reproduction failure",
+    "runner": "verify",
+    "expect": "PROVABLY FAIR — Full Pass",
+    "expectExit": 1,
+    "file": "src/exact.ts",
+    "find": "  const num = binomialBig(GRID, k) * (withEdge ? EDGE_NUM : 1n);\n  const den = binomialBig(GRID - m, k) * (withEdge ? EDGE_DEN : 1n);",
+    "replace": "  const num = binomialBig(GRID, k) * (withEdge ? EDGE_NUM : 1n) * (withEdge && m === 1 && k === 24 ? 99n : 100n); // MUTATION: one cell paid 1 % less\n  const den = binomialBig(GRID - m, k) * (withEdge ? EDGE_DEN : 1n) * 100n;",
+    "guard": "Ruling 14 Oct 2026 (FIXPASS2): a committed RTP table that does not equal the run or its pin is a reproduction failure, exit 1, miss or no miss. MC3a without regenerating the table must end exit 1 with the table reported as differing, never exit 5: the miss is only reported on a consistent package. The draws pass, so the verdict line still reads Full Pass; the run is refused by its exit, 1 (the rule's line reports the committed table as differing from the run)."
+  },
+  {
+    "name": "MC3b the stated figure raised in the claim source: the 0.1 % tier stated at 100.1 % instead of 99.9 %",
+    "runner": "test",
+    "regen": [
+      "rtp-table",
+      "record"
+    ],
+    "expect": "RTP FIGURE OVERSTATED",
+    "expectStep": 16,
+    "expectStatus": "FLAG",
+    "expectExit": 5,
+    "file": "src/rtp-settings.ts",
+    "find": "    .map(e => ({ tier: tierOf(e), rtp: oneMinus(e), source:",
+    "replace": "    .map(e => ({ tier: tierOf(e), rtp: e === BASE_EDGE ? '1.001' /* MUTATION: stated figure raised */ : oneMinus(e), source:",
+    "guard": "FIXPASS2 class C3, 14 Oct 2026: (ii) the published figure raised where the claim is stated (src/rtp-settings.ts RTP_CLAIM, house_edge 0.001 on the first scaling_edge tier) to 100.1 %, 0.2 pp above every 0.1 %-tier setting's real 99.9 % (since 19 Oct 2026 the claim is tiered: src/rtp-settings.ts statedTiers, the 0.1 % tier's stated figure raised): the 294 settings priced at that tier miss by more than the band, so the run must end RTP FIGURE OVERSTATED, exit 5. Table and record regenerated in the copy."
+  },
+  {
+    "name": "MC3bs the same change as MC3b, RTP table NOT regenerated: a stale table is a reproduction failure",
+    "runner": "verify",
+    "expect": "PROVABLY FAIR — Full Pass",
+    "expectExit": 1,
+    "file": "src/rtp-settings.ts",
+    "find": "    .map(e => ({ tier: tierOf(e), rtp: oneMinus(e), source:",
+    "replace": "    .map(e => ({ tier: tierOf(e), rtp: e === BASE_EDGE ? '1.001' /* MUTATION: stated figure raised */ : oneMinus(e), source:",
+    "guard": "Ruling 14 Oct 2026 (FIXPASS2): a committed RTP table that does not equal the run or its pin is a reproduction failure, exit 1, miss or no miss. MC3b without regenerating the table must end exit 1 with the table reported as differing, never exit 5: the miss is only reported on a consistent package. The draws pass, so the verdict line still reads Full Pass; the run is refused by its exit, 1 (the rule's line reports the committed table as differing from the run)."
+  }
+]

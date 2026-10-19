@@ -1,6 +1,6 @@
 /**
  * Duel.com Mines — type definitions.
- * Matches the actual capture output from mines-capture.js.
+ * Matches the capture output the dataset was produced by (capture/mines-capture.reference.js, v5).
  */
 
 export type Phase = 'A' | 'B' | 'C' | 'D' | 'E1' | 'E2' | 'E3' | 'E4' | 'E5';
@@ -78,8 +78,30 @@ export interface MinesDataset {
 export interface StepResult {
   step: number;
   name: string;
-  status: 'PASS' | 'FLAG' | 'FAIL';
+  /** INFO: an informational step's deviation (profile policy INFORMATIONAL — the live-sample fit, Mike
+   *  2026-09-29): reported, never counted as a flag, never affects the verdict. */
+  status: 'PASS' | 'FLAG' | 'FAIL' | 'INFO';
   detail: string;
+  /**
+   * The step's measurements, as numbers.
+   *
+   * A MEASURED FLOAT MUST NEVER BE EMBEDDED IN `detail`. A string leaf cannot be
+   * tolerance-compared: the reproduction gate in tests/verify.ts can only ask whether two
+   * strings are identical, so an RTP or a deviation printed into the sentence turns ordinary
+   * last-place drift on another machine into a permanent, unfixable disagreement — and the
+   * first thing a reader does with a diff that always fails is stop reading it.
+   *
+   * The split: `detail` states the BOUND the step tested against, which is a constant and
+   * compares exactly. The measurement goes here, where the tolerance applies.
+   */
+  data?: Record<string, unknown>;
+  /**
+   * 'capture' marks a FLAG raised by the AUDITOR'S capture (a retried request that left a nonce
+   * gap), not by anything the operator served. It is disclosed on every run but verdict-neutral:
+   * the verdict stays Full Pass and the exit status 0. Only an operator-origin FLAG downgrades to
+   * Conditional Pass (profile policies.FLAG, decided 2026-09-17; same mechanism as Duel Video Poker).
+   */
+  origin?: 'capture';
 }
 
 export interface InfoItem {

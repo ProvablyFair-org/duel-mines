@@ -1,0 +1,798 @@
+{
+  "package": "duel/mines",
+  "game": "mines",
+  "settingSpace": "mines 1–24 × cash-out after k = 1 … 25 − m reveals (300 cells), each priced at the first stake tier of its list in Duel's mines settings (E14, as fetched 2026-10-05 in a logged-in session): 0.1 % on 294 cells, 0.14–0.21 % on the six full-board cash-outs (10–15 mines). Each row carries that tier, keyed by the house_edge E14 states for it. The higher stake tiers are not tabled (E14 holds no multiplier)",
+  "rtpMethod": "exact rational: C(25−m,k)/C(25,k) × C(25,k)·(1 − edge)/C(25−m,k), the operator multiplier at the row's first-tier edge; settlement captured at edge 0.001 only (the six full-board rows: the formula, consistent with E14's tier boundaries, not observed)",
+  "rule": "RTP-CLAIM",
+  "ruleVersion": "1.2.0 (Methodology v1.1: places, per-setting, stake tiers, noted, published, RTP Figure Overstated; agreed 2026-10-14; 1.1.0 2026-10-01; 1.0.0 2026-09-29)",
+  "bandPp": "0.10",
+  "claim": {
+    "kind": "tiered",
+    "tiers": [
+      {
+        "tier": "house_edge=0.001",
+        "rtp": "0.999",
+        "source": "game settings: house_edge 0.001 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0011",
+        "rtp": "0.9989",
+        "source": "game settings: house_edge 0.0011 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0012",
+        "rtp": "0.9988",
+        "source": "game settings: house_edge 0.0012 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0013",
+        "rtp": "0.9987",
+        "source": "game settings: house_edge 0.0013 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0014",
+        "rtp": "0.9986",
+        "source": "game settings: house_edge 0.0014 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0015",
+        "rtp": "0.9985",
+        "source": "game settings: house_edge 0.0015 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0016",
+        "rtp": "0.9984",
+        "source": "game settings: house_edge 0.0016 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0017",
+        "rtp": "0.9983",
+        "source": "game settings: house_edge 0.0017 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0018",
+        "rtp": "0.9982",
+        "source": "game settings: house_edge 0.0018 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0019",
+        "rtp": "0.9981",
+        "source": "game settings: house_edge 0.0019 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.002",
+        "rtp": "0.998",
+        "source": "game settings: house_edge 0.002 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0021",
+        "rtp": "0.9979",
+        "source": "game settings: house_edge 0.0021 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0022",
+        "rtp": "0.9978",
+        "source": "game settings: house_edge 0.0022 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0023",
+        "rtp": "0.9977",
+        "source": "game settings: house_edge 0.0023 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0024",
+        "rtp": "0.9976",
+        "source": "game settings: house_edge 0.0024 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0025",
+        "rtp": "0.9975",
+        "source": "game settings: house_edge 0.0025 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0026",
+        "rtp": "0.9974",
+        "source": "game settings: house_edge 0.0026 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0027",
+        "rtp": "0.9973",
+        "source": "game settings: house_edge 0.0027 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0028",
+        "rtp": "0.9972",
+        "source": "game settings: house_edge 0.0028 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0029",
+        "rtp": "0.9971",
+        "source": "game settings: house_edge 0.0029 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.003",
+        "rtp": "0.997",
+        "source": "game settings: house_edge 0.003 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0031",
+        "rtp": "0.9969",
+        "source": "game settings: house_edge 0.0031 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0032",
+        "rtp": "0.9968",
+        "source": "game settings: house_edge 0.0032 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0033",
+        "rtp": "0.9967",
+        "source": "game settings: house_edge 0.0033 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0034",
+        "rtp": "0.9966",
+        "source": "game settings: house_edge 0.0034 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0035",
+        "rtp": "0.9965",
+        "source": "game settings: house_edge 0.0035 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0036",
+        "rtp": "0.9964",
+        "source": "game settings: house_edge 0.0036 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0037",
+        "rtp": "0.9963",
+        "source": "game settings: house_edge 0.0037 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0038",
+        "rtp": "0.9962",
+        "source": "game settings: house_edge 0.0038 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0039",
+        "rtp": "0.9961",
+        "source": "game settings: house_edge 0.0039 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.004",
+        "rtp": "0.996",
+        "source": "game settings: house_edge 0.004 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0041",
+        "rtp": "0.9959",
+        "source": "game settings: house_edge 0.0041 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0042",
+        "rtp": "0.9958",
+        "source": "game settings: house_edge 0.0042 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0043",
+        "rtp": "0.9957",
+        "source": "game settings: house_edge 0.0043 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0044",
+        "rtp": "0.9956",
+        "source": "game settings: house_edge 0.0044 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0045",
+        "rtp": "0.9955",
+        "source": "game settings: house_edge 0.0045 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0046",
+        "rtp": "0.9954",
+        "source": "game settings: house_edge 0.0046 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0047",
+        "rtp": "0.9953",
+        "source": "game settings: house_edge 0.0047 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0048",
+        "rtp": "0.9952",
+        "source": "game settings: house_edge 0.0048 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0049",
+        "rtp": "0.9951",
+        "source": "game settings: house_edge 0.0049 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.005",
+        "rtp": "0.995",
+        "source": "game settings: house_edge 0.005 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0051",
+        "rtp": "0.9949",
+        "source": "game settings: house_edge 0.0051 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0052",
+        "rtp": "0.9948",
+        "source": "game settings: house_edge 0.0052 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0053",
+        "rtp": "0.9947",
+        "source": "game settings: house_edge 0.0053 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0054",
+        "rtp": "0.9946",
+        "source": "game settings: house_edge 0.0054 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0055",
+        "rtp": "0.9945",
+        "source": "game settings: house_edge 0.0055 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0056",
+        "rtp": "0.9944",
+        "source": "game settings: house_edge 0.0056 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0057",
+        "rtp": "0.9943",
+        "source": "game settings: house_edge 0.0057 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0058",
+        "rtp": "0.9942",
+        "source": "game settings: house_edge 0.0058 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0059",
+        "rtp": "0.9941",
+        "source": "game settings: house_edge 0.0059 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.006",
+        "rtp": "0.994",
+        "source": "game settings: house_edge 0.006 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0061",
+        "rtp": "0.9939",
+        "source": "game settings: house_edge 0.0061 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0062",
+        "rtp": "0.9938",
+        "source": "game settings: house_edge 0.0062 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0063",
+        "rtp": "0.9937",
+        "source": "game settings: house_edge 0.0063 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0064",
+        "rtp": "0.9936",
+        "source": "game settings: house_edge 0.0064 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0065",
+        "rtp": "0.9935",
+        "source": "game settings: house_edge 0.0065 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0066",
+        "rtp": "0.9934",
+        "source": "game settings: house_edge 0.0066 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0067",
+        "rtp": "0.9933",
+        "source": "game settings: house_edge 0.0067 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0068",
+        "rtp": "0.9932",
+        "source": "game settings: house_edge 0.0068 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0069",
+        "rtp": "0.9931",
+        "source": "game settings: house_edge 0.0069 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.007",
+        "rtp": "0.993",
+        "source": "game settings: house_edge 0.007 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0071",
+        "rtp": "0.9929",
+        "source": "game settings: house_edge 0.0071 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0072",
+        "rtp": "0.9928",
+        "source": "game settings: house_edge 0.0072 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0073",
+        "rtp": "0.9927",
+        "source": "game settings: house_edge 0.0073 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0074",
+        "rtp": "0.9926",
+        "source": "game settings: house_edge 0.0074 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0075",
+        "rtp": "0.9925",
+        "source": "game settings: house_edge 0.0075 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0076",
+        "rtp": "0.9924",
+        "source": "game settings: house_edge 0.0076 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0077",
+        "rtp": "0.9923",
+        "source": "game settings: house_edge 0.0077 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0078",
+        "rtp": "0.9922",
+        "source": "game settings: house_edge 0.0078 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0079",
+        "rtp": "0.9921",
+        "source": "game settings: house_edge 0.0079 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.008",
+        "rtp": "0.992",
+        "source": "game settings: house_edge 0.008 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0081",
+        "rtp": "0.9919",
+        "source": "game settings: house_edge 0.0081 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0082",
+        "rtp": "0.9918",
+        "source": "game settings: house_edge 0.0082 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0083",
+        "rtp": "0.9917",
+        "source": "game settings: house_edge 0.0083 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0084",
+        "rtp": "0.9916",
+        "source": "game settings: house_edge 0.0084 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0085",
+        "rtp": "0.9915",
+        "source": "game settings: house_edge 0.0085 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0086",
+        "rtp": "0.9914",
+        "source": "game settings: house_edge 0.0086 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0087",
+        "rtp": "0.9913",
+        "source": "game settings: house_edge 0.0087 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0088",
+        "rtp": "0.9912",
+        "source": "game settings: house_edge 0.0088 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0089",
+        "rtp": "0.9911",
+        "source": "game settings: house_edge 0.0089 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.009",
+        "rtp": "0.991",
+        "source": "game settings: house_edge 0.009 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0091",
+        "rtp": "0.9909",
+        "source": "game settings: house_edge 0.0091 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0092",
+        "rtp": "0.9908",
+        "source": "game settings: house_edge 0.0092 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0093",
+        "rtp": "0.9907",
+        "source": "game settings: house_edge 0.0093 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0094",
+        "rtp": "0.9906",
+        "source": "game settings: house_edge 0.0094 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0095",
+        "rtp": "0.9905",
+        "source": "game settings: house_edge 0.0095 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0096",
+        "rtp": "0.9904",
+        "source": "game settings: house_edge 0.0096 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0097",
+        "rtp": "0.9903",
+        "source": "game settings: house_edge 0.0097 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0098",
+        "rtp": "0.9902",
+        "source": "game settings: house_edge 0.0098 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.0099",
+        "rtp": "0.9901",
+        "source": "game settings: house_edge 0.0099 in scaling_edge (E14)"
+      },
+      {
+        "tier": "house_edge=0.01",
+        "rtp": "0.99",
+        "source": "game settings: house_edge 0.01 in scaling_edge (E14)"
+      }
+    ],
+    "source": "game settings: the house_edge Duel's mines settings state for each stake tier of each (mines, depth) cell (scaling_edge in GET https://duel.com/api/v2/mines/settings?mines=1…24 as fetched 2026-10-05 in a logged-in session, read-only; E14, evidence/settings/); each cell is held to 1 − the edge of the first tier of its list (the tier from a $0 stake): 0.1 % on 294 cells, the edge served on all 6,500 captured bets as effective_edge 0.1 (Step 12); 0.14–0.21 % on the six full-board cash-outs (10–15 mines), which have no 0.1 % tier (MANIFEST.md#rtp-claim; declaration gameModel.edge.claimed 0.001)"
+  },
+  "settings": 300,
+  "trueMin": {
+    "setting": "mines=12 k=13",
+    "rtpExact": "9979/10000",
+    "rtpPct": "99.790000"
+  },
+  "trueMax": {
+    "setting": "mines=1 k=1",
+    "rtpExact": "999/1000",
+    "rtpPct": "99.900000"
+  },
+  "houseSideFailures": 0,
+  "playerFavourable": 0,
+  "worst": {
+    "setting": "mines=1 k=1",
+    "gapPp": "0.000000"
+  },
+  "rangeChecks": [],
+  "outcome": "PASS",
+  "minimalFix": "none — the claim holds for every setting it states a figure for",
+  "unstated": 0,
+  "rowsComplete": true,
+  "buckets": [
+    {"bucket":"first tier 0.1% (E14)","settings":294,"minPct":"99.900000","maxPct":"99.900000","houseSideFailures":0,"playerFavourable":0},
+    {"bucket":"first tier above 0.1% (E14): full-board cash-outs","settings":6,"minPct":"99.790000","maxPct":"99.860000","houseSideFailures":0,"playerFavourable":0}
+  ],
+  "rows": [
+    {"setting":"mines=1 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=8","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=9","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=10","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=11","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=12","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=13","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=14","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=15","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=16","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=17","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=18","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=19","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=20","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=21","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=22","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=23","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=1 k=24","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=8","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=9","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=10","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=11","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=12","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=13","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=14","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=15","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=16","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=17","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=18","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=19","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=20","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=21","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=22","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=2 k=23","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=8","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=9","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=10","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=11","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=12","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=13","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=14","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=15","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=16","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=17","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=18","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=19","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=20","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=21","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=3 k=22","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=8","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=9","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=10","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=11","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=12","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=13","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=14","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=15","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=16","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=17","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=18","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=19","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=20","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=4 k=21","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=8","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=9","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=10","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=11","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=12","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=13","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=14","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=15","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=16","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=17","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=18","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=19","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=5 k=20","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=8","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=9","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=10","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=11","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=12","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=13","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=14","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=15","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=16","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=17","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=18","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=6 k=19","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=8","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=9","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=10","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=11","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=12","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=13","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=14","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=15","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=16","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=17","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=7 k=18","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=8 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=8 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=8 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=8 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=8 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=8 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=8 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=8 k=8","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=8 k=9","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=8 k=10","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=8 k=11","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=8 k=12","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=8 k=13","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=8 k=14","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=8 k=15","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=8 k=16","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=8 k=17","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=9 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=9 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=9 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=9 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=9 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=9 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=9 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=9 k=8","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=9 k=9","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=9 k=10","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=9 k=11","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=9 k=12","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=9 k=13","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=9 k=14","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=9 k=15","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=9 k=16","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=10 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=10 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=10 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=10 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=10 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=10 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=10 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=10 k=8","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=10 k=9","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=10 k=10","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=10 k=11","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=10 k=12","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=10 k=13","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=10 k=14","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=10 k=15","tier":"house_edge=0.0014","rtpExact":"4993/5000","rtpPct":"99.860000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=11 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=11 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=11 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=11 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=11 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=11 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=11 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=11 k=8","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=11 k=9","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=11 k=10","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=11 k=11","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=11 k=12","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=11 k=13","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=11 k=14","tier":"house_edge=0.0018","rtpExact":"4991/5000","rtpPct":"99.820000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=12 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=12 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=12 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=12 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=12 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=12 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=12 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=12 k=8","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=12 k=9","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=12 k=10","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=12 k=11","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=12 k=12","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=12 k=13","tier":"house_edge=0.0021","rtpExact":"9979/10000","rtpPct":"99.790000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=13 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=13 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=13 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=13 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=13 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=13 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=13 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=13 k=8","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=13 k=9","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=13 k=10","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=13 k=11","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=13 k=12","tier":"house_edge=0.0021","rtpExact":"9979/10000","rtpPct":"99.790000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=14 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=14 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=14 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=14 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=14 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=14 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=14 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=14 k=8","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=14 k=9","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=14 k=10","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=14 k=11","tier":"house_edge=0.0018","rtpExact":"4991/5000","rtpPct":"99.820000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=15 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=15 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=15 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=15 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=15 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=15 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=15 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=15 k=8","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=15 k=9","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=15 k=10","tier":"house_edge=0.0014","rtpExact":"4993/5000","rtpPct":"99.860000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=16 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=16 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=16 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=16 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=16 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=16 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=16 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=16 k=8","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=16 k=9","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=17 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=17 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=17 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=17 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=17 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=17 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=17 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=17 k=8","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=18 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=18 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=18 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=18 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=18 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=18 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=18 k=7","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=19 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=19 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=19 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=19 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=19 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=19 k=6","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=20 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=20 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=20 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=20 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=20 k=5","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=21 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=21 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=21 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=21 k=4","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=22 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=22 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=22 k=3","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=23 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=23 k=2","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"},
+    {"setting":"mines=24 k=1","tier":"house_edge=0.001","rtpExact":"999/1000","rtpPct":"99.900000","gapPp":"0.000000","side":"within-band","outcome":"PASS"}
+  ]
+}

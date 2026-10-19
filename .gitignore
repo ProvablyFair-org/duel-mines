@@ -5,5 +5,15 @@ outputs/*.json
 !outputs/rtp-convergence.html
 .DS_Store
 
+# artifacts of record — the verifier scores a run against these
+!outputs/verification-results.json
+!outputs/determinism-log.json
+!outputs/chi-squared-results.json
+!outputs/payout-coverage.json
+# the simulation's artifact of record — steps 18-19 score it; a fresh clone cannot reproduce
+# the audit without it, and `npm run simulate` (PF_EMIT=1) is the only thing that rewrites it
+!outputs/simulation-results.json
+
 # run products — this verifier writes them fresh each run; the committed artifacts are pinned
 outputs/run/
+!outputs/rtp-claim-table.json
