@@ -32,14 +32,25 @@ export const ARTIFACT_PINS: Readonly<Record<string, string>> = Object.freeze({
     '12c39c309bbb7539e2ae8756923f8b7caaa560e9dfe0bc4c18f744fbfaa1497a',
   'chi-squared-results.json':
     'c73aa5b90fc626c65c439eef964a3d3c795ae8d4b43515ee6d8023e16b569daf',
+  // RE-PINNED 2026-10-20 (v1.2.0): re-emitted (PF_EMIT=1) after src/rng.ts was rebuilt from
+  // docs/ALGORITHM.md. Its theoreticalMultiplier is the spec's product of (25 − t)/(25 − m − t) instead
+  // of the v1.1.0 ratio of floating-point binomials, so 166 of the 1,099 leaves (the informational
+  // `multiplier` of uncovered cells) moved in the last bits, worst relative 5.9e-16; no other leaf
+  // changed. Previous pin afc216a4….
   'payout-coverage.json':
-    'afc216a49f5176a634731b5ef2bb0324447d80af1f638681512f2434303ec46d',
-  // RE-PINNED 2026-10-19: regenerated with `npm run simulate` after the Pass 1 description stopped
-  // calling src/rng.ts an independent implementation (it is ported from Duel's Verify-tab code,
-  // decision 1). Of the artifact's 36,301 leaves only that description changed; the chart is
-  // byte-identical. Previous pin d8977f86….
+    '32bfe33cf0a4ca62dea3445d3d6e78ca59c8bb4fd6c7b6cd6fc727266b2e070e',
+  // RE-PINNED 2026-10-20 (v1.2.0): regenerated with `npm run simulate` after src/rng.ts was rebuilt
+  // from docs/ALGORITHM.md and the Pass 1 description says so (Duel's Verify-tab code is now a second
+  // check, not the source). Of the artifact's 36,301 leaves only that description changed; the chart
+  // is byte-identical. Previous pin b6ce7239… (2026-10-19, the description then called src/rng.ts a
+  // port of Duel's Verify-tab code), before it d8977f86….
   'simulation-results.json':
-    'b6ce72390eaa5159d3c770ca96e6e4bd1b9d04dc03a11e453b00dd6c23f1de87',
+    '8f628aa69a303ebc13ee343ebb65bae1ba6fd0f1c02d9f996f9b83bf33912f4d',
+  // RE-PINNED 2026-10-20 (v1.2.0): re-emitted (PF_EMIT=1) after src/rng.ts was rebuilt from
+  // docs/ALGORITHM.md: Step 5's operator leg no longer checks citations (data fields citesChecked and
+  // citesBad removed), its draw-bias rows for ranges 2, 4, 8 and 16 record the spec's window 2^32
+  // (0 rejected values), the MINES-09, MINES-29 and MINES-30 notes were rewritten. No step result or
+  // verdict changed. Previous pin 3d4a24a9….
   // RE-PINNED 2026-10-19: re-emitted (PF_EMIT=1) after Mike's 19 Oct QA: Step 16 holds each cell to
   // its own first-tier edge (new data field cellsAboveBaseTier: 6), Step 8 also scores the 39 Phase E
   // depth-1 wins (data field phaseEWinsDepth1), Steps 1 and 3 and the MINES-01/03/11/13/18/19/29 notes
@@ -73,5 +84,5 @@ export const ARTIFACT_PINS: Readonly<Record<string, string>> = Object.freeze({
   // endpoint), before it 8aead87e… (2026-10-04, docs consolidated into README.md + MANIFEST.md),
   // before it 9d5ded55… (2026-09-29, MINES-22 informational), before it 65f0afb7….
   'verification-results.json':
-    '3d4a24a990a3966ea693ec26b106ca735d3f6ebca0ba62c21fa379323db7b045',
+    '2c7912464ab85ecb42c9777c11bd932104fd77b14545813d38b0edc86499638f',
 });

@@ -1,6 +1,6 @@
 # Duel Mines — Provably Fair Audit
 
-**Auditor:** [ProvablyFair.org](https://www.provablyfair.org) · **Audit ID:** PF-2026-DL04 · **Release:** `v1.1.0` · **Capture:** April 2026
+**Auditor:** [ProvablyFair.org](https://www.provablyfair.org) · **Audit ID:** PF-2026-DL04 · **Release:** `v1.2.0` · **Capture:** April 2026
 
 **Result: PROVABLY FAIR — Full Pass.** Every mine layout in the 7,050-bet dataset (6,500 primary + 550 Phase E) reproduces from (serverSeed, clientSeed, nonce). The suite runs 26 scored verification steps: 25 PASS, one capture-origin FLAG and zero hard fails. The flag is a single Phase E nonce with no captured round, attributed on the evidence in DL-2 to a capture request that failed after the round was placed (inferred, not witnessed); it is disclosed and verdict-neutral, and Step 4 found no other nonce gap.
 
@@ -10,7 +10,7 @@
 
 | Check | Captured evidence |
 |---|---|
-| Mine layouts | 7,050 of 7,050 reproduced: 6,500 primary (Step 5) and 550 Phase E (Step 21); 0 mismatches. The RNG code, `src/rng.ts`, is ported from Duel's published Verify-tab code ([E13](MANIFEST.md#operator-source-and-verifier-copies)) |
+| Mine layouts | 7,050 of 7,050 reproduced: 6,500 primary (Step 5) and 550 Phase E (Step 21); 0 mismatches. The RNG code, `src/rng.ts`, was rebuilt from a written specification ([docs/ALGORITHM.md](docs/ALGORITHM.md)) by an implementer who never opened Duel's code; Duel's published Verify-tab code ([E13](MANIFEST.md#operator-source-and-verifier-copies)) is run as a second check, not used as the source |
 | Payouts | 0 errors on the 6,500 primary bets and 417 further Phase E rounds (Step 7), and on 133 Phase E cash-outs at k>1 (Step 23) |
 | Multipliers | 2,795 primary wins and 39 Phase E wins settled at depth 1 (Step 8), 133 Phase E cash-outs at k>1 (Step 23) and 1,173 Phase E reveal steps (Step 20) match the exact rational C(25,k)/C(25−m,k) (× 999/1000); 0 mismatches |
 | Seed records | 134 primary + 17 Phase E records; 133/133 and 16/16 commitment links recomputed from the raw hashes |
@@ -18,7 +18,7 @@
 | Theoretical RTP | 99.9000% on all 300 cells at the 0.1% base edge, proven by counting all 2^25 tile subsets, with no casino-supplied probability; at the first stake tier of Duel's settings, 99.9000% on 294 cells and 99.79–99.86% on the six full-board cash-outs; Duel's scaling edge raises the edge to at most 1.0% above $25,000 potential profit (settings as fetched 2026-10-05 in a logged-in session, [E14](MANIFEST.md#evidence)) |
 | Observed return | 100.86% over the 6,500 primary bets; reported separately from theoretical RTP |
 | Simulation | 24,000,000 Pass 1 rounds across 24 mine counts (mean RTP 99.9041%); Pass 2 on 130 revealed casino seeds × 10,000 nonces |
-| Player verification | The ProvablyFair.org site verifier, the live verify-bets bundle and Duel's own Verify-tab code, each executed on all 7,050 rounds; 0 mismatches |
+| Player verification | The ProvablyFair.org site verifier, the live verify-bets bundle and Duel's own Verify-tab code (the second check), each executed on all 7,050 rounds; 0 mismatches |
 
 The declared limitations DL-1 … DL-11, the assumed premises (P1–P3, and P7: the capture is a faithful record, on which the pre-bet timing of the commitments rests), residual operator trust in seed selection and the untested adversarial rows are kept in the [overview's limitations](MANIFEST.md#limitations-and-trust).
 

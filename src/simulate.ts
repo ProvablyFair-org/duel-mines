@@ -552,7 +552,7 @@ const pass1Serializable = pass1Results.map(r => ({
 // wall-clock figures are printed to the console above; the artifact carries only the experiment.
 const output = {
   pass1_fresh_seeds: {
-    description: 'Auditor-generated random seeds through src/rng.ts, which is ported from Duel\'s published Verify-tab code (not an independent implementation). Tests mine position uniformity and serial independence.',
+    description: 'Auditor-generated random seeds through src/rng.ts, which is rebuilt from a written specification (docs/ALGORITHM.md) by an implementer who never opened Duel\'s code; Duel\'s published Verify-tab code is run as a second check (Step 5), not used as the source. Tests mine position uniformity and serial independence.',
     configs:                CONFIGS.length,
     roundsPerConfig:        ROUNDS_PER_CONFIG,
     totalRounds:            CONFIGS.length * ROUNDS_PER_CONFIG,

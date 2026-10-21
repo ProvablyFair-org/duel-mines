@@ -1,317 +1,283 @@
 /**
- * Duel.com Mines — RNG implementation.
+ * PROVENANCE (header added on integration, 20 Oct 2026; everything below this comment is the
+ * clean-room module byte for byte).
  *
- * PORTED FROM THE OPERATOR'S OWN SOURCE: the Mines code panel of duel.com → Provably Fair → Verify
- * (Expand → Copy), copied verbatim by Paulo on 2026-09-25 to
- * evidence/verify-tab/duel-verify-tab-mines-2026-09-25.js (SHA-256 88f5268b…cff592, pinned in
- * src/operator-verifier.ts). "Lxx" below is a line of that file. Every citation is listed in
- * OPERATOR_SOURCE_CITES and checked against the pinned bytes by Step 5 and the unit tests — a cited
- * line that does not carry the quoted text FAILs. Step 5 also EXECUTES that file on every captured
- * round and requires its mine set to equal this module's and the served one.
+ * This module was REBUILT FROM A WRITTEN SPECIFICATION, not ported from Duel's code:
+ *   spec      docs/ALGORITHM.md, a copy of games/mines/ALGORITHM.md in the ProvablyFair.org audit
+ *             framework (pf-audit, branch clean-room-spec-2026-10-20, SHA-256 6c094b31…19ede336).
+ *             Written from Duel's public pages, the standard provably-fair construction and the
+ *             7,050 live rounds, without opening Duel's code (its §8 lists every file read).
+ *   rebuild   written by an implementer who read ONLY that spec and a module-interface file, and
+ *             never opened Duel's code, its Verify-tab file, or this package's earlier src/rng.ts.
+ *   self-test tests/mines/RngSpecTests.ts (the spec's vectors and properties).
  *
- * Algorithm: backward Fisher-Yates shuffle with per-step rejection sampling.
+ * Duel's published Verify-tab code (evidence/verify-tab/duel-verify-tab-mines-2026-09-25.js, E13) is
+ * NOT the source of this module. It is run byte for byte as a SECOND CHECK, by Step 5 and the unit
+ * tests (src/operator-verifier.ts), next to the ProvablyFair.org docs-site and live-site verifiers.
+ * The audit's draw-bias bound is src/bias.ts, built on this module's drawFromChunk.
  *
- *   positions = [0, 1, ..., 24]                                                   L50
- *   for i from 24 downto 1:                                                       L53
- *     range  = i + 1                                                              L54
- *     maxFair = 0xFFFFFFFF - (0xFFFFFFFF % range)                                 L49, L55
- *     cursor = 24 - i                                                             L56
- *     loop:
- *       hash = HMAC-SHA256(key=hex_bytes(serverSeed), msg=clientSeed:nonce:cursor) L30, L36, L62
- *       scan 4-byte chunks (8 hex chars) of hash, first to last:                  L66, L67
- *         if chunk < maxFair → j = chunk % range; swap positions[i] ↔ positions[j]; break   L68–L70
- *       else cursor++ and retry                                                   L77
- *   mine_positions = positions[0..mineCount-1], sorted ascending                  L82
+ * Three-way agreement measured on integration (20 Oct 2026, all 7,050 captured rounds, 6,500 primary
+ * + 550 Phase E): this module vs the live rounds, mine set / commitment / outcome 7,050/7,050,
+ * Phase E is_mine 1,173/1,173, multipliers within 1e-13 relative on 2,967 wins, 4,083 losses and
+ * 795 reveal steps; vs Duel's Verify-tab code 7,050/7,050 mine sets; vs the provablyfair.org live
+ * verifier 7,050/7,050 mine sets. Step 5 of `npm run verify` re-measures all three on every run.
  *
- * Key encoding: Buffer.from(serverSeed, 'hex') — hex-decoded bytes, NOT UTF-8 (operator L30, hexToBytes).
- * Output: mine position SET is deterministic; order in API may vary.
- *
- * NOT in the operator file: the commitment encoding (verifyHash below — SHA-256 of the hex-decoded
- * seed). It is established from the capture (Step 1: every revealed seed hashes to its commitment),
- * not from operator source.
+ * Where this module and Duel's Verify-tab code differ on inputs no captured round reaches:
+ *   (1) for ranges 2, 4, 8 and 16 this module accepts every 32-bit chunk (spec §2 step 2:
+ *       floor(2^32/r)·r = 2^32), while Duel's code rejects the top r values (its maxFair is
+ *       0xFFFFFFFF − (0xFFFFFFFF mod r)); both rules are exactly uniform;
+ *   (2) when all eight chunks of a digest are rejected (spec O1, unspecified) this module throws,
+ *       while Duel's code moves to the next cursor. 0 rejected chunks occur in the 169,200 captured
+ *       draws, so neither difference is witnessed (MANIFEST.md DL-11, premise P1).
  */
+// Duel.com Mines: mine layout derivation, written from ALGORITHM.md alone.
+// Every step below names the section of ALGORITHM.md it implements.
 
-import * as crypto from 'crypto';
+import { createHash, createHmac } from "crypto";
 
-// ── Operator source citations (checked, not decorative) ────────────────────
-/**
- * Each entry: a line of evidence/verify-tab/duel-verify-tab-mines-2026-09-25.js and text that line
- * must contain verbatim. src/operator-verifier.ts checkOperatorCites reads the pinned file and FAILs
- * any entry whose line does not carry its text.
- */
-export const OPERATOR_SOURCE_CITES: ReadonlyArray<{ line: number; text: string; ports: string }> = Object.freeze([
-  { line: 30, text: 'const keyBytes = hexToBytes(keyHex);', ports: 'the server seed is hex-decoded to the HMAC key' },
-  { line: 36, text: "{ name: 'HMAC', hash: 'SHA-256' },", ports: 'HMAC-SHA256' },
-  { line: 49, text: 'const MAX_UINT32 = 0xFFFFFFFF;', ports: 'MAX_UINT32' },
-  { line: 50, text: 'const positions = Array.from({ length: gridSize }, (_, i) => i);', ports: 'positions = [0 … gridSize − 1]' },
-  { line: 53, text: 'for (let i = gridSize - 1; i > 0; i--) {', ports: 'backward Fisher-Yates, i = 24 … 1' },
-  { line: 54, text: 'const range = i + 1;', ports: 'range = i + 1' },
-  { line: 55, text: 'const maxFair = MAX_UINT32 - (MAX_UINT32 % range);', ports: 'maxFairFor' },
-  { line: 56, text: 'let cursor = gridSize - 1 - i;', ports: 'cursor starts at gridSize − 1 − i for every i' },
-  { line: 62, text: 'new TextEncoder().encode(`${clientSeed}:${nonce}:${cursor}`)', ports: 'the HMAC message' },
-  { line: 66, text: 'for (let off = 0; off + 8 <= hash.length; off += 8) {', ports: 'eight 4-byte chunks, first to last' },
-  { line: 67, text: 'const value = parseInt(hash.slice(off, off + 8), 16);', ports: 'chunk read as a big-endian uint32 (8 hex chars)' },
-  { line: 68, text: 'if (value < maxFair) {', ports: 'drawFromChunk: accept below maxFair' },
-  { line: 69, text: 'const j = value % range;', ports: 'drawFromChunk: j = value mod range' },
-  { line: 70, text: '[positions[i], positions[j]] = [positions[j], positions[i]];', ports: 'the swap' },
-  { line: 77, text: 'cursor++; // otherwise try a new cursor', ports: 'all 8 chunks rejected → next cursor' },
-  { line: 82, text: 'return positions.slice(0, minesCount).sort((a, b) => a - b);', ports: 'computeMinePositionsFromBuffer: first m, sorted' },
-]);
+/** Tiles on the board: a 5 x 5 grid, indices 0..24 (spec §1.1). */
+export const GRID_SIZE: number = 25;
 
-export const GRID_SIZE  = 25;
-export const MAX_UINT32 = 0xFFFFFFFF;   // operator L49
+/** Largest value a 4-byte unsigned chunk can hold (spec §2 step 2 reads u32 values). */
+export const MAX_UINT32: number = 0xffffffff;
+
+/** 2^32: the number of distinct 4-byte chunk values. */
+const TWO_POW_32 = 4294967296;
+
+/** Bytes per chunk and chunks per digest: a SHA-256 digest is 32 bytes = 8 chunks (spec §2 step 2, offsets 0..28). */
+const CHUNK_BYTES = 4;
 
 /**
- * Exclusive upper end of the accepted chunk window for one shuffle step on `range` tiles:
- * a 32-bit chunk v is accepted iff v < maxFairFor(range). By construction a whole number of
- * ranges, which is what makes the step exactly uniform — tests/steps/determinism.ts (Step 5,
- * MINES-08) re-derives that from the predicate below rather than trusting this sentence.
+ * Exclusive upper end of the accepted window for one draw over `range` outcomes.
+ * Spec §2 step 2: LIMIT = floor(2^32 / r) * r. A chunk value v is accepted when v < LIMIT,
+ * so every outcome 0..r-1 is hit by exactly floor(2^32 / r) accepted values.
+ * When r is a power of two this is 2^32 itself and nothing is ever rejected.
  */
 export function maxFairFor(range: number): number {
-  return MAX_UINT32 - (MAX_UINT32 % range);   // operator L55
+  if (!Number.isInteger(range) || range < 1 || range > TWO_POW_32) {
+    throw new RangeError(`range must be an integer in 1..2^32, got ${range}`);
+  }
+  return Math.floor(TWO_POW_32 / range) * range;
 }
 
 /**
- * THE SINGLE-CHUNK DRAW the shuffle uses — the one place the acceptance rule and the
- * chunk-to-index mapping live. Returns the swap index j in [0, range), or null when the chunk
- * falls in the rejected tail. The bias bound (drawBiasBound) probes THIS function, so a change
- * to the rule the shuffle actually runs is a change to the bound the step prints.
+ * One 4-byte chunk to an index in [0, range), or null when the chunk falls in the
+ * rejection region (spec §2 step 2: "if v < LIMIT: return v mod r").
+ * The shuffle calls this for every chunk it reads.
  */
 export function drawFromChunk(value: number, range: number): number | null {
-  return value < maxFairFor(range) ? value % range : null;   // operator L68–L69
+  if (!Number.isInteger(value) || value < 0 || value > MAX_UINT32) {
+    throw new RangeError(`chunk value must be an integer in 0..${MAX_UINT32}, got ${value}`);
+  }
+  const limit = maxFairFor(range);
+  return value < limit ? value % range : null;
 }
 
-/** Optional census filled by the shuffle: how often the rejection branch was actually taken. */
+/** Optional counter; passing one changes nothing computed. */
 export interface DrawCensus {
-  /** Shuffle steps executed (gridSize − 1 per round). */
-  draws: number;
-  /** 4-byte chunks read, accepted or not. */
-  chunksRead: number;
-  /** Chunks that fell in a rejected tail. */
-  rejectedChunks: number;
-  /** Times all 8 chunks of one HMAC were rejected and the cursor advanced. */
-  cursorAdvances: number;
+  draws: number; // shuffle steps executed (gridSize - 1 per round)
+  chunksRead: number; // 4-byte chunks read, accepted or not
+  rejectedChunks: number; // chunks rejected
+  cursorAdvances: number; // times a draw needed a further digest beyond its first (0 if the spec never does this)
 }
 
 export function newDrawCensus(): DrawCensus {
   return { draws: 0, chunksRead: 0, rejectedChunks: 0, cursorAdvances: 0 };
 }
 
-export function computeMinePositionsFromBuffer(
-  keyBuffer: Buffer,
-  clientSeed: string,
-  nonce: number,
-  mineCount: number,
-  gridSize = GRID_SIZE,
-  census?: DrawCensus,
-): number[] {
-  return shuffleTilesFromBuffer(keyBuffer, clientSeed, nonce, gridSize, census)
-    .slice(0, mineCount).sort((a, b) => a - b);   // operator L82
+// ---------------------------------------------------------------------------
+// Input checks
+// ---------------------------------------------------------------------------
+
+function checkGridSize(gridSize: number): void {
+  if (!Number.isInteger(gridSize) || gridSize < 2) {
+    throw new RangeError(`gridSize must be an integer >= 2, got ${gridSize}`);
+  }
+}
+
+function checkNonce(nonce: number): void {
+  // Spec §1.1: nonce is an integer >= 0. Spec §2 step 1: written in plain base 10.
+  if (!Number.isSafeInteger(nonce) || nonce < 0) {
+    throw new RangeError(`nonce must be a non-negative safe integer, got ${nonce}`);
+  }
+}
+
+function checkKey(keyBuffer: Buffer): void {
+  if (!Buffer.isBuffer(keyBuffer) || keyBuffer.length === 0) {
+    throw new TypeError("keyBuffer must be a non-empty Buffer (the hex-decoded server seed)");
+  }
 }
 
 /**
- * The shuffle itself: the full permutation of the grid, in DRAW ORDER. positions[i] is final after
- * the step for i (i = 24 … 1), so the mines positions[0 … m−1] are placed last-to-first and
- * positions[m − 1] is the FIRST mine the shuffle places. computeMinePositionsFromBuffer is the
- * sorted prefix of this; Step 26 reads the first-drawn mine from it.
+ * Hex-decode a published server seed (spec §1.1: 64 hex characters = 32 bytes).
+ * Buffer.from(..., "hex") silently drops malformed input, so the shape is checked first.
+ */
+function decodeServerSeed(serverSeed: string): Buffer {
+  if (typeof serverSeed !== "string" || !/^[0-9a-fA-F]{64}$/.test(serverSeed)) {
+    throw new TypeError("serverSeed must be 64 hexadecimal characters");
+  }
+  return Buffer.from(serverSeed, "hex");
+}
+
+// ---------------------------------------------------------------------------
+// Layout derivation (spec §2)
+// ---------------------------------------------------------------------------
+
+/**
+ * Spec §2 step 1: draw number i has its own digest,
+ * HMAC-SHA256(key = hex-decoded server seed, message = UTF-8 of "clientSeed:nonce:i"),
+ * with nonce and i in plain base 10. UTF-8 for non-ASCII client seeds is the spec's assumption (O8).
+ */
+function digestForDraw(keyBuffer: Buffer, clientSeed: string, nonce: number, drawIndex: number): Buffer {
+  const message = `${clientSeed}:${String(nonce)}:${String(drawIndex)}`;
+  return createHmac("sha256", keyBuffer).update(Buffer.from(message, "utf8")).digest();
+}
+
+/**
+ * Spec §2 step 2: walk the digest's eight big-endian 4-byte chunks in order and take the
+ * first one drawFromChunk accepts. The spec does not say what happens when all eight are
+ * rejected (O1); that has probability below (6e-9)^8 per draw, so this implementation stops
+ * with an error rather than invent a continuation. It never reads a further digest, so
+ * census.cursorAdvances stays 0.
+ */
+function drawIndexFromDigest(digest: Buffer, range: number, census: DrawCensus | undefined): number {
+  for (let off = 0; off + CHUNK_BYTES <= digest.length; off += CHUNK_BYTES) {
+    const value = digest.readUInt32BE(off);
+    if (census) census.chunksRead += 1;
+    const picked = drawFromChunk(value, range);
+    if (picked !== null) return picked;
+    if (census) census.rejectedChunks += 1;
+  }
+  throw new Error(
+    `all ${digest.length / CHUNK_BYTES} chunks of the digest were rejected for range ${range}; ` +
+      "ALGORITHM.md O1 leaves this case unspecified",
+  );
+}
+
+/**
+ * Spec §2 step 3: backward Fisher-Yates over a = [0, 1, ..., gridSize-1].
+ * For i = 0 .. gridSize-2: r = gridSize - i, j = draw(i, r), swap a[r-1] and a[j].
+ * All gridSize-1 draws are performed (the spec specifies the full shuffle; O2).
+ * Returns the array as the shuffle leaves it.
  */
 export function shuffleTilesFromBuffer(
   keyBuffer: Buffer,
   clientSeed: string,
   nonce: number,
-  gridSize = GRID_SIZE,
+  gridSize: number = GRID_SIZE,
   census?: DrawCensus,
 ): number[] {
-  const positions: number[] = Array.from({ length: gridSize }, (_, i) => i);   // operator L50
+  checkKey(keyBuffer);
+  checkNonce(nonce);
+  checkGridSize(gridSize);
+  if (typeof clientSeed !== "string") throw new TypeError("clientSeed must be a string");
 
-  for (let i = gridSize - 1; i > 0; i--) {   // operator L53
-    const range   = i + 1;                   // operator L54
-    let cursor    = gridSize - 1 - i;        // operator L56
-    if (census) census.draws++;
+  const tiles: number[] = [];
+  for (let t = 0; t < gridSize; t += 1) tiles.push(t);
 
-    while (true) {
-      const message = `${clientSeed}:${nonce}:${cursor}`;   // operator L62
-      const hmac    = crypto.createHmac('sha256', keyBuffer).update(message).digest('hex');   // operator L29–L43
-      let found     = false;
-
-      for (let off = 0; off + 8 <= hmac.length; off += 8) {           // operator L66
-        const value = parseInt(hmac.substring(off, off + 8), 16);   // operator L67
-        if (census) census.chunksRead++;
-        const j = drawFromChunk(value, range);
-        if (j !== null) {
-          [positions[i], positions[j]] = [positions[j], positions[i]];   // operator L70
-          found = true;
-          break;
-        }
-        if (census) census.rejectedChunks++;
-      }
-
-      if (found) break;
-      if (census) census.cursorAdvances++;
-      // operator L77: all 8 chunks rejected → next cursor
-      cursor++;
-    }
+  for (let i = 0; i < gridSize - 1; i += 1) {
+    const range = gridSize - i; // gridSize, gridSize-1, ..., 2
+    const digest = digestForDraw(keyBuffer, clientSeed, nonce, i); // cursor = draw index (§2 step 1)
+    const j = drawIndexFromDigest(digest, range, census); // 0 <= j < range (§2 step 2)
+    const last = range - 1;
+    const held = tiles[last] as number;
+    tiles[last] = tiles[j] as number;
+    tiles[j] = held;
+    if (census) census.draws += 1;
   }
-
-  return positions;
-}
-
-/** One range's row of the draw-bias bound. */
-export interface RangeBias {
-  range: number;
-  /** maxFairFor(range) — the constant the acceptance rule is written against. */
-  maxFair: number;
-  /** The accepted window's exclusive end AS MEASURED from drawFromChunk (binary search). */
-  acceptedWindow: number;
-  /** Chunk values in the rejected tail [acceptedWindow, 2^32). */
-  rejectedValues: number;
-  rejectionProbabilityPerChunk: number;
-  /** acceptedWindow mod range: 0 ⇔ every index receives the same number of accepted values. */
-  remainder: number;
-  minIndexCount: number;
-  maxIndexCount: number;
-  /** max over j of |P(j | accepted) − 1/range|. */
-  bias: number;
-  /** P(max) / P(min) − 1. */
-  relativeBias: number;
-  /** The same two figures for the UNCORRECTED draw (plain v mod range over all 2^32 values). */
-  uncorrectedBias: number;
-  uncorrectedRelativeBias: number;
-  /** Probes where drawFromChunk disagreed with "v < acceptedWindow ? v % range : null". */
-  predicateProbeFailures: number;
-  exact: boolean;
+  return tiles;
 }
 
 /**
- * THE DRAW BIAS BOUND, MEASURED FROM THE FUNCTION THE SHUFFLE CALLS.
- *
- * For every range the shuffle draws on (2 … gridSize), the accepted window is located by binary
- * search on drawFromChunk itself — not read off maxFairFor — then ~600 probes (both ends of the
- * domain, both sides of the window edge, and a stride across it) confirm the predicate IS
- * "v < window ? v % range : null". Given that shape the per-index counts are exact integer
- * arithmetic: floor(W / range) or that plus one, the larger for the low `W mod range` indices.
- * Returned as numbers so a step can compare them with the profile's 2^-32 ceiling.
+ * Spec §2 step 3: the mines are the first m entries of the shuffled array, a[0 .. m-1].
+ * Spec §2 step 4: compared with the record as a sorted set, so they are returned ascending.
  */
-export function drawBiasBound(gridSize = GRID_SIZE): {
-  algorithm: 'rejection-sampling';
-  domainSize: number;
-  ranges: RangeBias[];
-  worstBias: number;
-  worstRelativeBias: number;
-  worstUncorrectedBias: number;
-  worstUncorrectedRelativeBias: number;
-  inexactRanges: number[];
-  predicateProbeFailures: number;
-  /** Expected rejected chunks per round: Σ_r p_r / (1 − p_r) over the gridSize − 1 steps. */
-  expectedRejectedChunksPerRound: number;
-} {
-  const domainSize = MAX_UINT32 + 1;   // parseInt of 8 hex chars: 2^32 values
-  const ranges: RangeBias[] = [];
-  for (let range = 2; range <= gridSize; range++) {
-    // Largest accepted value + 1, assuming the accepted set is a prefix of [0, 2^32).
-    let lo = 0, hi = domainSize;       // invariant: accepted(lo-1) (or lo = 0), rejected(hi) (or hi = 2^32)
-    if (drawFromChunk(0, range) === null) hi = 0;
-    while (hi - lo > 1) {
-      const mid = Math.floor((lo + hi) / 2);
-      if (drawFromChunk(mid, range) !== null) lo = mid; else hi = mid;
-    }
-    const W = hi === 0 ? 0 : (drawFromChunk(lo, range) !== null ? lo + 1 : lo);
-
-    const expect = (v: number): number | null => (v < W ? v % range : null);
-    const probes = new Set<number>();
-    for (let d = 0; d < 100; d++) {
-      probes.add(d);
-      probes.add(MAX_UINT32 - d);
-      if (W - 1 - d >= 0) probes.add(W - 1 - d);
-      if (W + d <= MAX_UINT32) probes.add(W + d);
-    }
-    for (let k = 0; k < 200; k++) probes.add(Math.floor(k * (domainSize / 200)) + (k % range));
-    let predicateProbeFailures = 0;
-    for (const v of probes) {
-      if (v < 0 || v > MAX_UINT32) continue;
-      if (drawFromChunk(v, range) !== expect(v)) predicateProbeFailures++;
-    }
-
-    const remainder = W % range;
-    const minIndexCount = Math.floor(W / range);
-    const maxIndexCount = remainder === 0 ? minIndexCount : minIndexCount + 1;
-    // Integer numerators (all < 2^53), one division: |count/W − 1/range| = |count·range − W| / (W·range).
-    const bias = W === 0 ? 1
-      : Math.max(maxIndexCount * range - W, W - minIndexCount * range) / (W * range);
-    const relativeBias = minIndexCount === 0 ? Infinity : maxIndexCount / minIndexCount - 1;
-
-    const uRem = domainSize % range;
-    const uMin = Math.floor(domainSize / range);
-    const uMax = uRem === 0 ? uMin : uMin + 1;
-    const uncorrectedBias = Math.max(uMax * range - domainSize, domainSize - uMin * range) / (domainSize * range);
-    const uncorrectedRelativeBias = uMax / uMin - 1;
-
-    const rejectedValues = domainSize - W;
-    ranges.push({
-      range, maxFair: maxFairFor(range), acceptedWindow: W, rejectedValues,
-      rejectionProbabilityPerChunk: rejectedValues / domainSize,
-      remainder, minIndexCount, maxIndexCount, bias, relativeBias,
-      uncorrectedBias, uncorrectedRelativeBias, predicateProbeFailures,
-      exact: remainder === 0 && W > 0 && predicateProbeFailures === 0,
-    });
+export function computeMinePositionsFromBuffer(
+  keyBuffer: Buffer,
+  clientSeed: string,
+  nonce: number,
+  mineCount: number,
+  gridSize: number = GRID_SIZE,
+  census?: DrawCensus,
+): number[] {
+  checkGridSize(gridSize);
+  // Spec §1.1: m is 1..24 on 25 tiles, i.e. at least one mine and at least one safe tile.
+  if (!Number.isInteger(mineCount) || mineCount < 1 || mineCount > gridSize - 1) {
+    throw new RangeError(`mineCount must be an integer in 1..${gridSize - 1}, got ${mineCount}`);
   }
-  return {
-    algorithm: 'rejection-sampling',
-    domainSize,
-    ranges,
-    worstBias: Math.max(...ranges.map(r => r.bias)),
-    worstRelativeBias: Math.max(...ranges.map(r => r.relativeBias)),
-    worstUncorrectedBias: Math.max(...ranges.map(r => r.uncorrectedBias)),
-    worstUncorrectedRelativeBias: Math.max(...ranges.map(r => r.uncorrectedRelativeBias)),
-    inexactRanges: ranges.filter(r => !r.exact).map(r => r.range),
-    predicateProbeFailures: ranges.reduce((n, r) => n + r.predicateProbeFailures, 0),
-    expectedRejectedChunksPerRound: ranges.reduce(
-      (n, r) => n + r.rejectionProbabilityPerChunk / (1 - r.rejectionProbabilityPerChunk), 0),
-  };
+  const tiles = shuffleTilesFromBuffer(keyBuffer, clientSeed, nonce, gridSize, census);
+  return tiles.slice(0, mineCount).sort((x, y) => x - y);
 }
 
+/** Same as computeMinePositionsFromBuffer, from the server seed as published (64 hex characters, spec §1.1). */
 export function computeMinePositions(
   serverSeed: string,
   clientSeed: string,
   nonce: number,
   mineCount: number,
-  gridSize = GRID_SIZE,
+  gridSize: number = GRID_SIZE,
 ): number[] {
-  const key = Buffer.from(serverSeed, 'hex');
-  return computeMinePositionsFromBuffer(key, clientSeed, nonce, mineCount, gridSize);
+  return computeMinePositionsFromBuffer(decodeServerSeed(serverSeed), clientSeed, nonce, mineCount, gridSize);
 }
 
-/** SHA-256 commit-reveal: verify SHA-256(hex_bytes(serverSeed)) === serverSeedHashed */
+// ---------------------------------------------------------------------------
+// Commitment (spec §1.2)
+// ---------------------------------------------------------------------------
+
+/**
+ * Spec §1.2: commitment = lowercase hex of SHA-256 over the 32 hex-decoded bytes of the
+ * server seed (not over its 64 ASCII characters). A malformed seed cannot match, so it
+ * yields false. The published hash is compared case-insensitively.
+ */
 export function verifyHash(serverSeed: string, serverSeedHashed: string): boolean {
-  const seedBytes = Buffer.from(serverSeed, 'hex');
-  const computed  = crypto.createHash('sha256').update(seedBytes).digest('hex');
-  return computed === serverSeedHashed;
+  if (typeof serverSeedHashed !== "string" || !/^[0-9a-fA-F]{64}$/.test(serverSeedHashed)) return false;
+  let key: Buffer;
+  try {
+    key = decodeServerSeed(serverSeed);
+  } catch {
+    return false;
+  }
+  const commitment = createHash("sha256").update(key).digest("hex");
+  return commitment === serverSeedHashed.toLowerCase();
+}
+
+// ---------------------------------------------------------------------------
+// Multiplier helpers (spec §3.2, §3.4)
+// ---------------------------------------------------------------------------
+
+function checkMinesAndReveals(mineCount: number, reveals: number, name: string): void {
+  if (!Number.isInteger(mineCount) || mineCount < 1 || mineCount > GRID_SIZE - 1) {
+    throw new RangeError(`mineCount must be an integer in 1..${GRID_SIZE - 1}, got ${mineCount}`);
+  }
+  if (!Number.isInteger(reveals) || reveals < 0 || reveals > GRID_SIZE - mineCount) {
+    throw new RangeError(`${name} must be an integer in 0..${GRID_SIZE - mineCount}, got ${reveals}`);
+  }
 }
 
 /**
- * Multiplier formula: C(n,k) / C(n-m,k) × (1 - house_edge)
- * n = grid_size (25), m = mines_count, k = reveals so far
+ * Chance the next reveal is safe after `revealsSoFar` safe reveals:
+ * (25 - m - revealsSoFar) of the (25 - revealsSoFar) unopened tiles are safe.
+ * Its running product is P(survive k reveals) = C(25-m, k) / C(25, k) (spec §3.2).
  */
-export function theoreticalMultiplier(mineCount: number, reveals: number, houseEdge = 0.001): number {
-  const n = GRID_SIZE;
-  const m = mineCount;
-  const k = reveals;
-  return comb(n, k) / comb(n - m, k) * (1 - houseEdge);
-}
-
-/** Win chance for next reveal: (n - m - k) / (n - k) */
 export function winChance(mineCount: number, revealsSoFar: number): number {
-  const n = GRID_SIZE;
-  return (n - mineCount - revealsSoFar) / (n - revealsSoFar);
+  checkMinesAndReveals(mineCount, revealsSoFar, "revealsSoFar");
+  return (GRID_SIZE - mineCount - revealsSoFar) / (GRID_SIZE - revealsSoFar);
 }
 
-/** Binomial coefficient C(n, k) */
-function comb(n: number, k: number): number {
-  if (k < 0 || k > n) return 0;
-  if (k === 0 || k === n) return 1;
-  let result = 1;
-  for (let i = 0; i < k; i++) {
-    result = result * (n - i) / (i + 1);
+/**
+ * Reference multiplier, unrounded, in IEEE doubles: (1 - houseEdge) / P(survive `reveals` reveals).
+ * 1/P is the spec's fair multiplier M(m, k) = prod_{t<k} (25 - t) / (25 - m - t) (spec §3.2);
+ * the (1 - e) factor is the edge of spec §3.4. Rounding to 18 decimals and the stake-band
+ * edge lookup are out of scope for this module.
+ */
+export function theoreticalMultiplier(mineCount: number, reveals: number, houseEdge: number = 0.001): number {
+  checkMinesAndReveals(mineCount, reveals, "reveals");
+  if (!Number.isFinite(houseEdge) || houseEdge < 0 || houseEdge >= 1) {
+    throw new RangeError(`houseEdge must be in [0, 1), got ${houseEdge}`);
   }
-  return result;
+  let fair = 1;
+  for (let t = 0; t < reveals; t += 1) {
+    fair *= (GRID_SIZE - t) / (GRID_SIZE - mineCount - t);
+  }
+  return fair * (1 - houseEdge);
 }

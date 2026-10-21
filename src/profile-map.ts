@@ -557,27 +557,33 @@ export const NOT_APPLICABLE: Array<{ id: string; reason: string }> = [
 export const PACKAGE_CHECKS: Array<{ id: string; artifact: string; coverage: Coverage | 'none'; note: string }> = [
   {
     id: 'MINES-09',
-    artifact: 'tests/mines/MinesTests.ts (Operator source block) + src/rng.ts OPERATOR_SOURCE_CITES + src/operator-verifier.ts + Step 5 fifth leg',
+    artifact: 'docs/ALGORITHM.md + tests/mines/RngSpecTests.ts + tests/mines/MinesTests.ts (Second check block) + src/operator-verifier.ts + Step 5 fifth leg',
     coverage: 'full',
-    note: 'THE OPERATOR SOURCE IS IN REACH (corrected 2026-09-25 — the earlier note said no Duel Mines source was; that was '
-      + 'wrong: Duel publishes it). Duel\'s own Mines code, shown in the code panel of duel.com → Provably Fair → Verify '
-      + '(Expand → Copy), was copied verbatim by Paulo on 2026-09-25 to evidence/verify-tab/duel-verify-tab-mines-2026-09-25.js '
-      + '(SHA-256 88f5268b…, 3,026 bytes; evidence/E03 shows the same panel collapsed). The asserts, each met: (1) "unit '
-      + 'tests reproduce captured bets from their revealed seeds … against the operator\'s published source" — the '
-      + 'Operator source block in tests/mines/MinesTests.ts EXECUTES that file unmodified (src/operator-verifier.ts: '
+    note: 'REWRITTEN 2026-10-20 (v1.2.0). src/rng.ts is rebuilt from a written specification, docs/ALGORITHM.md '
+      + '(framework games/mines/ALGORITHM.md), by an implementer who never opened Duel\'s code; Duel\'s published '
+      + 'Verify-tab code is run as a second check, not used as the source. Through v1.1.0 src/rng.ts was a port of that '
+      + 'code and cited 16 of its lines (OPERATOR_SOURCE_CITES); the port and the citation table are gone. The asserts: '
+      + '(1) "unit tests reproduce captured bets from their revealed seeds … against the operator\'s published source" — '
+      + 'the Second check block in tests/mines/MinesTests.ts EXECUTES Duel\'s Verify-tab file (copied verbatim by Paulo on '
+      + '2026-09-25 from duel.com → Provably Fair → Verify, Expand → Copy, to evidence/verify-tab/duel-verify-tab-mines-2026-09-25.js, '
+      + 'SHA-256 88f5268b…, 3,026 bytes; evidence/E03 shows the same panel collapsed) unmodified (src/operator-verifier.ts: '
       + 'pinned SHA-256, child-process runner verifier-parity/operator/run-operator-verifier.cjs, the file\'s own '
       + 'generateMinesPositions) on all 7,050 captured rounds of both datasets and requires its mine set to equal the '
       + 'served mines_positions and src/rng.ts computeMinePositions: 7,050/7,050, 0 differ; (2) "fixed vectors" — the '
       + 'same block requires the operator code to return the 7 known-answer layouts (server seed b255e0f5…, client seed '
-      + 'EveJlkDtA24dfvBr, nonces 0-6), beside the existing src/rng.ts vectors and the commitment vector; (3) "the '
-      + 'adapter cites the operator source line it ports" — src/rng.ts OPERATOR_SOURCE_CITES names 16 lines of the '
-      + 'pinned file with the text each must carry (L30 hex-decoded key … L82 first m, sorted), and '
-      + 'checkOperatorCites FAILs any line that does not carry it: 16/16 verbatim. Step 5 (fifth leg) runs the same '
-      + 'execution and citation check in the verifier and FAILs on a hash mismatch, any disagreement, a round count '
-      + 'other than 7,050, or a broken citation. FAIL probed: M05f (a comment of the operator file changed without a '
-      + 're-pin → hash mismatch), M05g (the file\'s HMAC digest byte order reversed AND re-pinned → layouts disagree), '
-      + 'M05h (a citation moved to a line that does not carry its text). What this does NOT establish: that the Verify '
-      + 'button runs exactly the code the panel shows, or that Duel\'s server runs it (MANIFEST.md DL-4, premise P2)',
+      + 'EveJlkDtA24dfvBr, nonces 0-6), and tests/mines/RngSpecTests.ts runs the spec\'s own vectors and properties '
+      + 'against src/rng.ts (115/115); (3) "the adapter cites the operator source line it ports" — superseded for this '
+      + 'package by the 20 Oct 2026 rule that RNG code is rebuilt from a written spec: nothing is ported, so no operator '
+      + 'line is cited; docs/ALGORITHM.md §4 names the source of every step instead (Duel\'s public pages, the standard '
+      + 'construction, or the 7,050 live rounds). Step 5 (fifth leg) runs the same execution in the verifier and FAILs on '
+      + 'a hash mismatch, any disagreement or a round count other than 7,050. FAIL probed: M05f (a comment of the operator '
+      + 'file changed without a re-pin → hash mismatch), M05g (the file\'s HMAC digest byte order reversed AND re-pinned → '
+      + 'layouts disagree). Known differences between src/rng.ts and Duel\'s file, on inputs no captured round reaches '
+      + '(0 rejected chunks in the captured draws): for ranges 2, 4, 8, 16 src/rng.ts accepts every chunk where Duel\'s '
+      + 'file rejects the top r values (both exactly uniform), and when all eight chunks of a digest are rejected src/rng.ts '
+      + 'throws (spec O1) where Duel\'s file moves to the next cursor (MANIFEST.md DL-11, premise P1). What this does NOT '
+      + 'establish: that the Verify button runs exactly the code the panel shows, or that Duel\'s server runs it '
+      + '(MANIFEST.md DL-4, premise P2)',
   },
   {
     id: 'MINES-23', artifact: 'MANIFEST.md#verification-results (S5-MATRIX block)', coverage: 'full',
@@ -661,7 +667,7 @@ export const PACKAGE_CHECKS: Array<{ id: string; artifact: string; coverage: Cov
     artifact: 'tests/mutations.json + tests/survivors.json + tests/mutations.ts (npm run mutate)',
     coverage: 'full',
     note: 'a step-named registry run in disposable temp copies (tests/mutations.ts, ported from LIQD with '
-      + 'multi-file `edits`): 48 must-fail entries, each with the result it must produce: 37 turn their named '
+      + 'multi-file `edits`): 47 must-fail entries, each with the result it must produce: 36 turn their named '
       + 'step FAIL, 7 turn it FLAG (M11, M19c, M25, M25b, M25c with Conditional Pass; MC3a, MC3b with RTP FIGURE '
       + 'OVERSTATED, exit 5), M26 must leave Step 26 at INFO with the verdict unchanged, and 3 name no step (M27 '
       + 'must fail the unit suite; MC3as and MC3bs must exit 1 with the committed RTP table reported as '
@@ -670,8 +676,9 @@ export const PACKAGE_CHECKS: Array<{ id: string; artifact: string; coverage: Cov
       + 'M07, M08, M20, M25c forge a dataset AND re-pin its SHA-256 as a forger would; M18, M19, M19b, M19c, M19d, M24b forge '
       + 'the simulation artifact AND re-pin it; M05b and M05d forge the vendored docusaurus and live-site verifiers AND re-pin them; M24, '
       + 'M05c and M05e edit an artifact without re-pinning; added 2026-09-25 for the operator\'s own Verify-tab code '
-      + '(MINES-09): M05g forges it AND re-pins it, M05f edits it without re-pinning, M05h breaks a src/rng.ts '
-      + 'citation. Three declared '
+      + '(MINES-09): M05g forges it AND re-pins it, M05f edits it without re-pinning (M05h, which broke a src/rng.ts '
+      + 'citation, was retired on 20 Oct 2026 with the citation table; M05, M06, M16, M16b and M27 were retargeted to the '
+      + 'rebuilt src/rng.ts). Three declared '
       + 'survivors in tests/survivors.json, each tied to a limitation id (DL-11, DL-5, DL-6)',
   },
   {
@@ -680,8 +687,8 @@ export const PACKAGE_CHECKS: Array<{ id: string; artifact: string; coverage: Cov
     coverage: 'full',
     note: 'MANIFEST.md carries the declared-limitations register DL-1 … DL-11, each row with its measured '
       + 'magnitude and its closure evidence (the step or artifact that binds it, or what would close it), and '
-      + 'a Load-Bearing Premises table marking the unwitnessed premises ASSUMED (P1 the operator\'s server takes '
-      + 'the retry branch its published code shows, P2 the Verify button runs the code its panel shows, P3 the API '
+      + 'a Load-Bearing Premises table marking the unwitnessed premises ASSUMED (P1 where no captured round reaches '
+      + '(all eight chunks rejected; the top values of a power-of-two range) the operator\'s server draws as its published code does, P2 the Verify button runs the code its panel shows, P3 the API '
       + 'tile numbering is the board the player sees, P7 the capture is a faithful record of what Duel served and '
       + 'when, on which the pre-bet timing of the commitments rests) beside the witnessed ones; MANIFEST Evidence numbers every exhibit '
       + 'E01-E14 with a file '

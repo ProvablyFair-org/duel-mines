@@ -79,7 +79,7 @@
     "expectStep": 5,
     "expectStatus": "FAIL",
     "file": "src/rng.ts",
-    "find": "return MAX_UINT32 - (MAX_UINT32 % range);",
+    "find": "return Math.floor(TWO_POW_32 / range) * range;",
     "replace": "return MAX_UINT32;",
     "guard": "Step 5 draw-bias bound: every accepted window must be a whole number of ranges"
   },
@@ -177,25 +177,14 @@
     "guard": "Step 5 operator-code parity (MINES-09): the operator's code is EXECUTED on every captured round and must return the served mine set and src/rng.ts's; a changed file that a forger also re-pins is caught by the layouts"
   },
   {
-    "name": "M05h src/rng.ts cites an operator line that does not carry the quoted text (L56 → L57)",
-    "runner": "verify",
-    "expect": "NOT PROVABLY FAIR",
-    "expectStep": 5,
-    "expectStatus": "FAIL",
-    "file": "src/rng.ts",
-    "find": "{ line: 56, text: 'let cursor = gridSize - 1 - i;'",
-    "replace": "{ line: 57, text: 'let cursor = gridSize - 1 - i;'",
-    "guard": "Step 5 operator-code parity (MINES-09): every citation in src/rng.ts OPERATOR_SOURCE_CITES must quote the pinned operator file at the line it names"
-  },
-  {
     "name": "M06 client seed dropped from the HMAC message",
     "runner": "verify",
     "expect": "NOT PROVABLY FAIR",
     "expectStep": 6,
     "expectStatus": "FAIL",
     "file": "src/rng.ts",
-    "find": "const message = `${clientSeed}:${nonce}:${cursor}`;",
-    "replace": "const message = `:${nonce}:${cursor}`;",
+    "find": "const message = `${clientSeed}:${String(nonce)}:${String(drawIndex)}`;",
+    "replace": "const message = `:${String(nonce)}:${String(drawIndex)}`;",
     "guard": "Step 6: a wrong or empty client seed must change the layout at the model-predicted rate"
   },
   {
@@ -331,20 +320,20 @@
     "expectStep": 16,
     "expectStatus": "FAIL",
     "file": "src/rng.ts",
-    "find": "return (n - mineCount - revealsSoFar) / (n - revealsSoFar);",
-    "replace": "return (n - mineCount - revealsSoFar + 1) / (n - revealsSoFar);",
+    "find": "return (GRID_SIZE - mineCount - revealsSoFar) / (GRID_SIZE - revealsSoFar);",
+    "replace": "return (GRID_SIZE - mineCount - revealsSoFar + 1) / (GRID_SIZE - revealsSoFar);",
     "guard": "Step 16 checks the adapter against the counting anchor; the old identity cancelled a shared error"
   },
   {
-    "name": "M16b binomial comb() off by one in the adapter",
+    "name": "M16b fair-multiplier product off by one in the adapter (retargeted 20 Oct 2026 from the v1.1.0 comb())",
     "runner": "verify",
     "expect": "NOT PROVABLY FAIR",
     "expectStep": 16,
     "expectStatus": "FAIL",
     "file": "src/rng.ts",
-    "find": "result = result * (n - i) / (i + 1);",
-    "replace": "result = result * (n - i + 1) / (i + 1);",
-    "guard": "Step 16 counting anchor: a wrong comb() used on both sides of the identity no longer cancels"
+    "find": "fair *= (GRID_SIZE - t) / (GRID_SIZE - mineCount - t);",
+    "replace": "fair *= (GRID_SIZE - t + 1) / (GRID_SIZE - mineCount - t);",
+    "guard": "Step 16 counting anchor: the adapter's fair multiplier (theoreticalMultiplier, the product of (25 − t)/(25 − m − t)) is held to the exact BigInt counting anchor, so an off-by-one factor cannot pass"
   },
   {
     "name": "M17 disclosed exposed epochs omit record 132",
@@ -371,8 +360,8 @@
       },
       {
         "file": "src/artifact-pins.ts",
-        "find": "b6ce72390eaa5159d3c770ca96e6e4bd1b9d04dc03a11e453b00dd6c23f1de87",
-        "replace": "809c3819f3579f94c9550f3e97a2b75bde5ff94a1358edaee3c58978f00ccc4e"
+        "find": "8f628aa69a303ebc13ee343ebb65bae1ba6fd0f1c02d9f996f9b83bf33912f4d",
+        "replace": "0b2f8a3e2f5bf4832a21f271cf97c454a45db0611c056bae3aa92c19df427273"
       }
     ],
     "guard": "Step 18 re-derives every statistic from the census; a forged figure disagrees"
@@ -402,8 +391,8 @@
       },
       {
         "file": "src/artifact-pins.ts",
-        "find": "b6ce72390eaa5159d3c770ca96e6e4bd1b9d04dc03a11e453b00dd6c23f1de87",
-        "replace": "e12fd0a9884cdba7edfdeb89ba21e1a256897aea2a8b998326dd19b576362a88"
+        "find": "8f628aa69a303ebc13ee343ebb65bae1ba6fd0f1c02d9f996f9b83bf33912f4d",
+        "replace": "fb7477ba9be0319d7b6ce789616aea765dc7f8c0c5c879c1b5b4ea6ac6e8cbdf"
       }
     ],
     "guard": "Step 19 re-derives every Test C window from the win bitmasks"
@@ -422,8 +411,8 @@
       },
       {
         "file": "src/artifact-pins.ts",
-        "find": "b6ce72390eaa5159d3c770ca96e6e4bd1b9d04dc03a11e453b00dd6c23f1de87",
-        "replace": "347530303684551f5e7424927faf049accc217a3c6bf0e74929e91ca0725e6e0"
+        "find": "8f628aa69a303ebc13ee343ebb65bae1ba6fd0f1c02d9f996f9b83bf33912f4d",
+        "replace": "9d404716b6da0cb2520fcbdf9e98ef7ee28b03da075b5d8c8cf7c5a90627eb32"
       }
     ],
     "guard": "Step 19 re-derives Test B p-values from the win counts; they were read from the rows"
@@ -447,8 +436,8 @@
       },
       {
         "file": "src/artifact-pins.ts",
-        "find": "b6ce72390eaa5159d3c770ca96e6e4bd1b9d04dc03a11e453b00dd6c23f1de87",
-        "replace": "373474bfeda7d9b1f784aed874989d8ed98c465c49c7eb6176051f68173815dc"
+        "find": "8f628aa69a303ebc13ee343ebb65bae1ba6fd0f1c02d9f996f9b83bf33912f4d",
+        "replace": "92b9af1d0238a7c27002258df92322f86b949878de2f5b4775b5374781d7059f"
       }
     ],
     "guard": "Step 19 broad count rule (6 Oct 2026): K = 2 seeds off in both windows, P(K >= 2 | Binomial(130, 0.0025)) = 0.0425 < 0.05 is a FLAG; one such seed alone is not"
@@ -477,8 +466,8 @@
       },
       {
         "file": "src/artifact-pins.ts",
-        "find": "b6ce72390eaa5159d3c770ca96e6e4bd1b9d04dc03a11e453b00dd6c23f1de87",
-        "replace": "61a49ff9559a4c239b8834a409fa4d9b5cfa854ea16dae4d559d273ca79dec25"
+        "find": "8f628aa69a303ebc13ee343ebb65bae1ba6fd0f1c02d9f996f9b83bf33912f4d",
+        "replace": "fa626ec7dd89c6f59111191b162d61d2167bdc2402f96fdc8c1e38398a7f2c70"
       }
     ],
     "guard": "Step 19 broad count rule (6 Oct 2026): K = 3 seeds off in both windows, P(K >= 3 | Binomial(130, 0.0025)) = 0.0044 < 0.01 is a FAIL"
@@ -572,8 +561,8 @@
       },
       {
         "file": "src/artifact-pins.ts",
-        "find": "b6ce72390eaa5159d3c770ca96e6e4bd1b9d04dc03a11e453b00dd6c23f1de87",
-        "replace": "674457d94205dee40104fc3995b725e520ea7cd29a19961cddae000d0d82ef46"
+        "find": "8f628aa69a303ebc13ee343ebb65bae1ba6fd0f1c02d9f996f9b83bf33912f4d",
+        "replace": "f96947de56a26e41b8e20a468694e50af055a478eb653a28e8807fa581f23991"
       }
     ],
     "guard": "Step 24 value domains: a re-pinned forgery still fails on a value no plan permits"
@@ -635,8 +624,8 @@
     "name": "M27 commitment encoding switched to UTF-8 (unit suite)",
     "runner": "mocha",
     "file": "src/rng.ts",
-    "find": "const seedBytes = Buffer.from(serverSeed, 'hex');",
-    "replace": "const seedBytes = Buffer.from(serverSeed, 'utf8');",
+    "find": "const commitment = createHash(\"sha256\").update(key).digest(\"hex\");",
+    "replace": "const commitment = createHash(\"sha256\").update(Buffer.from(serverSeed, \"utf8\")).digest(\"hex\");",
     "expect": "commit-reveal",
     "guard": "the unit vectors pin the hex-decoded commitment encoding"
   },

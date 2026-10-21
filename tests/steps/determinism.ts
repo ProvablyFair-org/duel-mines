@@ -6,19 +6,24 @@
  * it draws each swap index equally. A rejection window that was not a whole number of ranges
  * would over-represent the low indices, and all 6,500 exact recomputations would be exact
  * recomputations of a biased shuffle.
+ *
+ * src/rng.ts is rebuilt from the written spec docs/ALGORITHM.md (v1.2.0); the bound is src/bias.ts,
+ * the audit's own code built on src/rng.ts drawFromChunk. Duel's Verify-tab code (fifth leg) is run as
+ * a second check, not used as the source.
  */
 
 import type { StepResult } from './context';
 import { step, VerifyContext } from './context';
 import {
-  computeMinePositionsFromBuffer, computeMinePositions, drawBiasBound, newDrawCensus, GRID_SIZE,
+  computeMinePositionsFromBuffer, computeMinePositions, newDrawCensus, GRID_SIZE,
 } from '../../src/rng';
+import { drawBiasBound } from '../../src/bias';
 import { EXPECTED_BETS, EXPECTED_REVEALED_EPOCHS, EXPECTED_EPOCHS, EXPECTED_PHASE_E_BETS } from '../../src/loader';
 import { sameLayout } from '../../src/layout';
 import { loadSiteVerifier, SITE_VERIFIER_PROVENANCE } from '../../src/site-verifier';
 import { runLiveSiteVerifier, LIVE_SITE_PROVENANCE } from '../../src/live-site-verifier';
 import {
-  runOperatorVerifier, checkOperatorCites, OPERATOR_EXPECTED_LOGS, OPERATOR_VERIFIER_PROVENANCE,
+  runOperatorVerifier, OPERATOR_EXPECTED_LOGS, OPERATOR_VERIFIER_PROVENANCE,
 } from '../../src/operator-verifier';
 
 /**
@@ -191,13 +196,14 @@ export function run(ctx: VerifyContext): StepResult[] {
     + `${liveCompared.toLocaleString()} captured rounds and printed the same mine set as src/rng.ts on every one — `
     + `${liveMismatches} mismatches.`;
 
-  // ── Step 5, fifth leg: THE OPERATOR'S OWN Verify-tab code (MINES-09) ──────
+  // ── Step 5, fifth leg: THE OPERATOR'S OWN Verify-tab code (MINES-09), a SECOND CHECK ──────
+  // src/rng.ts is rebuilt from the written spec docs/ALGORITHM.md, not from this code; Duel's file is
+  // run here as an independent cross-check of that rebuild and of the served layouts, never as its source.
   // Duel's Mines code panel (duel.com → Provably Fair → Verify → Expand → Copy, 2026-09-25) is
   // vendored verbatim under evidence/verify-tab/ and pinned by SHA-256 in src/operator-verifier.ts.
   // Its own generateMinesPositions is EXECUTED unmodified on every captured round of both datasets;
-  // its mine set must equal the SERVED mines_positions and src/rng.ts's. It must print only its own
-  // empty-input message, and every operator line src/rng.ts cites must carry the quoted text. HARD
-  // FAIL on a hash mismatch, a runner that will not load, any disagreement, or a round count other
+  // its mine set must equal the SERVED mines_positions and src/rng.ts's, and it must print only its own
+  // empty-input message. HARD FAIL on a hash mismatch, a runner that will not load, any disagreement, or a round count other
   // than EXPECTED_BETS + EXPECTED_PHASE_E_BETS.
   const opIssues: string[] = [];
   const opRounds: Array<{ id: string; serverSeed: string; clientSeed: string; nonce: number; gridSize: number; minesCount: number; pkg: string; served: string; round: string }> = [];
@@ -210,7 +216,6 @@ export function run(ctx: VerifyContext): StepResult[] {
       served: [...b.response.mines_positions].sort((x, y) => x - y).join(','), round: String(b.response.round_id) });
   });
   const op = runOperatorVerifier(opRounds.map(({ id, serverSeed, clientSeed, nonce, gridSize, minesCount }) => ({ id, serverSeed, clientSeed, nonce, gridSize, minesCount })));
-  const opCites = checkOperatorCites();
   let opCompared = 0, opVsPkg = 0, opVsServed = 0;
   const opFirst: string[] = [];
   if (op.error) opIssues.push(op.error);
@@ -230,13 +235,12 @@ export function run(ctx: VerifyContext): StepResult[] {
     }
     if (opCompared !== siteExpected) opIssues.push(`operator-code parity covered ${opCompared} rounds, expected ${siteExpected}`);
   }
-  if (opCites.bad.length > 0 || opCites.checked === 0) opIssues.push(`src/rng.ts operator citations: ${opCites.bad.slice(0, 2).join('; ')}`);
   const opSentence =
-    `Operator-code parity (MINES-09): Duel's own Mines Verify-tab code (${OPERATOR_VERIFIER_PROVENANCE.savedAs}, `
+    `Operator-code parity (MINES-09), the second check: Duel's own Mines Verify-tab code (${OPERATOR_VERIFIER_PROVENANCE.savedAs}, `
     + `copied ${OPERATOR_VERIFIER_PROVENANCE.copiedOn}; ${op.files.filter(f => f.match).length}/${op.files.length} SHA-256 pins MATCH) was executed `
     + `unmodified on all ${opCompared.toLocaleString()} captured rounds: its generateMinesPositions returned the served mine set on `
-    + `${(opCompared - opVsServed).toLocaleString()} and src/rng.ts's on ${(opCompared - opVsPkg).toLocaleString()} (${opVsServed} / ${opVsPkg} differ); `
-    + `operator lines cited by src/rng.ts ${opCites.checked - opCites.bad.length}/${opCites.checked} verbatim.`;
+    + `${(opCompared - opVsServed).toLocaleString()} and src/rng.ts's on ${(opCompared - opVsPkg).toLocaleString()} (${opVsServed} / ${opVsPkg} differ). `
+    + `src/rng.ts is rebuilt from docs/ALGORITHM.md, not from this code.`;
 
   const s5Ok = mismatches === 0 && s5Issues.length === 0 && biasIssues.length === 0 && siteIssues.length === 0 && liveIssues.length === 0
     && opIssues.length === 0;
@@ -290,7 +294,6 @@ export function run(ctx: VerifyContext): StepResult[] {
         files: op.files.map(f => ({ file: f.file, pinnedSha256: f.pinned, actualSha256: f.actual, match: f.match })),
         provenance: OPERATOR_VERIFIER_PROVENANCE,
         rounds: opCompared, expectedRounds: siteExpected, disagreeWithRng: opVsPkg, disagreeWithServed: opVsServed,
-        citesChecked: opCites.checked, citesBad: opCites.bad.length,
         issues: opIssues,
       },
     },

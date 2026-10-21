@@ -9,10 +9,84 @@ exports.ARTIFACT_PINS = Object.freeze({
     'rtp-convergence.html': '4d5cadeca0ab206d0788b2f4bf59355bf61d757c31a33e10e3acee5d98559424',
     'determinism-log.json': '12c39c309bbb7539e2ae8756923f8b7caaa560e9dfe0bc4c18f744fbfaa1497a',
     'chi-squared-results.json': 'c73aa5b90fc626c65c439eef964a3d3c795ae8d4b43515ee6d8023e16b569daf',
-    'payout-coverage.json': 'afc216a49f5176a634731b5ef2bb0324447d80af1f638681512f2434303ec46d',
-    'simulation-results.json': 'b6ce72390eaa5159d3c770ca96e6e4bd1b9d04dc03a11e453b00dd6c23f1de87',
-    'verification-results.json': '3d4a24a990a3966ea693ec26b106ca735d3f6ebca0ba62c21fa379323db7b045',
+    'payout-coverage.json': '32bfe33cf0a4ca62dea3445d3d6e78ca59c8bb4fd6c7b6cd6fc727266b2e070e',
+    'simulation-results.json': '8f628aa69a303ebc13ee343ebb65bae1ba6fd0f1c02d9f996f9b83bf33912f4d',
+    'verification-results.json': '2c7912464ab85ecb42c9777c11bd932104fd77b14545813d38b0edc86499638f',
 });
+
+},
+"src/bias.js": function(module, exports, require, __filename, __dirname) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.drawBiasBound = drawBiasBound;
+const rng_1 = require("./rng");
+function drawBiasBound(gridSize = rng_1.GRID_SIZE) {
+    const domainSize = rng_1.MAX_UINT32 + 1;
+    const ranges = [];
+    for (let range = 2; range <= gridSize; range++) {
+        let lo = 0, hi = domainSize;
+        if ((0, rng_1.drawFromChunk)(0, range) === null)
+            hi = 0;
+        while (hi - lo > 1) {
+            const mid = Math.floor((lo + hi) / 2);
+            if ((0, rng_1.drawFromChunk)(mid, range) !== null)
+                lo = mid;
+            else
+                hi = mid;
+        }
+        const W = hi === 0 ? 0 : ((0, rng_1.drawFromChunk)(lo, range) !== null ? lo + 1 : lo);
+        const expect = (v) => (v < W ? v % range : null);
+        const probes = new Set();
+        for (let d = 0; d < 100; d++) {
+            probes.add(d);
+            probes.add(rng_1.MAX_UINT32 - d);
+            if (W - 1 - d >= 0)
+                probes.add(W - 1 - d);
+            if (W + d <= rng_1.MAX_UINT32)
+                probes.add(W + d);
+        }
+        for (let k = 0; k < 200; k++)
+            probes.add(Math.floor(k * (domainSize / 200)) + (k % range));
+        let predicateProbeFailures = 0;
+        for (const v of probes) {
+            if (v < 0 || v > rng_1.MAX_UINT32)
+                continue;
+            if ((0, rng_1.drawFromChunk)(v, range) !== expect(v))
+                predicateProbeFailures++;
+        }
+        const remainder = W % range;
+        const minIndexCount = Math.floor(W / range);
+        const maxIndexCount = remainder === 0 ? minIndexCount : minIndexCount + 1;
+        const bias = W === 0 ? 1
+            : Math.max(maxIndexCount * range - W, W - minIndexCount * range) / (W * range);
+        const relativeBias = minIndexCount === 0 ? Infinity : maxIndexCount / minIndexCount - 1;
+        const uRem = domainSize % range;
+        const uMin = Math.floor(domainSize / range);
+        const uMax = uRem === 0 ? uMin : uMin + 1;
+        const uncorrectedBias = Math.max(uMax * range - domainSize, domainSize - uMin * range) / (domainSize * range);
+        const uncorrectedRelativeBias = uMax / uMin - 1;
+        const rejectedValues = domainSize - W;
+        ranges.push({
+            range, maxFair: (0, rng_1.maxFairFor)(range), acceptedWindow: W, rejectedValues,
+            rejectionProbabilityPerChunk: rejectedValues / domainSize,
+            remainder, minIndexCount, maxIndexCount, bias, relativeBias,
+            uncorrectedBias, uncorrectedRelativeBias, predicateProbeFailures,
+            exact: remainder === 0 && W > 0 && predicateProbeFailures === 0,
+        });
+    }
+    return {
+        algorithm: 'rejection-sampling',
+        domainSize,
+        ranges,
+        worstBias: Math.max(...ranges.map(r => r.bias)),
+        worstRelativeBias: Math.max(...ranges.map(r => r.relativeBias)),
+        worstUncorrectedBias: Math.max(...ranges.map(r => r.uncorrectedBias)),
+        worstUncorrectedRelativeBias: Math.max(...ranges.map(r => r.uncorrectedRelativeBias)),
+        inexactRanges: ranges.filter(r => !r.exact).map(r => r.range),
+        predicateProbeFailures: ranges.reduce((n, r) => n + r.predicateProbeFailures, 0),
+        expectedRejectedChunksPerRound: ranges.reduce((n, r) => n + r.rejectionProbabilityPerChunk / (1 - r.rejectionProbabilityPerChunk), 0),
+    };
+}
 
 },
 "src/diff.js": function(module, exports, require, __filename, __dirname) {
@@ -233,7 +307,7 @@ exports.VERIFICATION_KEY_DOMAINS = new Map([
     winningBets wins worstMineCount siteVerifierRounds siteVerifierExpectedRounds siteVerifierMismatches
     siteVerifierUnrecomputable capKeysScanned capServedChecked servedAboveCap cellsAboveCap
     liveSiteRounds liveSiteExpectedRounds liveSiteMismatches liveSiteStandInModules pageModule
-    bytes lines rounds expectedRounds disagreeWithRng disagreeWithServed citesChecked citesBad
+    bytes lines rounds expectedRounds disagreeWithRng disagreeWithServed
     broadFlagAt broadFailAt`, INT),
     ...keys(`earlyWins earlyTotal`, intIn(0, sim_plan_1.SIM_EPOCH_LENGTH, 'epoch length')),
     ...keys(`lateWins lateTotal`, intIn(0, sim_plan_1.SIM_NONCES_PER_SEED, 'Pass-2 nonces per seed')),
@@ -684,13 +758,11 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OPERATOR_RUNNER_TIMEOUT_MS = exports.OPERATOR_EXPECTED_LOGS = exports.OPERATOR_VERIFIER_PROVENANCE = exports.OPERATOR_VERIFIER_PINS = exports.OPERATOR_VERIFIER_RUNNER = exports.OPERATOR_VERIFIER_FILE = exports.PACKAGE_ROOT = void 0;
 exports.runOperatorVerifier = runOperatorVerifier;
-exports.checkOperatorCites = checkOperatorCites;
 const crypto = __importStar(require("crypto"));
 const fs = __importStar(require("fs"));
 const os = __importStar(require("os"));
 const path = __importStar(require("path"));
 const child_process_1 = require("child_process");
-const rng_1 = require("./rng");
 exports.PACKAGE_ROOT = path.join(__dirname, '..');
 exports.OPERATOR_VERIFIER_FILE = 'evidence/verify-tab/duel-verify-tab-mines-2026-09-25.js';
 exports.OPERATOR_VERIFIER_RUNNER = 'verifier-parity/operator/run-operator-verifier.cjs';
@@ -765,21 +837,6 @@ function runOperatorVerifier(rounds, root = exports.PACKAGE_ROOT) {
     catch (e) {
         return { files, hashesMatch, mines: null, logs: [], error: `operator verifier output unreadable: ${e.message}` };
     }
-}
-function checkOperatorCites(root = exports.PACKAGE_ROOT) {
-    const p = path.join(root, exports.OPERATOR_VERIFIER_FILE);
-    if (!fs.existsSync(p))
-        return { checked: 0, bad: [`${exports.OPERATOR_VERIFIER_FILE} not found`] };
-    const lines = fs.readFileSync(p, 'utf8').split('\n');
-    const bad = [];
-    for (const c of rng_1.OPERATOR_SOURCE_CITES) {
-        const at = lines[c.line - 1];
-        if (at === undefined || !at.includes(c.text))
-            bad.push(`L${c.line} does not contain ${JSON.stringify(c.text)} (it reads ${JSON.stringify((at ?? '').trim())})`);
-    }
-    if (rng_1.OPERATOR_SOURCE_CITES.length === 0)
-        bad.push('src/rng.ts cites no operator line');
-    return { checked: rng_1.OPERATOR_SOURCE_CITES.length, bad };
 }
 
 },
@@ -1225,27 +1282,33 @@ exports.NOT_APPLICABLE = [
 exports.PACKAGE_CHECKS = [
     {
         id: 'MINES-09',
-        artifact: 'tests/mines/MinesTests.ts (Operator source block) + src/rng.ts OPERATOR_SOURCE_CITES + src/operator-verifier.ts + Step 5 fifth leg',
+        artifact: 'docs/ALGORITHM.md + tests/mines/RngSpecTests.ts + tests/mines/MinesTests.ts (Second check block) + src/operator-verifier.ts + Step 5 fifth leg',
         coverage: 'full',
-        note: 'THE OPERATOR SOURCE IS IN REACH (corrected 2026-09-25 — the earlier note said no Duel Mines source was; that was '
-            + 'wrong: Duel publishes it). Duel\'s own Mines code, shown in the code panel of duel.com → Provably Fair → Verify '
-            + '(Expand → Copy), was copied verbatim by Paulo on 2026-09-25 to evidence/verify-tab/duel-verify-tab-mines-2026-09-25.js '
-            + '(SHA-256 88f5268b…, 3,026 bytes; evidence/E03 shows the same panel collapsed). The asserts, each met: (1) "unit '
-            + 'tests reproduce captured bets from their revealed seeds … against the operator\'s published source" — the '
-            + 'Operator source block in tests/mines/MinesTests.ts EXECUTES that file unmodified (src/operator-verifier.ts: '
+        note: 'REWRITTEN 2026-10-20 (v1.2.0). src/rng.ts is rebuilt from a written specification, docs/ALGORITHM.md '
+            + '(framework games/mines/ALGORITHM.md), by an implementer who never opened Duel\'s code; Duel\'s published '
+            + 'Verify-tab code is run as a second check, not used as the source. Through v1.1.0 src/rng.ts was a port of that '
+            + 'code and cited 16 of its lines (OPERATOR_SOURCE_CITES); the port and the citation table are gone. The asserts: '
+            + '(1) "unit tests reproduce captured bets from their revealed seeds … against the operator\'s published source" — '
+            + 'the Second check block in tests/mines/MinesTests.ts EXECUTES Duel\'s Verify-tab file (copied verbatim by Paulo on '
+            + '2026-09-25 from duel.com → Provably Fair → Verify, Expand → Copy, to evidence/verify-tab/duel-verify-tab-mines-2026-09-25.js, '
+            + 'SHA-256 88f5268b…, 3,026 bytes; evidence/E03 shows the same panel collapsed) unmodified (src/operator-verifier.ts: '
             + 'pinned SHA-256, child-process runner verifier-parity/operator/run-operator-verifier.cjs, the file\'s own '
             + 'generateMinesPositions) on all 7,050 captured rounds of both datasets and requires its mine set to equal the '
             + 'served mines_positions and src/rng.ts computeMinePositions: 7,050/7,050, 0 differ; (2) "fixed vectors" — the '
             + 'same block requires the operator code to return the 7 known-answer layouts (server seed b255e0f5…, client seed '
-            + 'EveJlkDtA24dfvBr, nonces 0-6), beside the existing src/rng.ts vectors and the commitment vector; (3) "the '
-            + 'adapter cites the operator source line it ports" — src/rng.ts OPERATOR_SOURCE_CITES names 16 lines of the '
-            + 'pinned file with the text each must carry (L30 hex-decoded key … L82 first m, sorted), and '
-            + 'checkOperatorCites FAILs any line that does not carry it: 16/16 verbatim. Step 5 (fifth leg) runs the same '
-            + 'execution and citation check in the verifier and FAILs on a hash mismatch, any disagreement, a round count '
-            + 'other than 7,050, or a broken citation. FAIL probed: M05f (a comment of the operator file changed without a '
-            + 're-pin → hash mismatch), M05g (the file\'s HMAC digest byte order reversed AND re-pinned → layouts disagree), '
-            + 'M05h (a citation moved to a line that does not carry its text). What this does NOT establish: that the Verify '
-            + 'button runs exactly the code the panel shows, or that Duel\'s server runs it (MANIFEST.md DL-4, premise P2)',
+            + 'EveJlkDtA24dfvBr, nonces 0-6), and tests/mines/RngSpecTests.ts runs the spec\'s own vectors and properties '
+            + 'against src/rng.ts (115/115); (3) "the adapter cites the operator source line it ports" — superseded for this '
+            + 'package by the 20 Oct 2026 rule that RNG code is rebuilt from a written spec: nothing is ported, so no operator '
+            + 'line is cited; docs/ALGORITHM.md §4 names the source of every step instead (Duel\'s public pages, the standard '
+            + 'construction, or the 7,050 live rounds). Step 5 (fifth leg) runs the same execution in the verifier and FAILs on '
+            + 'a hash mismatch, any disagreement or a round count other than 7,050. FAIL probed: M05f (a comment of the operator '
+            + 'file changed without a re-pin → hash mismatch), M05g (the file\'s HMAC digest byte order reversed AND re-pinned → '
+            + 'layouts disagree). Known differences between src/rng.ts and Duel\'s file, on inputs no captured round reaches '
+            + '(0 rejected chunks in the captured draws): for ranges 2, 4, 8, 16 src/rng.ts accepts every chunk where Duel\'s '
+            + 'file rejects the top r values (both exactly uniform), and when all eight chunks of a digest are rejected src/rng.ts '
+            + 'throws (spec O1) where Duel\'s file moves to the next cursor (MANIFEST.md DL-11, premise P1). What this does NOT '
+            + 'establish: that the Verify button runs exactly the code the panel shows, or that Duel\'s server runs it '
+            + '(MANIFEST.md DL-4, premise P2)',
     },
     {
         id: 'MINES-23', artifact: 'MANIFEST.md#verification-results (S5-MATRIX block)', coverage: 'full',
@@ -1329,7 +1392,7 @@ exports.PACKAGE_CHECKS = [
         artifact: 'tests/mutations.json + tests/survivors.json + tests/mutations.ts (npm run mutate)',
         coverage: 'full',
         note: 'a step-named registry run in disposable temp copies (tests/mutations.ts, ported from LIQD with '
-            + 'multi-file `edits`): 48 must-fail entries, each with the result it must produce: 37 turn their named '
+            + 'multi-file `edits`): 47 must-fail entries, each with the result it must produce: 36 turn their named '
             + 'step FAIL, 7 turn it FLAG (M11, M19c, M25, M25b, M25c with Conditional Pass; MC3a, MC3b with RTP FIGURE '
             + 'OVERSTATED, exit 5), M26 must leave Step 26 at INFO with the verdict unchanged, and 3 name no step (M27 '
             + 'must fail the unit suite; MC3as and MC3bs must exit 1 with the committed RTP table reported as '
@@ -1338,8 +1401,9 @@ exports.PACKAGE_CHECKS = [
             + 'M07, M08, M20, M25c forge a dataset AND re-pin its SHA-256 as a forger would; M18, M19, M19b, M19c, M19d, M24b forge '
             + 'the simulation artifact AND re-pin it; M05b and M05d forge the vendored docusaurus and live-site verifiers AND re-pin them; M24, '
             + 'M05c and M05e edit an artifact without re-pinning; added 2026-09-25 for the operator\'s own Verify-tab code '
-            + '(MINES-09): M05g forges it AND re-pins it, M05f edits it without re-pinning, M05h breaks a src/rng.ts '
-            + 'citation. Three declared '
+            + '(MINES-09): M05g forges it AND re-pins it, M05f edits it without re-pinning (M05h, which broke a src/rng.ts '
+            + 'citation, was retired on 20 Oct 2026 with the citation table; M05, M06, M16, M16b and M27 were retargeted to the '
+            + 'rebuilt src/rng.ts). Three declared '
             + 'survivors in tests/survivors.json, each tied to a limitation id (DL-11, DL-5, DL-6)',
     },
     {
@@ -1348,8 +1412,8 @@ exports.PACKAGE_CHECKS = [
         coverage: 'full',
         note: 'MANIFEST.md carries the declared-limitations register DL-1 … DL-11, each row with its measured '
             + 'magnitude and its closure evidence (the step or artifact that binds it, or what would close it), and '
-            + 'a Load-Bearing Premises table marking the unwitnessed premises ASSUMED (P1 the operator\'s server takes '
-            + 'the retry branch its published code shows, P2 the Verify button runs the code its panel shows, P3 the API '
+            + 'a Load-Bearing Premises table marking the unwitnessed premises ASSUMED (P1 where no captured round reaches '
+            + '(all eight chunks rejected; the top values of a power-of-two range) the operator\'s server draws as its published code does, P2 the Verify button runs the code its panel shows, P3 the API '
             + 'tile numbering is the board the player sees, P7 the capture is a faithful record of what Duel served and '
             + 'when, on which the pre-bet timing of the commitments rests) beside the witnessed ones; MANIFEST Evidence numbers every exhibit '
             + 'E01-E14 with a file '
@@ -1376,214 +1440,145 @@ function labelFor(step) {
 },
 "src/rng.js": function(module, exports, require, __filename, __dirname) {
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MAX_UINT32 = exports.GRID_SIZE = exports.OPERATOR_SOURCE_CITES = void 0;
+exports.MAX_UINT32 = exports.GRID_SIZE = void 0;
 exports.maxFairFor = maxFairFor;
 exports.drawFromChunk = drawFromChunk;
 exports.newDrawCensus = newDrawCensus;
-exports.computeMinePositionsFromBuffer = computeMinePositionsFromBuffer;
 exports.shuffleTilesFromBuffer = shuffleTilesFromBuffer;
-exports.drawBiasBound = drawBiasBound;
+exports.computeMinePositionsFromBuffer = computeMinePositionsFromBuffer;
 exports.computeMinePositions = computeMinePositions;
 exports.verifyHash = verifyHash;
-exports.theoreticalMultiplier = theoreticalMultiplier;
 exports.winChance = winChance;
-const crypto = __importStar(require("crypto"));
-exports.OPERATOR_SOURCE_CITES = Object.freeze([
-    { line: 30, text: 'const keyBytes = hexToBytes(keyHex);', ports: 'the server seed is hex-decoded to the HMAC key' },
-    { line: 36, text: "{ name: 'HMAC', hash: 'SHA-256' },", ports: 'HMAC-SHA256' },
-    { line: 49, text: 'const MAX_UINT32 = 0xFFFFFFFF;', ports: 'MAX_UINT32' },
-    { line: 50, text: 'const positions = Array.from({ length: gridSize }, (_, i) => i);', ports: 'positions = [0 … gridSize − 1]' },
-    { line: 53, text: 'for (let i = gridSize - 1; i > 0; i--) {', ports: 'backward Fisher-Yates, i = 24 … 1' },
-    { line: 54, text: 'const range = i + 1;', ports: 'range = i + 1' },
-    { line: 55, text: 'const maxFair = MAX_UINT32 - (MAX_UINT32 % range);', ports: 'maxFairFor' },
-    { line: 56, text: 'let cursor = gridSize - 1 - i;', ports: 'cursor starts at gridSize − 1 − i for every i' },
-    { line: 62, text: 'new TextEncoder().encode(`${clientSeed}:${nonce}:${cursor}`)', ports: 'the HMAC message' },
-    { line: 66, text: 'for (let off = 0; off + 8 <= hash.length; off += 8) {', ports: 'eight 4-byte chunks, first to last' },
-    { line: 67, text: 'const value = parseInt(hash.slice(off, off + 8), 16);', ports: 'chunk read as a big-endian uint32 (8 hex chars)' },
-    { line: 68, text: 'if (value < maxFair) {', ports: 'drawFromChunk: accept below maxFair' },
-    { line: 69, text: 'const j = value % range;', ports: 'drawFromChunk: j = value mod range' },
-    { line: 70, text: '[positions[i], positions[j]] = [positions[j], positions[i]];', ports: 'the swap' },
-    { line: 77, text: 'cursor++; // otherwise try a new cursor', ports: 'all 8 chunks rejected → next cursor' },
-    { line: 82, text: 'return positions.slice(0, minesCount).sort((a, b) => a - b);', ports: 'computeMinePositionsFromBuffer: first m, sorted' },
-]);
+exports.theoreticalMultiplier = theoreticalMultiplier;
+const crypto_1 = require("crypto");
 exports.GRID_SIZE = 25;
-exports.MAX_UINT32 = 0xFFFFFFFF;
+exports.MAX_UINT32 = 0xffffffff;
+const TWO_POW_32 = 4294967296;
+const CHUNK_BYTES = 4;
 function maxFairFor(range) {
-    return exports.MAX_UINT32 - (exports.MAX_UINT32 % range);
+    if (!Number.isInteger(range) || range < 1 || range > TWO_POW_32) {
+        throw new RangeError(`range must be an integer in 1..2^32, got ${range}`);
+    }
+    return Math.floor(TWO_POW_32 / range) * range;
 }
 function drawFromChunk(value, range) {
-    return value < maxFairFor(range) ? value % range : null;
+    if (!Number.isInteger(value) || value < 0 || value > exports.MAX_UINT32) {
+        throw new RangeError(`chunk value must be an integer in 0..${exports.MAX_UINT32}, got ${value}`);
+    }
+    const limit = maxFairFor(range);
+    return value < limit ? value % range : null;
 }
 function newDrawCensus() {
     return { draws: 0, chunksRead: 0, rejectedChunks: 0, cursorAdvances: 0 };
 }
-function computeMinePositionsFromBuffer(keyBuffer, clientSeed, nonce, mineCount, gridSize = exports.GRID_SIZE, census) {
-    return shuffleTilesFromBuffer(keyBuffer, clientSeed, nonce, gridSize, census)
-        .slice(0, mineCount).sort((a, b) => a - b);
+function checkGridSize(gridSize) {
+    if (!Number.isInteger(gridSize) || gridSize < 2) {
+        throw new RangeError(`gridSize must be an integer >= 2, got ${gridSize}`);
+    }
+}
+function checkNonce(nonce) {
+    if (!Number.isSafeInteger(nonce) || nonce < 0) {
+        throw new RangeError(`nonce must be a non-negative safe integer, got ${nonce}`);
+    }
+}
+function checkKey(keyBuffer) {
+    if (!Buffer.isBuffer(keyBuffer) || keyBuffer.length === 0) {
+        throw new TypeError("keyBuffer must be a non-empty Buffer (the hex-decoded server seed)");
+    }
+}
+function decodeServerSeed(serverSeed) {
+    if (typeof serverSeed !== "string" || !/^[0-9a-fA-F]{64}$/.test(serverSeed)) {
+        throw new TypeError("serverSeed must be 64 hexadecimal characters");
+    }
+    return Buffer.from(serverSeed, "hex");
+}
+function digestForDraw(keyBuffer, clientSeed, nonce, drawIndex) {
+    const message = `${clientSeed}:${String(nonce)}:${String(drawIndex)}`;
+    return (0, crypto_1.createHmac)("sha256", keyBuffer).update(Buffer.from(message, "utf8")).digest();
+}
+function drawIndexFromDigest(digest, range, census) {
+    for (let off = 0; off + CHUNK_BYTES <= digest.length; off += CHUNK_BYTES) {
+        const value = digest.readUInt32BE(off);
+        if (census)
+            census.chunksRead += 1;
+        const picked = drawFromChunk(value, range);
+        if (picked !== null)
+            return picked;
+        if (census)
+            census.rejectedChunks += 1;
+    }
+    throw new Error(`all ${digest.length / CHUNK_BYTES} chunks of the digest were rejected for range ${range}; ` +
+        "ALGORITHM.md O1 leaves this case unspecified");
 }
 function shuffleTilesFromBuffer(keyBuffer, clientSeed, nonce, gridSize = exports.GRID_SIZE, census) {
-    const positions = Array.from({ length: gridSize }, (_, i) => i);
-    for (let i = gridSize - 1; i > 0; i--) {
-        const range = i + 1;
-        let cursor = gridSize - 1 - i;
+    checkKey(keyBuffer);
+    checkNonce(nonce);
+    checkGridSize(gridSize);
+    if (typeof clientSeed !== "string")
+        throw new TypeError("clientSeed must be a string");
+    const tiles = [];
+    for (let t = 0; t < gridSize; t += 1)
+        tiles.push(t);
+    for (let i = 0; i < gridSize - 1; i += 1) {
+        const range = gridSize - i;
+        const digest = digestForDraw(keyBuffer, clientSeed, nonce, i);
+        const j = drawIndexFromDigest(digest, range, census);
+        const last = range - 1;
+        const held = tiles[last];
+        tiles[last] = tiles[j];
+        tiles[j] = held;
         if (census)
-            census.draws++;
-        while (true) {
-            const message = `${clientSeed}:${nonce}:${cursor}`;
-            const hmac = crypto.createHmac('sha256', keyBuffer).update(message).digest('hex');
-            let found = false;
-            for (let off = 0; off + 8 <= hmac.length; off += 8) {
-                const value = parseInt(hmac.substring(off, off + 8), 16);
-                if (census)
-                    census.chunksRead++;
-                const j = drawFromChunk(value, range);
-                if (j !== null) {
-                    [positions[i], positions[j]] = [positions[j], positions[i]];
-                    found = true;
-                    break;
-                }
-                if (census)
-                    census.rejectedChunks++;
-            }
-            if (found)
-                break;
-            if (census)
-                census.cursorAdvances++;
-            cursor++;
-        }
+            census.draws += 1;
     }
-    return positions;
+    return tiles;
 }
-function drawBiasBound(gridSize = exports.GRID_SIZE) {
-    const domainSize = exports.MAX_UINT32 + 1;
-    const ranges = [];
-    for (let range = 2; range <= gridSize; range++) {
-        let lo = 0, hi = domainSize;
-        if (drawFromChunk(0, range) === null)
-            hi = 0;
-        while (hi - lo > 1) {
-            const mid = Math.floor((lo + hi) / 2);
-            if (drawFromChunk(mid, range) !== null)
-                lo = mid;
-            else
-                hi = mid;
-        }
-        const W = hi === 0 ? 0 : (drawFromChunk(lo, range) !== null ? lo + 1 : lo);
-        const expect = (v) => (v < W ? v % range : null);
-        const probes = new Set();
-        for (let d = 0; d < 100; d++) {
-            probes.add(d);
-            probes.add(exports.MAX_UINT32 - d);
-            if (W - 1 - d >= 0)
-                probes.add(W - 1 - d);
-            if (W + d <= exports.MAX_UINT32)
-                probes.add(W + d);
-        }
-        for (let k = 0; k < 200; k++)
-            probes.add(Math.floor(k * (domainSize / 200)) + (k % range));
-        let predicateProbeFailures = 0;
-        for (const v of probes) {
-            if (v < 0 || v > exports.MAX_UINT32)
-                continue;
-            if (drawFromChunk(v, range) !== expect(v))
-                predicateProbeFailures++;
-        }
-        const remainder = W % range;
-        const minIndexCount = Math.floor(W / range);
-        const maxIndexCount = remainder === 0 ? minIndexCount : minIndexCount + 1;
-        const bias = W === 0 ? 1
-            : Math.max(maxIndexCount * range - W, W - minIndexCount * range) / (W * range);
-        const relativeBias = minIndexCount === 0 ? Infinity : maxIndexCount / minIndexCount - 1;
-        const uRem = domainSize % range;
-        const uMin = Math.floor(domainSize / range);
-        const uMax = uRem === 0 ? uMin : uMin + 1;
-        const uncorrectedBias = Math.max(uMax * range - domainSize, domainSize - uMin * range) / (domainSize * range);
-        const uncorrectedRelativeBias = uMax / uMin - 1;
-        const rejectedValues = domainSize - W;
-        ranges.push({
-            range, maxFair: maxFairFor(range), acceptedWindow: W, rejectedValues,
-            rejectionProbabilityPerChunk: rejectedValues / domainSize,
-            remainder, minIndexCount, maxIndexCount, bias, relativeBias,
-            uncorrectedBias, uncorrectedRelativeBias, predicateProbeFailures,
-            exact: remainder === 0 && W > 0 && predicateProbeFailures === 0,
-        });
+function computeMinePositionsFromBuffer(keyBuffer, clientSeed, nonce, mineCount, gridSize = exports.GRID_SIZE, census) {
+    checkGridSize(gridSize);
+    if (!Number.isInteger(mineCount) || mineCount < 1 || mineCount > gridSize - 1) {
+        throw new RangeError(`mineCount must be an integer in 1..${gridSize - 1}, got ${mineCount}`);
     }
-    return {
-        algorithm: 'rejection-sampling',
-        domainSize,
-        ranges,
-        worstBias: Math.max(...ranges.map(r => r.bias)),
-        worstRelativeBias: Math.max(...ranges.map(r => r.relativeBias)),
-        worstUncorrectedBias: Math.max(...ranges.map(r => r.uncorrectedBias)),
-        worstUncorrectedRelativeBias: Math.max(...ranges.map(r => r.uncorrectedRelativeBias)),
-        inexactRanges: ranges.filter(r => !r.exact).map(r => r.range),
-        predicateProbeFailures: ranges.reduce((n, r) => n + r.predicateProbeFailures, 0),
-        expectedRejectedChunksPerRound: ranges.reduce((n, r) => n + r.rejectionProbabilityPerChunk / (1 - r.rejectionProbabilityPerChunk), 0),
-    };
+    const tiles = shuffleTilesFromBuffer(keyBuffer, clientSeed, nonce, gridSize, census);
+    return tiles.slice(0, mineCount).sort((x, y) => x - y);
 }
 function computeMinePositions(serverSeed, clientSeed, nonce, mineCount, gridSize = exports.GRID_SIZE) {
-    const key = Buffer.from(serverSeed, 'hex');
-    return computeMinePositionsFromBuffer(key, clientSeed, nonce, mineCount, gridSize);
+    return computeMinePositionsFromBuffer(decodeServerSeed(serverSeed), clientSeed, nonce, mineCount, gridSize);
 }
 function verifyHash(serverSeed, serverSeedHashed) {
-    const seedBytes = Buffer.from(serverSeed, 'hex');
-    const computed = crypto.createHash('sha256').update(seedBytes).digest('hex');
-    return computed === serverSeedHashed;
+    if (typeof serverSeedHashed !== "string" || !/^[0-9a-fA-F]{64}$/.test(serverSeedHashed))
+        return false;
+    let key;
+    try {
+        key = decodeServerSeed(serverSeed);
+    }
+    catch {
+        return false;
+    }
+    const commitment = (0, crypto_1.createHash)("sha256").update(key).digest("hex");
+    return commitment === serverSeedHashed.toLowerCase();
 }
-function theoreticalMultiplier(mineCount, reveals, houseEdge = 0.001) {
-    const n = exports.GRID_SIZE;
-    const m = mineCount;
-    const k = reveals;
-    return comb(n, k) / comb(n - m, k) * (1 - houseEdge);
+function checkMinesAndReveals(mineCount, reveals, name) {
+    if (!Number.isInteger(mineCount) || mineCount < 1 || mineCount > exports.GRID_SIZE - 1) {
+        throw new RangeError(`mineCount must be an integer in 1..${exports.GRID_SIZE - 1}, got ${mineCount}`);
+    }
+    if (!Number.isInteger(reveals) || reveals < 0 || reveals > exports.GRID_SIZE - mineCount) {
+        throw new RangeError(`${name} must be an integer in 0..${exports.GRID_SIZE - mineCount}, got ${reveals}`);
+    }
 }
 function winChance(mineCount, revealsSoFar) {
-    const n = exports.GRID_SIZE;
-    return (n - mineCount - revealsSoFar) / (n - revealsSoFar);
+    checkMinesAndReveals(mineCount, revealsSoFar, "revealsSoFar");
+    return (exports.GRID_SIZE - mineCount - revealsSoFar) / (exports.GRID_SIZE - revealsSoFar);
 }
-function comb(n, k) {
-    if (k < 0 || k > n)
-        return 0;
-    if (k === 0 || k === n)
-        return 1;
-    let result = 1;
-    for (let i = 0; i < k; i++) {
-        result = result * (n - i) / (i + 1);
+function theoreticalMultiplier(mineCount, reveals, houseEdge = 0.001) {
+    checkMinesAndReveals(mineCount, reveals, "reveals");
+    if (!Number.isFinite(houseEdge) || houseEdge < 0 || houseEdge >= 1) {
+        throw new RangeError(`houseEdge must be in [0, 1), got ${houseEdge}`);
     }
-    return result;
+    let fair = 1;
+    for (let t = 0; t < reveals; t += 1) {
+        fair *= (exports.GRID_SIZE - t) / (exports.GRID_SIZE - mineCount - t);
+    }
+    return fair * (1 - houseEdge);
 }
 
 },
@@ -3896,6 +3891,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = run;
 const context_1 = require("./context");
 const rng_1 = require("../../src/rng");
+const bias_1 = require("../../src/bias");
 const loader_1 = require("../../src/loader");
 const layout_1 = require("../../src/layout");
 const site_verifier_1 = require("../../src/site-verifier");
@@ -3928,7 +3924,7 @@ function run(ctx) {
         s5Issues.push(`${skipped} bet(s) not recomputable — their epoch seed was never revealed`);
     if (verifiedCount !== loader_1.EXPECTED_BETS)
         s5Issues.push(`recomputed ${verifiedCount} != ${loader_1.EXPECTED_BETS}`);
-    const bb = (0, rng_1.drawBiasBound)(rng_1.GRID_SIZE);
+    const bb = (0, bias_1.drawBiasBound)(rng_1.GRID_SIZE);
     const drawsPerRound = rng_1.GRID_SIZE - 1;
     const expectedDraws = verifiedCount * drawsPerRound;
     const expectedRejectedChunks = verifiedCount * bb.expectedRejectedChunksPerRound;
@@ -4057,7 +4053,6 @@ function run(ctx) {
             served: [...b.response.mines_positions].sort((x, y) => x - y).join(','), round: String(b.response.round_id) });
     });
     const op = (0, operator_verifier_1.runOperatorVerifier)(opRounds.map(({ id, serverSeed, clientSeed, nonce, gridSize, minesCount }) => ({ id, serverSeed, clientSeed, nonce, gridSize, minesCount })));
-    const opCites = (0, operator_verifier_1.checkOperatorCites)();
     let opCompared = 0, opVsPkg = 0, opVsServed = 0;
     const opFirst = [];
     if (op.error)
@@ -4090,13 +4085,11 @@ function run(ctx) {
         if (opCompared !== siteExpected)
             opIssues.push(`operator-code parity covered ${opCompared} rounds, expected ${siteExpected}`);
     }
-    if (opCites.bad.length > 0 || opCites.checked === 0)
-        opIssues.push(`src/rng.ts operator citations: ${opCites.bad.slice(0, 2).join('; ')}`);
-    const opSentence = `Operator-code parity (MINES-09): Duel's own Mines Verify-tab code (${operator_verifier_1.OPERATOR_VERIFIER_PROVENANCE.savedAs}, `
+    const opSentence = `Operator-code parity (MINES-09), the second check: Duel's own Mines Verify-tab code (${operator_verifier_1.OPERATOR_VERIFIER_PROVENANCE.savedAs}, `
         + `copied ${operator_verifier_1.OPERATOR_VERIFIER_PROVENANCE.copiedOn}; ${op.files.filter(f => f.match).length}/${op.files.length} SHA-256 pins MATCH) was executed `
         + `unmodified on all ${opCompared.toLocaleString()} captured rounds: its generateMinesPositions returned the served mine set on `
-        + `${(opCompared - opVsServed).toLocaleString()} and src/rng.ts's on ${(opCompared - opVsPkg).toLocaleString()} (${opVsServed} / ${opVsPkg} differ); `
-        + `operator lines cited by src/rng.ts ${opCites.checked - opCites.bad.length}/${opCites.checked} verbatim.`;
+        + `${(opCompared - opVsServed).toLocaleString()} and src/rng.ts's on ${(opCompared - opVsPkg).toLocaleString()} (${opVsServed} / ${opVsPkg} differ). `
+        + `src/rng.ts is rebuilt from docs/ALGORITHM.md, not from this code.`;
     const s5Ok = mismatches === 0 && s5Issues.length === 0 && biasIssues.length === 0 && siteIssues.length === 0 && liveIssues.length === 0
         && opIssues.length === 0;
     const s5FailParts = [];
@@ -4151,7 +4144,6 @@ function run(ctx) {
             files: op.files.map(f => ({ file: f.file, pinnedSha256: f.pinned, actualSha256: f.actual, match: f.match })),
             provenance: operator_verifier_1.OPERATOR_VERIFIER_PROVENANCE,
             rounds: opCompared, expectedRounds: siteExpected, disagreeWithRng: opVsPkg, disagreeWithServed: opVsServed,
-            citesChecked: opCites.checked, citesBad: opCites.bad.length,
             issues: opIssues,
         },
     });

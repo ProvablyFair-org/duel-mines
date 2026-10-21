@@ -1,14 +1,14 @@
 [
   {
-    "name": "S01 all-8-chunks-rejected branch throws instead of advancing the cursor",
+    "name": "S01 all-8-chunks-rejected branch returns plain v mod r instead of throwing",
     "runner": "verify",
     "file": "src/rng.ts",
-    "find": "      cursor++;\n    }",
-    "replace": "      throw new Error('no fair chunk');\n    }",
+    "find": "  throw new Error(\n    `all ${digest.length / CHUNK_BYTES} chunks of the digest were rejected for range ${range}; ` +",
+    "replace": "  if (digest.length > 0) return digest.readUInt32BE(0) % range; // MUTATION: fallback instead of throwing\n  throw new Error(\n    `all ${digest.length / CHUNK_BYTES} chunks of the digest were rejected for range ${range}; ` +",
     "expect": "NOT PROVABLY FAIR",
     "expectStep": 5,
     "expectStatus": "FAIL",
-    "why": "DL-11 / premise P1: the branch is never reached — 0 rejected chunks in the 156,000 captured draws (expected 2.4e-4) — so no captured round can tell which rule the operator's server runs (its published Verify-tab code advances the cursor, L77 of evidence/verify-tab/duel-verify-tab-mines-2026-09-25.js — the rule src/rng.ts ports)"
+    "why": "DL-11 / premise P1: the branch is never reached — 0 rejected chunks in the 156,000 captured draws (expected 1.9e-4) — so no captured round can tell which rule the operator's server runs there (src/rng.ts stops with an error, the spec leaving it open as docs/ALGORITHM.md O1; Duel's published Verify-tab code advances the cursor, L77 of evidence/verify-tab/duel-verify-tab-mines-2026-09-25.js)"
   },
   {
     "name": "S02 multiplier bound loosened from 1e-12 to 1e-6 relative",

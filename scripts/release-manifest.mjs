@@ -27,12 +27,12 @@ const DECLARED = {
   auditId: 'PF-2026-DL04',
   game: 'mines',
   casino: 'duel',
-  release: 'v1.1.0',
+  release: 'v1.2.0',
   framework: '1.1',
   environmentHost: 'duel.com',
   environmentStage: 'production',
   environmentQualifier: null,
-  supersedes: 'v1.0.0',
+  supersedes: 'v1.1.0',
   signature: 'SHA256:gEujiJm2pRyq7lQsfYQfQ1r97H/J7GdaKHbOW8GtikY',
   pending: '',
 };
@@ -75,7 +75,7 @@ function captureWindow(dataset) {
 /** The falsifiability battery. `mutations` is computed from the registry; the RUN RESULT is DECLARED
  * from the last completed `npm run mutate` (cite it in `source`) and must be refreshed by re-running
  * the battery — a generator never asserts a kill it did not run. null = not run for this manifest. */
-const FALSIFIABILITY_DECLARED = { killed: 48, declaredSurvivors: 3, source: 'npm run mutate 2026-10-19, the whole registry (48 must-fail entries) on the tree carrying the 19 Oct QA changes (Apple M2 Max, 12 cores, Node 22.23.1, wall 23:41): 42/48 caught by their named step, 3 declared survivors; the 6 not caught (M18, M19, M19b, M19c, M19d, M24b) could not be applied because their re-pin edits still named the simulation artifact pin replaced that day, so Step 19 had no killer in that run. Their pins re-made (forged-artifact hashes recomputed; the method reproduces the 6 previous hashes from the previous artifact) and rerun the same day with npm run mutate -- M18 M19 M24b: 7/7 caught (M18b included), Step 19 FAIL/FLAG as named. 48/48 across the two runs; MC3a and MC3b ended RTP FIGURE OVERSTATED, exit 5' };
+const FALSIFIABILITY_DECLARED = { killed: 47, declaredSurvivors: 3, source: 'npm run mutate 2026-10-20, the whole registry (47 must-fail entries) on the 20 October v1.2.0 tree (src/rng.ts rebuilt from docs/ALGORITHM.md; Apple M2 Max, 12 cores, Node 22.23.1, wall 2197 s): 47/47 caught by their named step, 0 missed, 3 declared survivors, 26/26 scored steps killed; MC3a and MC3b ended RTP FIGURE OVERSTATED, exit 5' };
 
 /** How long `npm test` takes, and on what — a property of the machine, so DECLARED from measured runs. */
 const RUNTIME = {

@@ -168,7 +168,7 @@ export const VERIFICATION_KEY_DOMAINS: ReadonlyMap<string, Domain> = new Map<str
     winningBets wins worstMineCount siteVerifierRounds siteVerifierExpectedRounds siteVerifierMismatches
     siteVerifierUnrecomputable capKeysScanned capServedChecked servedAboveCap cellsAboveCap
     liveSiteRounds liveSiteExpectedRounds liveSiteMismatches liveSiteStandInModules pageModule
-    bytes lines rounds expectedRounds disagreeWithRng disagreeWithServed citesChecked citesBad
+    bytes lines rounds expectedRounds disagreeWithRng disagreeWithServed
     broadFlagAt broadFailAt`, INT),
   ...keys(`earlyWins earlyTotal`, intIn(0, SIM_EPOCH_LENGTH, 'epoch length')),
   ...keys(`lateWins lateTotal`, intIn(0, SIM_NONCES_PER_SEED, 'Pass-2 nonces per seed')),

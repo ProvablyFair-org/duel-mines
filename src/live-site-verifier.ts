@@ -6,7 +6,7 @@
  * chunks: chunk 34934e0e762aa37e.js carries the page module (Turbopack module 7721), whose verifier
  * class dispatches `VERIFY({ casinoName, ... })` to verifyHouseBetsGame (HouseBets) or
  * verifyDuelsGame (Duel.com). A player who pastes a round into that page is trusting THAT code, not
- * this package's port. Its source repository is not available to this audit; the deployed bundle is.
+ * this package's src/rng.ts. Its source repository is not available to this audit; the deployed bundle is.
  *
  * WHAT THIS FILE DOES.
  *   1. PINS the SHA-256 of the three site files the Mines derivation needs (LIVE_SITE_PINS): the

@@ -2,7 +2,7 @@
   "auditId": "PF-2026-DL04",
   "game": "mines",
   "casino": "duel",
-  "release": "v1.1.0",
+  "release": "v1.2.0",
   "framework": "1.1",
   "simulation": {
     "seeding": "pinned",
@@ -29,9 +29,9 @@
     "outputs/rtp-convergence.html": "4d5cadeca0ab206d0788b2f4bf59355bf61d757c31a33e10e3acee5d98559424",
     "outputs/determinism-log.json": "12c39c309bbb7539e2ae8756923f8b7caaa560e9dfe0bc4c18f744fbfaa1497a",
     "outputs/chi-squared-results.json": "c73aa5b90fc626c65c439eef964a3d3c795ae8d4b43515ee6d8023e16b569daf",
-    "outputs/payout-coverage.json": "afc216a49f5176a634731b5ef2bb0324447d80af1f638681512f2434303ec46d",
-    "outputs/simulation-results.json": "b6ce72390eaa5159d3c770ca96e6e4bd1b9d04dc03a11e453b00dd6c23f1de87",
-    "outputs/verification-results.json": "3d4a24a990a3966ea693ec26b106ca735d3f6ebca0ba62c21fa379323db7b045",
+    "outputs/payout-coverage.json": "32bfe33cf0a4ca62dea3445d3d6e78ca59c8bb4fd6c7b6cd6fc727266b2e070e",
+    "outputs/simulation-results.json": "8f628aa69a303ebc13ee343ebb65bae1ba6fd0f1c02d9f996f9b83bf33912f4d",
+    "outputs/verification-results.json": "2c7912464ab85ecb42c9777c11bd932104fd77b14545813d38b0edc86499638f",
     "outputs/rtp-claim-table.json": "499c4f3dd1167550ae1a66f0b385b88e7191283e4cc001f96de01ff1e596e7c5"
   },
   "verdict": "PROVABLY FAIR — Full Pass",
@@ -52,15 +52,15 @@
     "stage": "production",
     "qualifier": null
   },
-  "supersedes": "v1.0.0",
+  "supersedes": "v1.1.0",
   "signature": "SHA256:gEujiJm2pRyq7lQsfYQfQ1r97H/J7GdaKHbOW8GtikY",
   "falsifiability": {
     "registry": "tests/mutations.json",
     "runner": null,
-    "mutations": 48,
-    "killed": 48,
+    "mutations": 47,
+    "killed": 47,
     "declaredSurvivors": 3,
-    "source": "npm run mutate 2026-10-19, the whole registry (48 must-fail entries) on the tree carrying the 19 Oct QA changes (Apple M2 Max, 12 cores, Node 22.23.1, wall 23:41): 42/48 caught by their named step, 3 declared survivors; the 6 not caught (M18, M19, M19b, M19c, M19d, M24b) could not be applied because their re-pin edits still named the simulation artifact pin replaced that day, so Step 19 had no killer in that run. Their pins re-made (forged-artifact hashes recomputed; the method reproduces the 6 previous hashes from the previous artifact) and rerun the same day with npm run mutate -- M18 M19 M24b: 7/7 caught (M18b included), Step 19 FAIL/FLAG as named. 48/48 across the two runs; MC3a and MC3b ended RTP FIGURE OVERSTATED, exit 5"
+    "source": "npm run mutate 2026-10-20, the whole registry (47 must-fail entries) on the 20 October v1.2.0 tree (src/rng.ts rebuilt from docs/ALGORITHM.md; Apple M2 Max, 12 cores, Node 22.23.1, wall 2197 s): 47/47 caught by their named step, 0 missed, 3 declared survivors, 26/26 scored steps killed; MC3a and MC3b ended RTP FIGURE OVERSTATED, exit 5"
   },
   "pending": ""
 }
