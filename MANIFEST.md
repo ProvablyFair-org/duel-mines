@@ -1,6 +1,6 @@
 # Duel Mines — Consolidated Audit Overview
 
-**Audit ID:** PF-2026-DL04 · **Auditor:** ProvablyFair.org · **Release:** `v1.2.0` · **Framework:** 1.1
+**Audit ID:** PF-2026-DL04 · **Auditor:** ProvablyFair.org · **Release:** `v1.2.1` · **Framework:** 1.1
 
 Audit date: April 2026. Publication date: 4 June 2026. Audit report: https://audit.provablyfair.org/casino/duel/games/mines/overview. This overview consolidates the package documentation; the machine-readable release identity is in [RELEASE-MANIFEST.json](RELEASE-MANIFEST.json).
 
@@ -558,6 +558,7 @@ A capture from these scripts needs the verifier's plan constants (`src/loader.ts
 | `v1.0.0` | The original audit. | PROVABLY FAIR — Full Pass |
 | `v1.1.0` | Re-certification under Framework 1.1, October 2026, below. The dataset of record is unchanged. | unchanged |
 | `v1.2.0` | `src/rng.ts` rebuilt from a written specification; Duel's Verify-tab code kept as a second check, below. The dataset of record is unchanged. | unchanged |
+| `v1.2.1` | Errata: adds `.gitattributes` (`* -text`) so a Windows git clone keeps every file byte-identical; no audit content changed. | unchanged |
 
 ### 21 October 2026 — final QA corrections (v1.2.0)
 

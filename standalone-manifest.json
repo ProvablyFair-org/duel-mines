@@ -11,7 +11,7 @@
   ],
   "inputs": {
     ".mocharc.yml": "740a5513cfdeb6b12e9da4a02c1dca865f5204541da4458b9aa9552ab81fe2fe",
-    "package-lock.json": "e627fdb4ccb9b84fef777994bd597f23ae3f3105c2e6cb494237cfa3b5eb5652",
+    "package-lock.json": "d2fdc25b5118abf053f0a10fc1ab4cf3dafa1db9492e38ecc651c706f3e81e1c",
     "scripts/build-standalone.mjs": "2859364f0afd9ff411cad98f4a9799062a2e893783daa2328ced059f27b23de1",
     "scripts/check-standalone.mjs": "d54d7956d003beb09059b7f0971a93ad5f423741b9bbe52927da374a35eb0754",
     "scripts/standalone-runtime.cjs": "9b247bcf042d17192ca92ef2d2168fca2a4bee2db1df798254e5138f271690c1",

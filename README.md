@@ -1,6 +1,6 @@
 # Duel Mines — Provably Fair Audit
 
-**Auditor:** [ProvablyFair.org](https://www.provablyfair.org) · **Audit ID:** PF-2026-DL04 · **Release:** `v1.2.0` · **Capture:** April 2026
+**Auditor:** [ProvablyFair.org](https://www.provablyfair.org) · **Audit ID:** PF-2026-DL04 · **Release:** `v1.2.1` · **Capture:** April 2026
 
 **Result: PROVABLY FAIR — Full Pass.** Every mine layout in the 7,050-bet dataset (6,500 primary + 550 Phase E) reproduces from (serverSeed, clientSeed, nonce). The suite runs 26 scored verification steps: 25 PASS, one capture-origin FLAG and zero hard fails. The flag is a single Phase E nonce with no captured round, attributed on the evidence in DL-2 to a capture request that failed after the round was placed (inferred, not witnessed); it is disclosed and verdict-neutral, and Step 4 found no other nonce gap.
 

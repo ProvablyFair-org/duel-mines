@@ -1,6 +1,6 @@
 {
   "name": "duel-mines-audit",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Provably fair audit \u2014 Duel.com Mines",
   "engines": {
     "node": "22.x"
