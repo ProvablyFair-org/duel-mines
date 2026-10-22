@@ -8,7 +8,7 @@
  * src/sim-plan.ts, the grid), never from the artifact being checked: a bound the artifact supplies
  * is a bound a forger sets.
  *
- * REJECT ONLY THE IMPOSSIBLE (the G-VALID rule from the sibling LIQD packages). A domain encodes
+ * REJECT ONLY THE IMPOSSIBLE. A domain encodes
  * physical possibility, not plausibility: nothing here rejects a value for being surprising,
  * extreme, round, or equal to its own expectation. An RTP window can exceed 1, a z-score is any
  * finite real, an expected count is a real.

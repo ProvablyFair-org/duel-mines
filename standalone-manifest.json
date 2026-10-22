@@ -11,7 +11,7 @@
   ],
   "inputs": {
     ".mocharc.yml": "740a5513cfdeb6b12e9da4a02c1dca865f5204541da4458b9aa9552ab81fe2fe",
-    "package-lock.json": "d2fdc25b5118abf053f0a10fc1ab4cf3dafa1db9492e38ecc651c706f3e81e1c",
+    "package-lock.json": "02328875fda60cd9ac295230c65503813c58af4208009ded21b1e8d2e895d5d0",
     "scripts/build-standalone.mjs": "2859364f0afd9ff411cad98f4a9799062a2e893783daa2328ced059f27b23de1",
     "scripts/check-standalone.mjs": "d54d7956d003beb09059b7f0971a93ad5f423741b9bbe52927da374a35eb0754",
     "scripts/standalone-runtime.cjs": "9b247bcf042d17192ca92ef2d2168fca2a4bee2db1df798254e5138f271690c1",
@@ -19,7 +19,7 @@
     "src/bias.ts": "c7794c1a7daee93de7777a250d08e29f7bb14a10b110c93149c01c7abc3cf4fe",
     "src/diff-simulation.ts": "07ab3272fa89b7d4a30ad4e046fa108fc0a346ec41b1cb80f65c72d99253d1f3",
     "src/diff.ts": "c60da7fbc7919feda66f121fa88958708bee92ea18c5b01aecf12e95ad6dbad2",
-    "src/domains.ts": "b89ca2720612cf8dd3b80e68b7ca0eaa9678facb43fd7f159b3e7bdbba9009db",
+    "src/domains.ts": "28578b4910162f68d48bb615efdfc291e1596b5169ff2b6dcdcf01dfba304cde",
     "src/exact.ts": "592d49fe15fcc878af6cc137699c8456f6d148295eef3b281200a7f7725753c7",
     "src/layout.ts": "61534f193d0a54bc77890c8a0f8805357dcb4e10d3a0608ccb7bfa9870d51c4d",
     "src/live-site-verifier.ts": "f5f90479d8e521220001f34a10c12b05fc89a5a51a80692d897ff65d95c9f70b",
